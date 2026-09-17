@@ -172,33 +172,7 @@ function renderLesStep() {
         const gated = !!s.predict && !lesStepDone;
         lesPredicted = !gated;
         ($(P + 'RunBtn')).disabled = gated;
-        paintPredict(gated);
-    }
-    function paintPredict(show) {
-        const wrap = $(P + 'Predict');
-        wrap.classList.toggle('hidden', !show);
-        if (!show)
-            return;
-        const s = curLesStep();
-        const opts = (s && s.predict && s.predict.options) || [];
-        mountOptions($(P + 'PredictOpts'), opts, (i) => lesPredictPick(i), { btnClass: 'tokbtn pred-opt', animate: false });
-        setText(P + 'PredictMsg', 'Study the code, then commit: what will it print?');
-    }
-    function lesPredictPick(i) {
-        const s = curLesStep();
-        if (!s || !s.predict)
-            return;
-        if (i === s.predict.answer) {
-            lesPredicted = true;
-            $(P + 'PredictOpts').innerHTML = '';
-            setText(P + 'PredictMsg', 'Locked in — and right. Press Run to confirm it for real.');
-            ($(P + 'RunBtn')).disabled = false;
-            beep(880, .07);
-        }
-        else {
-            setText(P + 'PredictMsg', 'Not quite — Run stays locked. Trace it line by line, then pick again.');
-            sfx.bad();
-        }
+        paintLesPredict(gated);
     }
     if (s.kind === 'order' && s.lines) {
         lesOrdGood = 0;
@@ -249,6 +223,35 @@ function renderLesStep() {
         });
     }
     syncLesNav();
+}
+/* Predict-first gate (shared by render + Reset): mounting fresh options asks
+   the question again and re-locks Run; hiding keeps a locked-in/completed
+   prediction standing. Top-level so lesReset can re-arm the same gate. */
+function paintLesPredict(show) {
+    const wrap = $(P + 'Predict');
+    wrap.classList.toggle('hidden', !show);
+    if (!show)
+        return;
+    const s = curLesStep();
+    const opts = (s && s.predict && s.predict.options) || [];
+    mountOptions($(P + 'PredictOpts'), opts, (i) => lesPredictPick(i), { btnClass: 'tokbtn pred-opt', animate: false });
+    setText(P + 'PredictMsg', 'Study the code, then commit: what will it print?');
+}
+function lesPredictPick(i) {
+    const s = curLesStep();
+    if (!s || !s.predict)
+        return;
+    if (i === s.predict.answer) {
+        lesPredicted = true;
+        $(P + 'PredictOpts').innerHTML = '';
+        setText(P + 'PredictMsg', 'Locked in — and right. Press Run to confirm it for real.');
+        ($(P + 'RunBtn')).disabled = false;
+        beep(880, .07);
+    }
+    else {
+        setText(P + 'PredictMsg', 'Not quite — Run stays locked. Trace it line by line, then pick again.');
+        sfx.bad();
+    }
 }
 function syncLesNav() {
     const l = curLesson();
@@ -445,10 +448,34 @@ function lesReset() {
     const s = curLesStep();
     if (!s)
         return;
-    $(P + 'Code').value = s.code || '';
+    // Reset is wired to the editor panels only; non-editor steps have no code.
+    if (s.kind !== 'run' && s.kind !== 'fix') {
+        $(P + 'Verdict').classList.add('hidden');
+        return;
+    }
+    ($(P + 'Code')).value = s.code || '';
     lesHighlight();
-    setText(P + 'Out', 'Press Run to compile your code.');
     $(P + 'Verdict').classList.add('hidden');
+    if (lesStepDone) {
+        // Completed steps stay completed (XP claimed once, Next unlocked):
+        // Reset just restores the starter code for experimentation.
+        setText(P + 'Out', 'Step complete — press Run to play some more.');
+        ($(P + 'RunBtn')).disabled = false;
+        paintLesPredict(false);
+        return;
+    }
+    // Same question fresh: restore the starter code AND re-ask the prediction,
+    // so Run re-locks until the player calls the output again.
+    if (s.predict) {
+        lesPredicted = false;
+        ($(P + 'RunBtn')).disabled = true;
+        paintLesPredict(true);
+    }
+    else {
+        ($(P + 'RunBtn')).disabled = false;
+        paintLesPredict(false);
+    }
+    setText(P + 'Out', 'Press Run to compile your code.');
 }
 function lesHint() {
     const s = curLesStep();
