@@ -1,0 +1,354 @@
+[
+  {
+    "id": "debug-001",
+    "title": "The Counter That Counted Nothing",
+    "desc": "A program that sums numbers with goroutines. The total prints before anyone finishes — if it prints at all.",
+    "diff": "boss",
+    "code": "total := 0\nfor _, v := range vals {\n\t\tgo func() {\n\t\t\t\ttotal += v\n\t\t}()\n}\nfmt.Println(total)",
+    "bug": 3,
+    "bugName": "Data race on total (plus no WaitGroup)",
+    "explain": "A triple homicide: concurrent writes with no mutex, one loop variable shared by every goroutine, and zero waiting — main prints before anyone runs. Mutex the shared state, capture the variable, WaitGroup the ending."
+  },
+  {
+    "id": "debug-002",
+    "title": "The Map That Never Was",
+    "desc": "A word counter. It dies on the very first word.",
+    "diff": "gopher",
+    "code": "var counts map[string]int\nfor _, w := range words {\n\t\tcounts[w]++\n}",
+    "bug": 2,
+    "bugName": "Assignment into a nil map",
+    "explain": "counts was declared, admired, and never initialized. Reads from a nil map return zero values with a straight face; writes panic on the spot. One word changes everything: make."
+  },
+  {
+    "id": "debug-003",
+    "title": "The Fencepost Felony",
+    "desc": "Grab the last element of a slice. What could go wrong?",
+    "diff": "rookie",
+    "code": "s := []int{1, 2, 3}\nlast := s[len(s)]\nfmt.Println(last)",
+    "bug": 1,
+    "bugName": "Index len(s) is out of range",
+    "explain": "Valid indexes run 0 to len-1, so s[len(s)] panics with total confidence, every single time. The last element lives at s[len(s)-1]. Off-by-one: the oldest bug, still collecting victims."
+  },
+  {
+    "id": "debug-004",
+    "title": "The Connection Vampire",
+    "desc": "Fetch a URL and print the body. Works fine — until the server stops answering your calls.",
+    "diff": "gopher",
+    "code": "resp, _ := http.Get(url)\ndata, _ := io.ReadAll(resp.Body)\nfmt.Println(string(data))",
+    "bug": 1,
+    "bugName": "resp.Body is never closed",
+    "explain": "Every skipped Close() leaves a connection wandering the dark forever until the transport starves. defer resp.Body.Close() right after the error check — and quit ignoring that error while you are at it."
+  },
+  {
+    "id": "debug-005",
+    "title": "The Append Into the Void",
+    "desc": "Grow a slice by one. The slice respectfully declines.",
+    "diff": "rookie",
+    "code": "nums := []int{1, 2}\nappend(nums, 3)\nfmt.Println(len(nums))",
+    "bug": 1,
+    "bugName": "append result is discarded",
+    "explain": "append() returned a beautiful longer slice and the code looked away. nums never grew, len never moved, and somewhere a garbage collector is raising the orphan. Catch what append throws: nums = append(nums, 3)."
+  },
+  {
+    "id": "debug-006",
+    "title": "The Error That Got Away",
+    "desc": "Read a file, fall back if it fails. The fallback works. The caller never knows.",
+    "diff": "gopher",
+    "code": "data, err := os.ReadFile(path)\nif err != nil {\n\t\tdata, err := fallback()\n\t\t_ = data\n}\nreturn err",
+    "bug": 2,
+    "bugName": "Shadowed err — original error returned",
+    "explain": ":= inside the braces minted fresh data AND err, so the outer err kept its original failure and marched out the door with it — while the successful fallback went in the bin. Declare once, assign with =."
+  },
+  {
+    "id": "debug-007",
+    "title": "The Photocopy Romance",
+    "desc": "Activate every user in the list. Nobody wakes up.",
+    "diff": "gopher",
+    "code": "for _, u := range users {\n\t\tu.Active = true\n}",
+    "bug": 1,
+    "bugName": "Mutating the range copy, not the element",
+    "explain": "range hands you a photocopy of each user and you lovingly activated the photocopy. The real users remain dormant. Hug the original: users[i].Active = true."
+  },
+  {
+    "id": "debug-008",
+    "title": "The Handshake That Never Happens",
+    "desc": "Send 42 down a channel, then print what comes out. Nothing comes out. Ever.",
+    "diff": "boss",
+    "code": "ch := make(chan int)\nch <- 42\nfmt.Println(<-ch)",
+    "bug": 1,
+    "bugName": "Send blocks with no receiver ready",
+    "explain": "An unbuffered send IS a handshake: it waits for the other hand. The receiver lives on the next line, which cannot run until the handshake finishes. Eternal standoff. Buffer it or receive in a goroutine."
+  },
+  {
+    "id": "debug-009",
+    "title": "The Lock That Locks Nothing",
+    "desc": "A counter with a mutex. The numbers still come out wrong under load.",
+    "diff": "boss",
+    "code": "type Counter struct {\n\t\tmu sync.Mutex\n\t\tn  int\n}\nfunc (c Counter) Inc() {\n\t\tc.mu.Lock()\n\t\tc.n++\n\t\tc.mu.Unlock()\n}",
+    "bug": 4,
+    "bugName": "Value receiver copies the mutex",
+    "explain": "The value receiver photocopied the whole struct — padlock included — so every call solemnly locks its own private padlock while the real counter parties on. vet screams copylocks at this. Pointer receiver."
+  },
+  {
+    "id": "debug-010",
+    "title": "The Rescue That Arrived Early",
+    "desc": "Catch a panic and print saved. The program crashes anyway.",
+    "diff": "gopher",
+    "code": "func risky() {\n\t\tif r := recover(); r != nil {\n\t\t\t\tfmt.Println(\"saved\")\n\t\t}\n\t\tpanic(\"boom\")\n}",
+    "bug": 1,
+    "bugName": "recover outside a deferred function",
+    "explain": "recover only works while a deferred function is running. Here it executed BEFORE the panic, found nothing to rescue, returned nil, and the panic crashed right through it. Wrap it: defer func() { … }()."
+  },
+  {
+    "id": "debug-011",
+    "title": "The Field That Does Not Exist",
+    "desc": "Decode JSON into a struct. One field stays empty no matter what the server sends.",
+    "diff": "rookie",
+    "code": "type User struct {\n\t\tname string `json:\"name\"`\n\t\tAge  int    `json:\"age\"`\n}",
+    "bug": 1,
+    "bugName": "Unexported field invisible to encoding/json",
+    "explain": "Lowercase fields are invisible to encoding/json no matter how nicely you tag them — name decodes to eternal emptiness. Capitalize it: Name string. The tag cannot save what the compiler cannot see."
+  },
+  {
+    "id": "debug-012",
+    "title": "The Timeout Nobody Set",
+    "desc": "Give a slow query one second. It takes as long as it wants.",
+    "diff": "gopher",
+    "code": "ctx, cancel := context.WithTimeout(ctx, time.Second)\ndefer cancel()\nslowQuery()",
+    "bug": 2,
+    "bugName": "ctx never passed to the slow call",
+    "explain": "A timeout context the work never receives is a fire alarm with no batteries. slowQuery must take ctx and listen for Done(), or the one-second deadline is pure decoration."
+  },
+  {
+    "id": "debug-013",
+    "title": "The Defer Avalanche",
+    "desc": "Open a thousand files, process each, move on. The OS starts sweating around file 900.",
+    "diff": "gopher",
+    "code": [
+      "for _, f := range files {",
+      "    fh, _ := os.Open(f)",
+      "    defer fh.Close()",
+      "    io.Copy(out, fh)",
+      "}"
+    ],
+    "bug": 2,
+    "bugName": "defers run at function end, not iteration end",
+    "explain": "defer fires at FUNCTION return, not loop iteration, so every lap stacks another open file onto the pile. A thousand files, a thousand handles, one exhausted OS. Close inline each round."
+  },
+  {
+    "id": "debug-014",
+    "title": "The Case of the Missing .5",
+    "desc": "Average 7 over 2. Expect 3.5.",
+    "diff": "rookie",
+    "code": [
+      "total := 7",
+      "n := 2",
+      "avg := total / n",
+      "fmt.Println(avg) // want 3.5"
+    ],
+    "bug": 2,
+    "bugName": "Integer division truncates",
+    "explain": "int divided by int is int — the .5 was never born. Convert first: float64(total) / float64(n). The compiler watched it happen and said nothing."
+  },
+  {
+    "id": "debug-015",
+    "title": "The Timer Bonfire",
+    "desc": "Tick once a second while work arrives. The longer it runs, the hotter the garbage collector gets.",
+    "diff": "gopher",
+    "code": [
+      "for {",
+      "    select {",
+      "    case v := <-ch:",
+      "        use(v)",
+      "    case <-time.After(time.Second):",
+      "        fmt.Println(\"tick\")",
+      "    }",
+      "}"
+    ],
+    "bug": 4,
+    "bugName": "time.After allocated every lap",
+    "explain": "Every lap mints a brand-new one-second timer. Spin fast and you are running a timer factory that manufactures garbage. Hoist NewTicker outside, Stop it when done."
+  },
+  {
+    "id": "debug-016",
+    "title": "The Copy Machine From Hell",
+    "desc": "Build a sentence word by word. Fine for ten words, a tragedy for ten million.",
+    "diff": "rookie",
+    "code": [
+      "s := \"\"",
+      "for _, w := range words {",
+      "    s += w + \" \"",
+      "}"
+    ],
+    "bug": 2,
+    "bugName": "Repeated += reallocates every lap",
+    "explain": "Strings are immutable, so each += retypes the entire manuscript from scratch — O(n squared) suffering on long inputs. strings.Builder does it in one pass and judges you silently."
+  },
+  {
+    "id": "debug-017",
+    "title": "The Error You Chose Not to See",
+    "desc": "Open a file, read 100 bytes. The file does not exist. Neither, technically, does the program anymore.",
+    "diff": "rookie",
+    "code": [
+      "f, _ := os.Open(path)",
+      "data := make([]byte, 100)",
+      "f.Read(data)"
+    ],
+    "bug": 0,
+    "bugName": "Blanked error, nil file used anyway",
+    "explain": "That underscore buried file-not-found alive. f is nil, f.Read is a panic in a trenchcoat, and the crime scene points at line 3 instead of line 1. Never blank an error you are about to lean on."
+  },
+  {
+    "id": "debug-018",
+    "title": "The Counter Stuck at Zero",
+    "desc": "Run three workers, wait for all of them. Main exits before they start.",
+    "diff": "boss",
+    "code": [
+      "var wg sync.WaitGroup",
+      "go func() {",
+      "    wg.Add(1)",
+      "    defer wg.Done()",
+      "    work()",
+      "}()",
+      "wg.Wait()"
+    ],
+    "bug": 2,
+    "bugName": "Add races with Wait from inside",
+    "explain": "Add must happen-before Wait, but this Add commutes in from inside the goroutine — Wait can stroll through a zero counter before it arrives. Add(1) BEFORE the go statement. Always."
+  },
+  {
+    "id": "debug-019",
+    "title": "The CPU Bonfire",
+    "desc": "A loop that waits for work but somehow melts a core doing nothing.",
+    "diff": "gopher",
+    "code": [
+      "for {",
+      "    select {",
+      "    case v := <-ch:",
+      "        use(v)",
+      "    default:",
+      "    }",
+      "}"
+    ],
+    "bug": 4,
+    "bugName": "default makes select a busy-loop",
+    "explain": "default turns select non-blocking: with nothing ready it spins instantly, forever, at full core. Remove it to park and wait, or rest on time.After."
+  },
+  {
+    "id": "debug-020",
+    "title": "The Lock That Travels",
+    "desc": "A mutex guarded counter shared with a goroutine. The race detector has opinions.",
+    "diff": "gopher",
+    "code": [
+      "var mu sync.Mutex",
+      "go work(mu)",
+      "mu.Lock()",
+      "n++",
+      "mu.Unlock()"
+    ],
+    "bug": 1,
+    "bugName": "Mutex copied into the goroutine",
+    "explain": "Passing mu by value clones a live lock — two locks, zero protection, and vet copylocks waving red flags. Pass &mu and share one truth."
+  },
+  {
+    "id": "debug-021",
+    "title": "The Rows That All Match",
+    "desc": "Three rows appended in a loop. All three print the last values.",
+    "diff": "boss",
+    "code": [
+      "rows := [][]int{}",
+      "row := make([]int, 0, 2)",
+      "for i := 0; i < 3; i++ {",
+      "    row = append(row[:0], i, i)",
+      "    rows = append(rows, row)",
+      "}"
+    ],
+    "bug": 4,
+    "bugName": "Every row aliases one backing array",
+    "explain": "append reuses the array while capacity allows, so all three rows point at the same memory holding the LAST write. Fresh allocation or full copy per row."
+  },
+  {
+    "id": "debug-022",
+    "title": "The Half Character",
+    "desc": "Print the second character of hello with flair. Get modern art instead.",
+    "diff": "rookie",
+    "code": [
+      "s := \"héllo\"",
+      "fmt.Println(string(s[1]))"
+    ],
+    "bug": 1,
+    "bugName": "Indexing bytes, not runes",
+    "explain": "s[1] grabs the second BYTE — the middle of a two-byte é. Range over the string or decode runes to walk actual characters."
+  },
+  {
+    "id": "debug-023",
+    "title": "The Concurrent Map Crash",
+    "desc": "Ten goroutines, one map, zero locks. Ends in tears.",
+    "diff": "boss",
+    "code": [
+      "m := map[string]int{}",
+      "for i := 0; i < 10; i++ {",
+      "    go func(n int) {",
+      "        m[\"k\"] = n",
+      "    }(i)",
+      "}"
+    ],
+    "bug": 3,
+    "bugName": "Concurrent map writes are fatal",
+    "explain": "Maps are not thread-safe: concurrent writes crash with a fatal error that recover cannot catch. Mutex it, shard it, or use sync.Map."
+  },
+  {
+    "id": "debug-024",
+    "title": "The Silent Closer",
+    "desc": "Create a file, defer its close, write away. The path does not exist.",
+    "diff": "gopher",
+    "code": [
+      "f, _ := os.Open(path)",
+      "defer f.Close()",
+      "f.Read(data)"
+    ],
+    "bug": 0,
+    "bugName": "Blanked error, nil file used anyway",
+    "explain": "The blanked error hid the missing file, so BOTH the deferred Close and the Read operate on nil. Check err first — defer still runs on early return, that is its whole job."
+  },
+  {
+    "id": "debug-025",
+    "title": "The Edge Thief",
+    "desc": "A binary search that works everywhere except the last slot. Hunting 38 prints 'Not found' while 38 sits right there at index 6.",
+    "diff": "gopher",
+    "code": "nums := []int{2, 5, 8, 12, 16, 23, 38}\ntarget := 38\nlow, high := 0, len(nums)-1\nfor low < high {\n\tmid := (low + high) / 2\n\tif nums[mid] == target {\n\t\tfmt.Println(\"Found at\", mid)\n\t\treturn\n\t} else if nums[mid] < target {\n\t\tlow = mid + 1\n\t} else {\n\t\thigh = mid - 1\n\t}\n}\nfmt.Println(\"Not found\")",
+    "bug": 3,
+    "bugName": "Loop quits before the last check (needs <=)",
+    "explain": "for low < high stops when the borders meet — but one remaining slot still needs checking. The lone < steals the edge; <= gives it back."
+  },
+  {
+    "id": "debug-026",
+    "title": "Drawers Made of Thin Air",
+    "desc": "A frequency counter that panics on its very first write. The map looks declared and ready.",
+    "diff": "rookie",
+    "code": "var counts map[string]int\ncounts[\"ada\"] = 1\nfmt.Println(counts[\"ada\"])",
+    "bug": 1,
+    "bugName": "Write to nil map",
+    "explain": "var m map[...]... is nil: reading gives zero values all day, but writing needs real drawers. make() it or use a literal first."
+  },
+  {
+    "id": "debug-027",
+    "title": "The Self Match",
+    "desc": "A one-pass two sum that answers '1 1' — one item marrying itself. The pair it should find is sitting right there.",
+    "diff": "gopher",
+    "code": "seen := map[int]int{}\nfor i, v := range nums {\n\tneed := 10 - v\n\tseen[v] = i\n\tif j, ok := seen[need]; ok {\n\t\tfmt.Println(j, i)\n\t\treturn\n\t}\n}",
+    "bug": 3,
+    "bugName": "Files before asking — item finds itself",
+    "explain": "Storing v before checking lets 5 find ITSELF whenever the target is double one item. Ask the drawer first, file second."
+  },
+  {
+    "id": "debug-028",
+    "title": "One Slot Too Far",
+    "desc": "A printer that walks seven slots and falls off the end. Seven prints, then a panic.",
+    "diff": "rookie",
+    "code": "nums := []int{2, 5, 8, 12, 16, 23, 38}\nfor i := 0; i <= len(nums); i++ {\n\tfmt.Println(nums[i])\n}",
+    "bug": 1,
+    "bugName": "<= visits slot len (use <)",
+    "explain": "Valid slots run 0 to len-1. The <= allows len itself — Go panics instead of handing you the neighbor's memory."
+  }
+]

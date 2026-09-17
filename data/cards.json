@@ -1,0 +1,2370 @@
+[
+  {
+    "id": "basics-001",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "var · zero value",
+    "q": "What is the zero value of an int, a string and a bool?",
+    "code": "var i int\nvar s string\nvar b bool",
+    "a": "0, \"\" and false",
+    "explain": "Every Go variable starts at a useful zero value — no undefined, no null surprises. Slices, maps and funcs start as nil.",
+    "options": [
+      "0, \"\" and false",
+      "nil, nil and nil",
+      "undefined ×3",
+      "0, null and false"
+    ]
+  },
+  {
+    "id": "basics-002",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "shorthand",
+    "q": "What does := do, and where is it forbidden?",
+    "code": "x := 42\n// vs\nvar x int = 42",
+    "a": "Declares + infers, func bodies only",
+    "explain": ":= is short declaration. It declares a new variable and infers the type. You cannot use it at package level — use var there.",
+    "options": [
+      "Declares + infers, func bodies only",
+      "Assigns only, anywhere",
+      "Imports a package",
+      "Declares a constant"
+    ]
+  },
+  {
+    "id": "basics-003",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "for loop",
+    "q": "How many loop keywords does Go have?",
+    "code": "for i := 0; i < 3; i++ {\n\tfmt.Println(i)\n}",
+    "a": "One: for",
+    "explain": "Go has no while or until. Plain for, condition-only for (while-style), for-range, and infinite for {} all use the same keyword.",
+    "options": [
+      "One: for",
+      "Two: for + while",
+      "Three: for/while/loop",
+      "Four"
+    ]
+  },
+  {
+    "id": "basics-004",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "range",
+    "q": "What do i and v hold here?",
+    "code": "for i, v := range []string{\"a\",\"b\"} {\n\tfmt.Println(i, v)\n}",
+    "a": "index + copy of value",
+    "explain": "range yields index + a COPY. Mutating v does not touch the slice. Use for i := range s if you only need indexes.",
+    "options": [
+      "index + copy of value",
+      "value + index",
+      "pointer + index",
+      "two copies"
+    ]
+  },
+  {
+    "id": "basics-005",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "const · iota",
+    "q": "What numbers do A, B, C get?",
+    "code": "const (\n\tA = iota // ?\n\tB        // ?\n\tC        // ?\n)",
+    "a": "0, 1, 2",
+    "explain": "Think of iota as a line counter that starts at 0: each line in the const block bumps it by one, and a blank expression repeats the line above. So A=0, B=1, C=2. It resets to 0 in every new const block — the classic enum trick.",
+    "options": [
+      "0, 1, 2",
+      "1, 2, 3",
+      "0, 0, 0",
+      "1, 1, 1"
+    ]
+  },
+  {
+    "id": "basics-006",
+    "deck": "basics",
+    "diff": "boss",
+    "tags": "blank identifier",
+    "q": "Why does this compile even though x is unused?",
+    "code": "x, _ := f(), g()\nfmt.Println(x)",
+    "a": "Blank identifier discards",
+    "explain": "Go refuses to compile unused imports/variables. Assigning to _ tells the compiler “I am discarding this on purpose” — essential for multi-return functions.",
+    "options": [
+      "Blank identifier discards",
+      "Compiler bug",
+      "x is global",
+      "Unused is allowed"
+    ]
+  },
+  {
+    "id": "basics-007",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "fmt",
+    "q": "Println vs Printf — which formats verbs like %d?",
+    "code": "fmt.Println(\"n =\", 7)\nfmt.Printf(\"n = %d\\n\", 7)",
+    "a": "Printf formats, Println spaces+newline",
+    "explain": "Printf interprets %d %s %v. Println just prints args with spaces and a trailing newline. Mixing them up is a classic rookie bug.",
+    "options": [
+      "Printf formats, Println spaces+newline",
+      "They are identical",
+      "Println formats, Printf does not",
+      "Neither formats"
+    ]
+  },
+  {
+    "id": "basics-008",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "switch",
+    "q": "Do you need break in a Go switch?",
+    "code": "switch day {\ncase \"mon\":\n\twork()\ncase \"sat\", \"sun\":\n\trest()\n}",
+    "a": "No, auto-break",
+    "explain": "Go cases do NOT fall through by default (the opposite of C). Multiple matches go comma-separated. Use fallthrough explicitly if you really want it.",
+    "options": [
+      "No, auto-break",
+      "Yes, always",
+      "Only for strings",
+      "Only with default"
+    ]
+  },
+  {
+    "id": "slices-001",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "make",
+    "q": "What length and capacity does this slice have?",
+    "code": "s := make([]int, 2, 5)\nfmt.Println(len(s), cap(s))",
+    "a": "len 2, cap 5",
+    "explain": "make(type, len, cap) pre-allocates. Length is what you can index today; capacity is room before append must reallocate.",
+    "options": [
+      "len 2, cap 5",
+      "len 5, cap 2",
+      "len 2, cap 2",
+      "len 0, cap 5"
+    ]
+  },
+  {
+    "id": "slices-002",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "append",
+    "q": "What happens to a after append?",
+    "code": "a := []int{1,2}\nb := append(a, 3)",
+    "a": "Must use return value",
+    "explain": "append returns a NEW slice header. It may reuse the backing array, so always use the return value: a = append(a, x). Never ignore it.",
+    "options": [
+      "Must use return value",
+      "a auto-updates",
+      "append mutates in place only",
+      "It panics"
+    ]
+  },
+  {
+    "id": "slices-003",
+    "deck": "slices",
+    "diff": "boss",
+    "tags": "aliasing trap",
+    "q": "What prints here — and why is it sneaky?",
+    "code": "a := []int{1,2,3}\nb := a[:2]\nb[0] = 99\nfmt.Println(a)",
+    "a": "[99 2 3], shared array",
+    "explain": "A slice is just a window onto a shared backing array, and slicing opens a second window onto the SAME array — no copying happens. Writes through b are visible through a. Rule: if you need independence, copy explicitly with copy() or append([]T{}, s...).",
+    "options": [
+      "[99 2 3], shared array",
+      "[1 2 3], slicing copies",
+      "panic index out of range",
+      "[99 2], truncated"
+    ]
+  },
+  {
+    "id": "slices-004",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "map read",
+    "q": "How do you safely read a possibly-missing key?",
+    "code": "m := map[string]int{\"go\": 1}",
+    "a": "v, ok := m[key]",
+    "explain": "A missing key returns the zero value, which is ambiguous. The second return ok tells you if the key exists. Always use comma-ok for lookups that matter.",
+    "options": [
+      "v, ok := m[key]",
+      "m.get(key)",
+      "m[key]!",
+      "has(m, key)"
+    ]
+  },
+  {
+    "id": "slices-005",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "nil map",
+    "q": "Reading from a nil map vs writing to one?",
+    "code": "var m map[string]int\nfmt.Println(m[\"x\"])\nm[\"x\"] = 1",
+    "a": "Read ok, write panics",
+    "explain": "Read from nil map gives zero value, no panic. Write to nil map panics: assignment to entry in nil map. Always make() or literal-init before writing.",
+    "options": [
+      "Read ok, write panics",
+      "Both panic",
+      "Both fine",
+      "Write ok, read panics"
+    ]
+  },
+  {
+    "id": "slices-006",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "delete",
+    "q": "What does delete do to a missing key?",
+    "code": "delete(m, \"nope\")",
+    "a": "Safe no-op",
+    "explain": "delete is forgiving: missing keys are ignored, no error, no panic. Perfect for cleanup loops.",
+    "options": [
+      "Safe no-op",
+      "Panics",
+      "Returns false",
+      "Deletes the whole map"
+    ]
+  },
+  {
+    "id": "slices-007",
+    "deck": "slices",
+    "diff": "boss",
+    "tags": "capacity growth",
+    "q": "Why can this loop be slow on huge data?",
+    "code": "var out []int\nfor i := 0; i < 1000000; i++ {\n\tout = append(out, i)\n}",
+    "a": "Repeated realloc, pre-size it",
+    "explain": "Starting from nil, append doubles capacity many times, copying each round. Pre-allocate: out := make([]int, 0, 1000000) for a big speedup.",
+    "options": [
+      "Repeated realloc, pre-size it",
+      "Append is O(n) always",
+      "GC pause",
+      "Range is faster"
+    ]
+  },
+  {
+    "id": "slices-008",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "len vs cap",
+    "q": "len and cap of a 3-key map?",
+    "code": "m := map[string]int{\"a\":1,\"b\":2,\"c\":3}",
+    "a": "len 3, cap n/a",
+    "explain": "cap only applies to slices/arrays/channels. For maps just use len(m).",
+    "options": [
+      "len 3, cap n/a",
+      "len 3 cap 3",
+      "len 0",
+      "panics"
+    ]
+  },
+  {
+    "id": "structs-001",
+    "deck": "structs",
+    "diff": "rookie",
+    "tags": "struct literal",
+    "q": "What is missing for this to compile?",
+    "code": "type User struct {\n\tName string\n\tAge  int\n}\nu := User{\"Ada\", 36}",
+    "a": "Nothing, but prefer keyed fields",
+    "explain": "Unkeyed literals depend on field order and break when fields are added. Prefer User{Name: \"Ada\", Age: 36}.",
+    "options": [
+      "Nothing, but prefer keyed fields",
+      "Missing new keyword",
+      "Missing types",
+      "Needs &"
+    ]
+  },
+  {
+    "id": "structs-002",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "pointer receiver",
+    "q": "Pointer or value receiver for SetAge?",
+    "code": "func (u User) SetAge(a int) {\n\tu.Age = a\n}",
+    "a": "Pointer receiver",
+    "explain": "Value receivers get a COPY. Mutating methods need pointer receivers. Rule of thumb: if one method needs a pointer, use pointers for all of that type.",
+    "options": [
+      "Pointer receiver",
+      "Value receiver",
+      "Either works",
+      "Global func"
+    ]
+  },
+  {
+    "id": "structs-003",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "embedding",
+    "q": "How do you call Inner.Hello through Outer?",
+    "code": "type Outer struct { Inner }\nvar o Outer",
+    "a": "o.Hello() promoted",
+    "explain": "Embedded fields promote their methods to the outer struct. It is composition, not inheritance.",
+    "options": [
+      "o.Hello() promoted",
+      "o.Inner.Hello() only",
+      "Outer.Hello(o)",
+      "Impossible"
+    ]
+  },
+  {
+    "id": "structs-004",
+    "deck": "structs",
+    "diff": "boss",
+    "tags": "interface",
+    "q": "How does a type satisfy this interface?",
+    "code": "type Stringer interface {\n\tString() string\n}",
+    "a": "Implicitly, no keyword",
+    "explain": "No implements keyword in Go. If your type has the method set, it satisfies the interface automatically. That is why any accepts everything.",
+    "options": [
+      "Implicitly, no keyword",
+      "With implements",
+      "With extends",
+      "Via struct tag"
+    ]
+  },
+  {
+    "id": "structs-005",
+    "deck": "structs",
+    "diff": "rookie",
+    "tags": "new vs &",
+    "q": "What does new(User) return?",
+    "code": "p := new(User)",
+    "a": "*User, zeroed",
+    "explain": "new(T) allocates a zero T and returns *T. &User{} is nearly identical but allows field initialization.",
+    "options": [
+      "*User, zeroed",
+      "User value",
+      "nil pointer",
+      "Interface"
+    ]
+  },
+  {
+    "id": "structs-006",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "json tags",
+    "q": "What JSON key does Name produce?",
+    "code": "type U struct {\n\tName string `json:\"name\"`\n}",
+    "a": "\"name\"",
+    "explain": "Struct tags control encoding/json. Without the tag you would get \"Name\". Unexported (lowercase) fields are always ignored.",
+    "options": [
+      "\"name\"",
+      "\"Name\"",
+      "\"NAME\"",
+      "Skipped"
+    ]
+  },
+  {
+    "id": "gochan-001",
+    "deck": "gochan",
+    "diff": "rookie",
+    "tags": "go keyword",
+    "q": "What does go do here?",
+    "code": "go doWork()\nfmt.Println(\"moved on\")",
+    "a": "Concurrent, no wait",
+    "explain": "go launches a goroutine: a cheap concurrent function. The program may exit before it finishes unless you synchronize (WaitGroup/channel).",
+    "options": [
+      "Concurrent, no wait",
+      "Waits for result",
+      "Runs twice",
+      "Compile error"
+    ]
+  },
+  {
+    "id": "gochan-002",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "unbuffered chan",
+    "q": "What happens at ch <- 1 with no receiver?",
+    "code": "ch := make(chan int)\nch <- 1",
+    "a": "Blocks / deadlocks",
+    "explain": "Unbuffered channels are rendezvous points: send blocks until a receiver is ready and vice versa. Buffered channels (make(chan int, N)) allow N sends without blocking.",
+    "options": [
+      "Blocks / deadlocks",
+      "Sends instantly",
+      "Drops value",
+      "Panics at once"
+    ]
+  },
+  {
+    "id": "gochan-003",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "select",
+    "q": "What is select used for?",
+    "code": "select {\ncase v := <-a:\n\tfmt.Println(v)\ncase b <- 1:\n\tfmt.Println(\"sent\")\n}",
+    "a": "First-ready channel op",
+    "explain": "select multiplexes channels. If several are ready it picks randomly; add default: for non-blocking behavior, and time.After for timeouts.",
+    "options": [
+      "First-ready channel op",
+      "If-else for ints",
+      "Switch for strings",
+      "Loop helper"
+    ]
+  },
+  {
+    "id": "gochan-004",
+    "deck": "gochan",
+    "diff": "boss",
+    "tags": "closure trap",
+    "q": "What does this print in old Go (<1.22)?",
+    "code": "for _, v := range []int{1,2,3} {\n\tgo func() { fmt.Println(v) }()\n}",
+    "a": "Often 3 3 3, shared var",
+    "explain": "Before Go 1.22 there was exactly ONE loop variable shared by every iteration, so all goroutines usually printed the final value (3 3 3). Two fixes that work everywhere: pass v as a parameter — go func(v int){...}(v) — or shadow it with v := v inside the loop. Go 1.22+ gives each iteration its own variable.",
+    "options": [
+      "Often 3 3 3, shared var",
+      "Always 1 2 3",
+      "Compile error",
+      "Empty output"
+    ]
+  },
+  {
+    "id": "gochan-005",
+    "deck": "gochan",
+    "diff": "boss",
+    "tags": "WaitGroup",
+    "q": "What is missing — what breaks?",
+    "code": "var wg sync.WaitGroup\nfor i := 0; i < 3; i++ {\n\tgo func() {\n\t\tdefer wg.Done()\n\t\twork()\n\t}()\n}\nwg.Wait()",
+    "a": "Missing Add(3)",
+    "explain": "The counter starts at 0, and Wait returns the moment it hits 0 — so with no Add, it returns instantly and main exits early. Always Add from the launching goroutine (never inside the new one), or Wait can slip through before any Add lands.",
+    "options": [
+      "Missing Add(3)",
+      "Missing Close",
+      "Missing Lock",
+      "Nothing"
+    ]
+  },
+  {
+    "id": "gochan-006",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "buffered",
+    "q": "How many sends fit without blocking?",
+    "code": "ch := make(chan string, 2)\nch <- \"a\"\nch <- \"b\"",
+    "a": "2",
+    "explain": "Capacity 2 means two values can sit in the buffer. The third send waits for a receiver. len(ch) shows buffered count.",
+    "options": [
+      "2",
+      "1",
+      "Unlimited",
+      "0"
+    ]
+  },
+  {
+    "id": "gochan-007",
+    "deck": "gochan",
+    "diff": "rookie",
+    "tags": "GOMAXPROCS",
+    "q": "How many OS threads can goroutines use?",
+    "code": "// thousands of goroutines...",
+    "a": "100k+ cheap goroutines",
+    "explain": "Goroutines start at ~2KB stacks and are scheduled by the Go runtime. You can run 100k of them; the OS could never do 100k threads.",
+    "options": [
+      "100k+ cheap goroutines",
+      "One per CPU only",
+      "Max 10",
+      "Same as threads"
+    ]
+  },
+  {
+    "id": "errors-001",
+    "deck": "errors",
+    "diff": "rookie",
+    "tags": "error return",
+    "q": "What is the Go error-handling style?",
+    "code": "data, err := os.ReadFile(\"f.txt\")\nif err != nil {\n\treturn err\n}",
+    "a": "Return + check values",
+    "explain": "No try/catch in Go. Functions return (value, error) and callers handle it now. Verbose but explicit — you always see the failure path.",
+    "options": [
+      "Return + check values",
+      "try/catch",
+      "Exceptions",
+      "Result type"
+    ]
+  },
+  {
+    "id": "errors-002",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "wrap %w",
+    "q": "%v vs %w when wrapping?",
+    "code": "fmt.Errorf(\"load %s: %w\", name, err)",
+    "a": "%w keeps unwrap chain",
+    "explain": "%w wraps so errors.Is/As can unwrap through layers. %v only prints. Always %w when callers may need to inspect the cause.",
+    "options": [
+      "%w keeps unwrap chain",
+      "No difference",
+      "%v keeps chain",
+      "%w panics"
+    ]
+  },
+  {
+    "id": "errors-003",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "defer order",
+    "q": "In what order do these print?",
+    "code": "defer fmt.Println(1)\ndefer fmt.Println(2)\nfmt.Println(3)",
+    "a": "3, 2, 1 LIFO",
+    "explain": "Defers run last-in-first-out, like plates unstacking: 3 prints first (it is not deferred), then 2, then 1. The twist: each defer’s ARGUMENTS evaluate immediately — defer fmt.Println(x) snapshots x now, even though the call itself waits for return.",
+    "options": [
+      "3, 2, 1 LIFO",
+      "1, 2, 3",
+      "3, 1, 2",
+      "2, 1, 3"
+    ]
+  },
+  {
+    "id": "errors-004",
+    "deck": "errors",
+    "diff": "boss",
+    "tags": "panic vs error",
+    "q": "When is panic appropriate?",
+    "code": "if id == \"\" {\n\tpanic(\"empty id\")\n}",
+    "a": "Unrecoverable bugs only",
+    "explain": "panic is for impossible states (nil deref, corrupt init), not bad user input. Libraries should return errors; panics crash unless recovered.",
+    "options": [
+      "Unrecoverable bugs only",
+      "Bad user input",
+      "Every error",
+      "Network failures"
+    ]
+  },
+  {
+    "id": "errors-005",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "sentinel",
+    "q": "How do you compare a wrapped sentinel error?",
+    "code": "var ErrDone = errors.New(\"done\")",
+    "a": "errors.Is",
+    "explain": "Never == on wrapped errors. errors.Is walks the chain; errors.As extracts a typed error into a target.",
+    "options": [
+      "errors.Is",
+      "==",
+      "!=",
+      "strings.Contains"
+    ]
+  },
+  {
+    "id": "errors-006",
+    "deck": "errors",
+    "diff": "rookie",
+    "tags": "named returns",
+    "q": "What does this return?",
+    "code": "func f() (n int) {\n\tdefer func() { n++ }()\n\treturn 41\n}",
+    "a": "42",
+    "explain": "With named results, return 41 first assigns n=41, THEN deferred calls run before control truly leaves — and they can still touch n. The deferred closure bumps it to 42. Powerful for cleanup that adjusts results, but confusing enough to use sparingly.",
+    "options": [
+      "42",
+      "41",
+      "0",
+      "Panic"
+    ]
+  },
+  {
+    "id": "std-001",
+    "deck": "std",
+    "diff": "rookie",
+    "tags": "json",
+    "q": "Why does decoding skip the secret field?",
+    "code": "type T struct {\n\tName   string `json:\"name\"`\n\tsecret string `json:\"secret\"`\n}",
+    "a": "Lowercase = invisible",
+    "explain": "Only exported (Capitalized) fields marshal. secret stays empty no matter the tags. Same rule for all reflection-based libs.",
+    "options": [
+      "Lowercase = invisible",
+      "Bad tag",
+      "JSON forbids it",
+      "Needs pointer"
+    ]
+  },
+  {
+    "id": "std-002",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "slices pkg",
+    "q": "Modern way to check membership?",
+    "code": "// Go 1.21+\nimport \"slices\"",
+    "a": "slices.Contains",
+    "explain": "The slices + maps std packages (Go 1.21) ended the hand-rolled contains helper era. Also: slices.Sort, maps.Keys, …",
+    "options": [
+      "slices.Contains",
+      "strings.Has",
+      "sort.Find",
+      "array.In"
+    ]
+  },
+  {
+    "id": "std-003",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "http server",
+    "q": "What does ListenAndServe do with nil?",
+    "code": "http.HandleFunc(\"/\", h)\nhttp.ListenAndServe(\":8080\", nil)",
+    "a": "Default mux, blocks",
+    "explain": "nil means “use DefaultServeMux” where HandleFunc registered. It blocks; real apps configure http.Server with timeouts.",
+    "options": [
+      "Default mux, blocks",
+      "Random mux",
+      "Serves once",
+      "Panics on nil"
+    ]
+  },
+  {
+    "id": "std-004",
+    "deck": "std",
+    "diff": "boss",
+    "tags": "context",
+    "q": "Why take ctx as the FIRST param?",
+    "code": "func Load(ctx context.Context, id string)",
+    "a": "Convention + cancellation",
+    "explain": "context carries deadlines, cancellation and request values. First-param convention keeps it visible. Never store ctx in structs; pass it down.",
+    "options": [
+      "Convention + cancellation",
+      "Faster compile",
+      "Required by law",
+      "Only for HTTP"
+    ]
+  },
+  {
+    "id": "std-005",
+    "deck": "std",
+    "diff": "rookie",
+    "tags": "time",
+    "q": "How long is time.Second really?",
+    "code": "time.Sleep(time.Second)",
+    "a": "1s = 1e9 ns",
+    "explain": "time.Duration is nanoseconds. Sleep, Since, Until and time.After all build on it. Use time.Sleep(500 * time.Millisecond) for halves.",
+    "options": [
+      "1s = 1e9 ns",
+      "1ms",
+      "1µs",
+      "1 minute"
+    ]
+  },
+  {
+    "id": "std-006",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "strings.Builder",
+    "q": "Fastest way to concat in a loop?",
+    "code": "var b strings.Builder\nfor _, s := range parts {\n\tb.WriteString(s)\n}",
+    "a": "strings.Builder",
+    "explain": "s += x in a loop reallocates every iteration. Builder grows amortized like append. For tiny fixed joins, strings.Join wins.",
+    "options": [
+      "strings.Builder",
+      "+= in loop",
+      "fmt.Sprintf loop",
+      "bytes.Buffer only"
+    ]
+  },
+  {
+    "id": "std-007",
+    "deck": "std",
+    "diff": "boss",
+    "tags": "embed",
+    "q": "What does //go:embed do?",
+    "code": "import _ \"embed\"\n//go:embed template.html\nvar tpl string",
+    "a": "Compile file into binary",
+    "explain": "go:embed ships assets inside one binary — no sidecar files. Embed strings, []byte, or whole dirs as embed.FS.",
+    "options": [
+      "Compile file into binary",
+      "Loads at runtime",
+      "Downloads URL",
+      "Encrypts file"
+    ]
+  },
+  {
+    "id": "tooling-001",
+    "deck": "tooling",
+    "diff": "rookie",
+    "tags": "go test",
+    "q": "Which files and functions does go test actually run?",
+    "code": "// math_test.go\nfunc TestAdd(t *testing.T) {\n\tif Add(1, 2) != 3 {\n\t\tt.Fatal(\"wrong\")\n\t}\n}",
+    "a": "Files ending _test.go, funcs starting Test",
+    "explain": "go test compiles only files ending in _test.go and runs only funcs starting with Test that take *testing.T. Everything else is ignored.",
+    "options": [
+      "Files ending _test.go, funcs starting Test",
+      "Any file with a test helper",
+      "Files ending .spec.go",
+      "Only tests in package main"
+    ]
+  },
+  {
+    "id": "tooling-002",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "table tests",
+    "q": "What is the idiomatic shape of a table-driven test?",
+    "code": "tests := []struct {\n\tin, want int\n}{\n\t{1, 2}, {2, 4},\n}\nfor _, tc := range tests {\n\tif got := Double(tc.in); got != tc.want {\n\t\tt.Errorf(\"got %d\", got)\n\t}\n}",
+    "a": "Slice of input/want structs, looped",
+    "explain": "Table tests list cases as data and loop over them. A new case is a new row, not a new function — that is the whole point.",
+    "options": [
+      "Slice of input/want structs, looped",
+      "One test func per case",
+      "A switch on the input",
+      "Deeply nested subtests only"
+    ]
+  },
+  {
+    "id": "tooling-003",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "benchmarks",
+    "q": "What makes this a benchmark instead of a test?",
+    "code": "func BenchmarkAdd(b *testing.B) {\n\tfor i := 0; i < b.N; i++ {\n\t\tAdd(1, 2)\n\t}\n}",
+    "a": "Benchmark prefix + loop to b.N",
+    "explain": "Benchmarks take *testing.B and loop exactly b.N times; the runner scales N until timing stabilizes. Run with go test -bench=.",
+    "options": [
+      "Benchmark prefix + loop to b.N",
+      "A name containing Speed",
+      "Calling b.Timer() once",
+      "Putting it in package bench"
+    ]
+  },
+  {
+    "id": "tooling-004",
+    "deck": "tooling",
+    "diff": "rookie",
+    "tags": "go vet",
+    "q": "What does go vet catch that the compiler happily allows?",
+    "code": "fmt.Printf(\"%d\", \"oops\")",
+    "a": "Suspicious but legal code, like bad verbs",
+    "explain": "vet flags likely bugs: wrong Printf verbs, unreachable code, bad struct tags. go test runs a vet subset automatically — run the full thing in CI.",
+    "options": [
+      "Suspicious but legal code, like bad verbs",
+      "Syntax errors",
+      "Missing imports",
+      "Slow loops"
+    ]
+  },
+  {
+    "id": "tooling-005",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "race detector",
+    "q": "How do you catch data races in your tests?",
+    "code": "go test -race ./...",
+    "a": "go test -race",
+    "explain": "-race instruments memory access and reports unsynchronized concurrent read/writes with full stacks. Slower runs, but it finds bugs tests alone never will.",
+    "options": [
+      "go test -race",
+      "go vet -race",
+      "go run -safe",
+      "go build -threads=1"
+    ]
+  },
+  {
+    "id": "tooling-006",
+    "deck": "tooling",
+    "diff": "rookie",
+    "tags": "go.mod",
+    "q": "What does the module line in go.mod actually decide?",
+    "code": "module example.com/mymod\n\ngo 1.21",
+    "a": "The import prefix for all its packages",
+    "explain": "The module path is the import root: package foo inside it imports as example.com/mymod/foo. Versioning and downloads key off this string.",
+    "options": [
+      "The import prefix for all its packages",
+      "The output binary name",
+      "Only the toolchain version",
+      "The license identifier"
+    ]
+  },
+  {
+    "id": "tooling-007",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "t.Helper",
+    "q": "Why call t.Helper() at the top of a test helper?",
+    "code": "func mustParse(t *testing.T, s string) int {\n\tt.Helper()\n\tv, err := strconv.Atoi(s)\n\tif err != nil {\n\t\tt.Fatalf(\"bad input %q\", s)\n\t}\n\treturn v\n}",
+    "a": "Failures point at the caller, not the helper",
+    "explain": "t.Helper marks the frame as helper code, so failure lines reference the calling test. Without it, every failure blames the helper body.",
+    "options": [
+      "Failures point at the caller, not the helper",
+      "It retries flaky asserts",
+      "It runs the helper in parallel",
+      "It enables result caching"
+    ]
+  },
+  {
+    "id": "tooling-008",
+    "deck": "tooling",
+    "diff": "boss",
+    "tags": "fuzzing",
+    "q": "What does a fuzz test need that a normal test does not?",
+    "code": "func FuzzParse(f *testing.F) {\n\tf.Add(\"1+2\")\n\tf.Fuzz(func(t *testing.T, s string) {\n\t\tParse(s) // must not panic\n\t})\n}",
+    "a": "Seed inputs via f.Add plus an f.Fuzz func",
+    "explain": "Fuzzing needs a seed corpus (f.Add) and the property under test (f.Fuzz). go test -fuzz then mutates inputs hunting for crashes.",
+    "options": [
+      "Seed inputs via f.Add plus an f.Fuzz func",
+      "A package main",
+      "Network access",
+      "A build tag"
+    ]
+  },
+  {
+    "id": "slices-009",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "map order",
+    "q": "What order does ranging over a map produce?",
+    "code": "for k := range m {\n\tfmt.Println(k)\n}",
+    "a": "Deliberately randomized every run",
+    "explain": "The runtime shuffles map iteration so you can never depend on order. Need order? Collect the keys and sort them yourself.",
+    "options": [
+      "Deliberately randomized every run",
+      "Sorted by key",
+      "Insertion order",
+      "Stable hash order"
+    ]
+  },
+  {
+    "id": "slices-010",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "copy",
+    "q": "How do you copy slice contents into a fresh array?",
+    "code": "dst := make([]int, len(src))\ncopy(dst, src)",
+    "a": "copy(dst, src) — copies min(len) elements",
+    "explain": "copy moves min(len(dst), len(src)) elements and returns how many. Plain assignment only copies the header — both names share one array.",
+    "options": [
+      "copy(dst, src) — copies min(len) elements",
+      "dst = src",
+      "append(dst)",
+      "clone(src)"
+    ]
+  },
+  {
+    "id": "structs-007",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "type switch",
+    "q": "How do you branch on the dynamic type inside an interface?",
+    "code": "switch v := i.(type) {\ncase string:\n\tfmt.Println(\"str:\", v)\ncase int:\n\tfmt.Println(\"int:\", v)\n}",
+    "a": "A type switch: switch v := i.(type)",
+    "explain": "The .(type) form is legal only as a switch guard, and each case rebinds v to the concrete type. Nothing else in the language does this.",
+    "options": [
+      "A type switch: switch v := i.(type)",
+      "An if-else assertion chain",
+      "reflect in a loop",
+      "A generic constraint"
+    ]
+  },
+  {
+    "id": "structs-008",
+    "deck": "structs",
+    "diff": "boss",
+    "tags": "nil interface trap",
+    "q": "Why does this print “not nil”?",
+    "code": "var p *User // nil\nvar i any = p\nif i != nil {\n\tfmt.Println(\"not nil\")\n}",
+    "a": "Interfaces hold type+value; the type is set",
+    "explain": "An interface is a (type, value) pair and it is nil only when BOTH are unset. Assigning a nil *User fills in the type slot, so i != nil passes while holding nothing. This bites hardest with errors: always return nil explicitly instead of a typed-nil error value.",
+    "options": [
+      "Interfaces hold type+value; the type is set",
+      "The compiler skips the check",
+      "Pointers are never nil",
+      "any cannot be nil"
+    ]
+  },
+  {
+    "id": "structs-009",
+    "deck": "structs",
+    "diff": "rookie",
+    "tags": "assertion",
+    "q": "What is the safe way to assert an interface to a type?",
+    "code": "s, ok := i.(string)",
+    "a": "Two-value form: v, ok := i.(T)",
+    "explain": "The single-value assertion panics on mismatch. Comma-ok reports success in ok instead — the same idiom as map lookups.",
+    "options": [
+      "Two-value form: v, ok := i.(T)",
+      "try and catch",
+      "reflect.MustConvert",
+      "Only a type switch"
+    ]
+  },
+  {
+    "id": "gochan-008",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "timeout",
+    "q": "How do you give a channel receive a deadline?",
+    "code": "select {\ncase v := <-ch:\n\tuse(v)\ncase <-time.After(2 * time.Second):\n\tfmt.Println(\"timeout\")\n}",
+    "a": "select with a time.After case",
+    "explain": "time.After returns a channel that delivers once. As a select case it races the real work — whichever becomes ready first wins.",
+    "options": [
+      "select with a time.After case",
+      "Sleep before receiving",
+      "A mutex around the channel",
+      "context.WithValue"
+    ]
+  },
+  {
+    "id": "gochan-009",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "close",
+    "q": "What does receiving from a closed channel do?",
+    "code": "close(ch)\nv, ok := <-ch",
+    "a": "Returns zero value at once, ok=false",
+    "explain": "Receives on a closed channel never block: you get the zero value with ok=false. Sends on closed channels panic — close on the sender side only.",
+    "options": [
+      "Returns zero value at once, ok=false",
+      "Blocks forever",
+      "Panics",
+      "Repeats the last value"
+    ]
+  },
+  {
+    "id": "gochan-010",
+    "deck": "gochan",
+    "diff": "boss",
+    "tags": "goroutine leak",
+    "q": "What leaks in this snippet?",
+    "code": "go func() {\n\tv := <-ch // nobody ever sends or closes ch\n\tfmt.Println(v)\n}()",
+    "a": "A goroutine blocked forever on receive",
+    "explain": "A goroutine parked on a channel nobody will satisfy never exits — a goroutine leak. Every go statement needs a guaranteed exit path.",
+    "options": [
+      "A goroutine blocked forever on receive",
+      "The channel buffer",
+      "The closure variable",
+      "Nothing — GC reclaims it"
+    ]
+  },
+  {
+    "id": "errors-007",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "errors.As",
+    "q": "errors.Is vs errors.As — when do you reach for As?",
+    "code": "var pe *fs.PathError\nif errors.As(err, &pe) {\n\tfmt.Println(pe.Op)\n}",
+    "a": "As extracts a typed error; Is only compares",
+    "explain": "Is asks “is this error in the chain”. As pulls out the first error of a given type so you can read its fields. The target must be a pointer.",
+    "options": [
+      "As extracts a typed error; Is only compares",
+      "As is just faster",
+      "Is is deprecated",
+      "They do the same thing"
+    ]
+  },
+  {
+    "id": "errors-008",
+    "deck": "errors",
+    "diff": "boss",
+    "tags": "recover",
+    "q": "Where is recover() actually able to stop a panic?",
+    "code": "defer func() {\n\tif r := recover(); r != nil {\n\t\tfmt.Println(\"caught:\", r)\n\t}\n}()",
+    "a": "Only inside a deferred function",
+    "explain": "recover only catches a panic while a deferred function is running — anywhere else it returns nil and unwinding continues. That is why the pattern is always defer func() { if r := recover(); … }(). Use it at server/goroutine boundaries to log and survive, never as everyday error handling.",
+    "options": [
+      "Only inside a deferred function",
+      "Anywhere after the panic line",
+      "In the panicking caller",
+      "Only inside init()"
+    ]
+  },
+  {
+    "id": "std-008",
+    "deck": "std",
+    "diff": "rookie",
+    "tags": "len vs runes",
+    "q": "Why does len(\"héllo\") print 6 instead of 5?",
+    "code": "fmt.Println(len(\"héllo\")) // 6",
+    "a": "len counts bytes; é needs 2 in UTF-8",
+    "explain": "Strings are byte sequences, so len counts bytes. Use utf8.RuneCountInString for characters, or range over the string, which decodes runes.",
+    "options": [
+      "len counts bytes; é needs 2 in UTF-8",
+      "The compiler pads strings",
+      "A hidden newline",
+      "len starts counting at 1"
+    ]
+  },
+  {
+    "id": "std-009",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "http.Handler",
+    "q": "What must a type define to satisfy http.Handler?",
+    "code": "http.Handle(\"/\", myHandler)",
+    "a": "ServeHTTP(w ResponseWriter, r *Request)",
+    "explain": "One method: ServeHTTP(w http.ResponseWriter, r *http.Request). HandleFunc adapts ordinary funcs with that exact signature.",
+    "options": [
+      "ServeHTTP(w ResponseWriter, r *Request)",
+      "Handle(w, r) string",
+      "Serve(w) error",
+      "Listen(addr string)"
+    ]
+  },
+  {
+    "id": "basics-009",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "blank import",
+    "q": "What does importing a package with _ accomplish?",
+    "code": "import _ \"net/http/pprof\"",
+    "a": "Runs the package init for side effects",
+    "explain": "Blank imports load a package solely for its init() side effects — like registering pprof handlers — without referencing any identifier.",
+    "options": [
+      "Runs the package init for side effects",
+      "Skips compiling it",
+      "Removes the dependency",
+      "Imports only its tests"
+    ]
+  },
+  {
+    "id": "basics-010",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "init order",
+    "q": "In what order do these three run?",
+    "code": "var x = setup()\n\nfunc init() { prepare() }\n\nfunc main() { run() }",
+    "a": "Package vars, then init(), then main()",
+    "explain": "Dependencies first, then package-level variables, then init() functions, and finally main(). Never rely on order across files — keep init minimal.",
+    "options": [
+      "Package vars, then init(), then main()",
+      "main, then init, then vars",
+      "Alphabetical by name",
+      "Random each run"
+    ]
+  },
+  {
+    "id": "gochan-011",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "pattern · worker pool",
+    "q": "What concurrency pattern is this?",
+    "code": "jobs := make(chan int)\nfor w := 0; w < 3; w++ {\n\t\tgo func() {\n\t\t\t\tfor j := range jobs {\n\t\t\t\t\t\twork(j)\n\t\t\t\t}\n\t\t}()\n}",
+    "a": "Worker pool: fixed goroutines draining a job channel",
+    "explain": "A fixed crew of goroutines ranges over one shared channel until it closes. Concurrency stays bounded without tracking every goroutine — close jobs when done so workers exit.",
+    "options": [
+      "Worker pool: fixed goroutines draining a job channel",
+      "Fan-out, fan-in",
+      "Pipeline",
+      "Pub-sub broker"
+    ]
+  },
+  {
+    "id": "gochan-012",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "pattern · pipeline",
+    "q": "What concurrency pattern is this?",
+    "code": "c1 := gen(nums)\nc2 := square(c1)\nfor v := range c2 {\n\t\tfmt.Println(v)\n}",
+    "a": "Pipeline: chained stages over channels",
+    "explain": "Each stage reads a channel, transforms each value, and writes the next channel. Close each out-channel when finished so the downstream range loop can terminate.",
+    "options": [
+      "Pipeline: chained stages over channels",
+      "Worker pool",
+      "Once-guard",
+      "Barrier"
+    ]
+  },
+  {
+    "id": "gochan-013",
+    "deck": "gochan",
+    "diff": "boss",
+    "tags": "pattern · fan-in",
+    "q": "What concurrency pattern does this goroutine implement?",
+    "code": "go func() {\n\t\tdefer close(out)\n\t\tfor v := range a {\n\t\t\t\tout <- v\n\t\t}\n\t\tfor v := range b {\n\t\t\t\tout <- v\n\t\t}\n}()",
+    "a": "Fan-in: many channels into one",
+    "explain": "Fan-in multiplexes several inputs onto a single channel so one loop can consume them all. Its mirror image, fan-out, splits one input across many workers.",
+    "options": [
+      "Fan-in: many channels into one",
+      "Pipeline",
+      "Worker pool",
+      "Semaphore"
+    ]
+  },
+  {
+    "id": "basics-011",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "cap",
+    "q": "What does cap() report for a plain array?",
+    "code": "a := [3]int{1,2,3}\nfmt.Println(cap(a))",
+    "a": "3 — arrays carry their size around",
+    "explain": "Arrays are values with fixed size baked in, so len and cap always agree. Slice one and cap starts telling the truth about headroom.",
+    "options": [
+      "3 — arrays carry their size around",
+      "Only 3 if made with make",
+      "0 — arrays have no cap",
+      "It panics on arrays"
+    ]
+  },
+  {
+    "id": "basics-012",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "redeclare",
+    "q": "Why does this refuse to compile?",
+    "code": "x := 1\nx := 2",
+    "a": ":= demands at least one NEW variable",
+    "explain": "Short declaration must declare something new on the left. The second line declares nothing, so the compiler sulks. Plain x = 2 is what you wanted.",
+    "options": [
+      ":= demands at least one NEW variable",
+      "x is a constant",
+      "You need var twice",
+      "Go forbids the number 2"
+    ]
+  },
+  {
+    "id": "basics-013",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "rune",
+    "q": "What type is this single-quoted character?",
+    "code": "c := 'a'\nfmt.Printf(\"%T\", c)",
+    "a": "int32 — a rune, not a string",
+    "explain": "Single quotes mean rune (alias int32): one Unicode code point as a number. Double quotes would make it a string. Mix them up and Printf will tell on you.",
+    "options": [
+      "int32 — a rune, not a string",
+      "string, obviously",
+      "byte, always byte",
+      "rune is a struct"
+    ]
+  },
+  {
+    "id": "basics-014",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "swap",
+    "q": "How do Go programmers swap two variables?",
+    "code": "a, b = b, a",
+    "a": "a, b = b, a — parallel assignment",
+    "explain": "Both sides evaluate first, then assign simultaneously. No temp variable, no cleverness required. It works for function returns too.",
+    "options": [
+      "a, b = b, a — parallel assignment",
+      "Swap via a temp only",
+      "a <=> b operator",
+      "Go cannot swap"
+    ]
+  },
+  {
+    "id": "basics-015",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "variadic",
+    "q": "What does ...int collect?",
+    "code": "func Sum(ns ...int) int {\n\t// ...\n}\nSum(1, 2, 3)",
+    "a": "A []int slice of all trailing args",
+    "explain": "Variadic params arrive as one slice. Callers pass values comma-separated, or spread an existing slice with Sum(s...).",
+    "options": [
+      "A []int slice of all trailing args",
+      "Three separate ints",
+      "A linked list",
+      "An error"
+    ]
+  },
+  {
+    "id": "basics-016",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "if scope",
+    "q": "Where does n live after this if?",
+    "code": "if n, err := f(); err != nil {\n\treturn err\n}\n// n here?",
+    "a": "Nowhere — scoped to the if statement",
+    "explain": "Short declarations in the if initializer die with the statement. Need n later? Declare it before the if and assign with plain =.",
+    "options": [
+      "Nowhere — scoped to the if statement",
+      "Visible below, set or not",
+      "Global after first run",
+      "Wherever err lives"
+    ]
+  },
+  {
+    "id": "basics-017",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "blank return",
+    "q": "What does bare return hand back here?",
+    "code": "func f() (n int, err error) {\n\tn = 7\n\treturn\n}",
+    "a": "The named values exactly as they stand",
+    "explain": "Bare return ships the current named results: n=7, err=nil. Convenient, but readers must hunt for where names were set — use sparingly.",
+    "options": [
+      "The named values exactly as they stand",
+      "Zeros, always",
+      "Whatever main wants",
+      "It does not compile"
+    ]
+  },
+  {
+    "id": "basics-018",
+    "deck": "basics",
+    "diff": "boss",
+    "tags": "goto",
+    "q": "Is goto legal Go?",
+    "code": "goto End\nfmt.Println(\"skip\")\nEnd:\nfmt.Println(\"here\")",
+    "a": "Yes — but it cannot jump over declarations",
+    "explain": "goto exists and works, with one guardrail: no jumping over new variable declarations. Legal does not mean wise — reach for it almost never.",
+    "options": [
+      "Yes — but it cannot jump over declarations",
+      "No — removed in Go 1.0",
+      "Only in tests",
+      "Only backwards jumps"
+    ]
+  },
+  {
+    "id": "basics-019",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "fallthrough",
+    "q": "When does a case fall into the next one?",
+    "code": "switch n {\ncase 1:\n\tfmt.Println(\"one\")\n\tfallthrough\ncase 2:\n\tfmt.Println(\"two\")\n}",
+    "a": "Only with explicit fallthrough",
+    "explain": "Go cases break automatically — the opposite of C. fallthrough forces entry into the next case body (without re-checking its condition). Rarely what you want.",
+    "options": [
+      "Only with explicit fallthrough",
+      "Always, like C",
+      "When cases share types",
+      "Never — keyword removed"
+    ]
+  },
+  {
+    "id": "basics-020",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "untyped const",
+    "q": "Why does the const version compile?",
+    "code": "const c = 2.5\nvar f float64 = c",
+    "a": "Untyped constants adapt to context",
+    "explain": "Untyped constants live in a perfect-precision limbo until used, then become whatever the context needs. Typed equivalents lock in early and complain.",
+    "options": [
+      "Untyped constants adapt to context",
+      "const bypasses the checker",
+      "float64 accepts ints only",
+      "It does not — trick question"
+    ]
+  },
+  {
+    "id": "slices-011",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "full slice",
+    "q": "What does the third index in s[1:2:3] control?",
+    "code": "s := []int{0,1,2,3,4}\nt := s[1:2:3]",
+    "a": "Capacity — it caps how far t can grow",
+    "explain": "Full slice expressions set len AND cap: t has len 1 but can only grow to index 3 of the shared array. It stops append from stomping your neighbors.",
+    "options": [
+      "Capacity — it caps how far t can grow",
+      "The step size",
+      "The start offset",
+      "Nothing, it is decorative"
+    ]
+  },
+  {
+    "id": "slices-012",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "append nil",
+    "q": "Does append work on a nil slice?",
+    "code": "var s []int\ns = append(s, 1)",
+    "a": "Yes — nil slices are append-ready",
+    "explain": "Nil slices have len 0 but append handles allocation for you. This is why var s []int followed by append in a loop is idiomatic Go.",
+    "options": [
+      "Yes — nil slices are append-ready",
+      "No — it panics on nil",
+      "Only with make first",
+      "Only for strings"
+    ]
+  },
+  {
+    "id": "slices-013",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "map init",
+    "q": "Which of these maps can you write to right now?",
+    "code": "a := map[string]int{}\nb := make(map[string]int)\nvar c map[string]int",
+    "a": "a and b — c is nil and will panic",
+    "explain": "Literal and make both initialize. var only declares, leaving a nil map that reads fine but panics on write. The compiler will not save you here.",
+    "options": [
+      "a and b — c is nil and will panic",
+      "All three are fine",
+      "Only b is safe",
+      "Only a is safe"
+    ]
+  },
+  {
+    "id": "slices-014",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "clear",
+    "q": "How do you zero a slice but keep its length?",
+    "code": "clear(s)",
+    "a": "clear zeroes elements, length stays",
+    "explain": "clear() (Go 1.21+) zeroes every element in place — length unchanged, backing array kept. On maps it deletes all keys instead.",
+    "options": [
+      "clear zeroes elements, length stays",
+      "s = nil (same thing)",
+      "Only via a loop",
+      "clear frees the array"
+    ]
+  },
+  {
+    "id": "slices-015",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "min max",
+    "q": "Builtin min and max since Go 1.21?",
+    "code": "m := min(a, b)",
+    "a": "Yes — min and max are builtins now",
+    "explain": "No more if-else ladders for two values. min/max take any ordered args (even mixed numeric types) and just work.",
+    "options": [
+      "Yes — min and max are builtins now",
+      "No — write helpers",
+      "Only via math pkg",
+      "Only for floats"
+    ]
+  },
+  {
+    "id": "slices-016",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "map equal",
+    "q": "How do you compare two maps?",
+    "code": "maps.Equal(a, b)",
+    "a": "maps.Equal — == never worked on maps",
+    "explain": "Maps are only comparable to nil, so == between two maps does not compile. maps.Equal walks both (values must be comparable too).",
+    "options": [
+      "maps.Equal — == never worked on maps",
+      "a == b works fine",
+      "reflect always",
+      "Convert to JSON first"
+    ]
+  },
+  {
+    "id": "slices-017",
+    "deck": "slices",
+    "diff": "boss",
+    "tags": "array convert",
+    "q": "A pointer to the first 4 as a fixed array?",
+    "code": "arr := (*[4]int)(s)",
+    "a": "Convert — panics if len drops below 4",
+    "explain": "Slices convert to array pointers when long enough, sharing memory both ways. Shorter than 4 and it panics at runtime. Sharp tool, real edge.",
+    "options": [
+      "Convert — panics if len drops below 4",
+      "Always copies safely",
+      "Only with unsafe pkg",
+      "Arrays cannot alias slices"
+    ]
+  },
+  {
+    "id": "structs-010",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "anon struct",
+    "q": "When is an anonymous struct the right call?",
+    "code": "p := struct {\n\tName string\n}{Name: \"Ada\"}",
+    "a": "One-off shapes not worth naming",
+    "explain": "Need a shape exactly once — for a test, a JSON blob, a channel message? Skip the type declaration. If it shows up twice, name it.",
+    "options": [
+      "One-off shapes not worth naming",
+      "Never — always name types",
+      "Only in tests",
+      "Only for JSON"
+    ]
+  },
+  {
+    "id": "structs-011",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "named types",
+    "q": "Can this type have methods?",
+    "code": "type ID string\nfunc (id ID) Valid() bool {\n\treturn len(id) > 0\n}",
+    "a": "Yes — any named type in your package",
+    "explain": "Methods are not struct-exclusive. Any named type you declare can carry methods. You just cannot add methods to types from other packages.",
+    "options": [
+      "Yes — any named type in your package",
+      "Only structs qualify",
+      "Only with generics",
+      "Only in package main"
+    ]
+  },
+  {
+    "id": "structs-012",
+    "deck": "structs",
+    "diff": "boss",
+    "tags": "shadowing",
+    "q": "Which Hello wins when you call b.Hello()?",
+    "code": "type A struct{}\nfunc (A) Hello() string { return \"A\" }\ntype B struct{ A }\nfunc (B) Hello() string { return \"B\" }",
+    "a": "B — the outer method shadows the promoted one",
+    "explain": "Promoted methods are the fallback, not the override. Anything defined directly on the outer type wins. Embedding is composition with a polite default.",
+    "options": [
+      "B — the outer method shadows the promoted one",
+      "A — embedded always wins",
+      "Ambiguous, compile error",
+      "Neither — it panics"
+    ]
+  },
+  {
+    "id": "structs-013",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "comparable struct",
+    "q": "Why does == work on these structs?",
+    "code": "type P struct{ X, Y int }\nfmt.Println(P{1,2} == P{1,2})",
+    "a": "All fields comparable — so is the struct",
+    "explain": "Struct comparability is inherited: all-comparable fields means comparable struct. Smuggle in one slice or map and == stops compiling.",
+    "options": [
+      "All fields comparable — so is the struct",
+      "Structs always compare",
+      "It compares addresses",
+      "Only with a method"
+    ]
+  },
+  {
+    "id": "structs-014",
+    "deck": "structs",
+    "diff": "boss",
+    "tags": "method expr",
+    "q": "What is User.Greet with no instance?",
+    "code": "f := User.Greet\nf(u)",
+    "a": "Method expression — receiver becomes first arg",
+    "explain": "T.Method rebinds the receiver as an explicit first parameter. Its twin, u.Greet, is a method value with the receiver already bound.",
+    "options": [
+      "Method expression — receiver becomes first arg",
+      "A compile error",
+      "A static method",
+      "The same as u.Greet"
+    ]
+  },
+  {
+    "id": "structs-015",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "empty struct",
+    "q": "What costs zero bytes and signals presence?",
+    "code": "seen := map[string]struct{}{}\nseen[\"go\"] = struct{}{}",
+    "a": "struct{} sets — presence without storage",
+    "explain": "The empty struct occupies zero bytes, so map[string]struct{} is the idiomatic set: keys carry meaning, values cost nothing.",
+    "options": [
+      "struct{} sets — presence without storage",
+      "Empty interfaces",
+      "Nil maps",
+      "Zero-length arrays"
+    ]
+  },
+  {
+    "id": "structs-016",
+    "deck": "structs",
+    "diff": "boss",
+    "tags": "padding",
+    "q": "Why is this 16 bytes instead of 9?",
+    "code": "type S struct{\n\tA bool\n\tB int64\n}",
+    "a": "Alignment pads bool to 8 — reorder to shrink",
+    "explain": "Fields align to their size: the bool eats 1 byte then 7 padding so int64 lands aligned. Biggest fields first keeps structs tight.",
+    "options": [
+      "Alignment pads bool to 8 — reorder to shrink",
+      "Bools are 8 bytes in Go",
+      "The compiler adds a lock",
+      "Slices hide inside"
+    ]
+  },
+  {
+    "id": "gochan-014",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "direction",
+    "q": "What does chan<- int promise as a parameter?",
+    "code": "func send(ch chan<- int) {\n\tch <- 42\n}",
+    "a": "Send-only — receiving will not compile",
+    "explain": "Channel directions are compile-time contracts. Hand a bidirectional channel to a send-only param and the function physically cannot receive. Self-documenting APIs.",
+    "options": [
+      "Send-only — receiving will not compile",
+      "It is just documentation",
+      "Buffered-only channel",
+      "A closed channel"
+    ]
+  },
+  {
+    "id": "gochan-015",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "range chan",
+    "q": "When does this loop finally exit?",
+    "code": "for v := range ch {\n\tfmt.Println(v)\n}",
+    "a": "When ch is closed and drained",
+    "explain": "Ranging over a channel parks until close. Forget to close and the loop (and its goroutine) lives forever — the classic leak. Close on the sender side.",
+    "options": [
+      "When ch is closed and drained",
+      "After one value",
+      "When the buffer fills",
+      "It never exits, by design"
+    ]
+  },
+  {
+    "id": "gochan-016",
+    "deck": "gochan",
+    "diff": "boss",
+    "tags": "mutex",
+    "q": "What happens at the second Lock()?",
+    "code": "var mu sync.Mutex\nmu.Lock()\nmu.Lock()",
+    "a": "Deadlock — Mutex is not reentrant",
+    "explain": "Go mutexes have no owner concept and no re-entry. Lock twice from one goroutine and you wait on yourself forever while the runtime judges you.",
+    "options": [
+      "Deadlock — Mutex is not reentrant",
+      "It returns an error",
+      "It counts locks",
+      "Nothing — locks stack"
+    ]
+  },
+  {
+    "id": "gochan-017",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "ticker",
+    "q": "How do you do something every second until told to stop?",
+    "code": "t := time.NewTicker(time.Second)\ndefer t.Stop()\nfor range t.C {\n\twork()\n}",
+    "a": "time.Ticker — and always Stop() it",
+    "explain": "Tickers beat steadily until stopped; forgetting Stop leaks the ticker. time.After is for one-shots, Ticker is for rhythms.",
+    "options": [
+      "time.Ticker — and always Stop() it",
+      "time.Sleep in a loop only",
+      "time.After each round",
+      "A busy for loop"
+    ]
+  },
+  {
+    "id": "gochan-018",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "Once",
+    "q": "How do you guarantee setup runs exactly once?",
+    "code": "var once sync.Once\nonce.Do(setup)",
+    "a": "sync.Once — concurrent-safe, exactly once",
+    "explain": "Once.Do runs the function a single time no matter how many goroutines race it. Late callers block, then return immediately. Init logic loves it.",
+    "options": [
+      "sync.Once — concurrent-safe, exactly once",
+      "A boolean flag",
+      "init() everywhere",
+      "defer in main"
+    ]
+  },
+  {
+    "id": "gochan-019",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "Pool",
+    "q": "What is sync.Pool for?",
+    "code": "buf := pool.Get().([]byte)",
+    "a": "Recycling temp objects to cut GC pressure",
+    "explain": "Pool hands back used objects instead of allocating. No guarantees — the runtime may drop everything under pressure. Throughput trick, not storage.",
+    "options": [
+      "Recycling temp objects to cut GC pressure",
+      "Permanent object cache",
+      "Connection pooling only",
+      "Goroutine storage"
+    ]
+  },
+  {
+    "id": "gochan-020",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "atomic",
+    "q": "Counter without a mutex?",
+    "code": "atomic.AddInt64(&n, 1)",
+    "a": "sync/atomic — single cheap ops only",
+    "explain": "Atomics make one indivisible step: add, load, store, swap. Anything fancier (check-then-act) still needs a mutex. Fast lane, narrow road.",
+    "options": [
+      "sync/atomic — single cheap ops only",
+      "Always beats mutexes",
+      "Replaces all locking",
+      "Only for strings"
+    ]
+  },
+  {
+    "id": "gochan-021",
+    "deck": "gochan",
+    "diff": "gopher",
+    "tags": "errgroup",
+    "q": "WaitGroup that returns errors?",
+    "code": "g, ctx := errgroup.WithContext(ctx)\ng.Go(func() error {\n\treturn work()\n})\nerr := g.Wait()",
+    "a": "errgroup — first error wins, rest cancel",
+    "explain": "From x/sync: fan out like WaitGroup, but Wait hands back the first error and cancels the shared context. Concurrency with accountability.",
+    "options": [
+      "errgroup — first error wins, rest cancel",
+      "A new error type",
+      "Built into sync",
+      "Only for HTTP"
+    ]
+  },
+  {
+    "id": "errors-009",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "wrap",
+    "q": "When do you reach for fmt.Errorf instead of errors.New?",
+    "code": "if err != nil {\n\treturn fmt.Errorf(\"load %s: %w\", name, err)\n}",
+    "a": "To add context and wrap with %w",
+    "explain": "errors.New makes flat messages. Errorf with %w layers context while keeping the original unwrappable for errors.Is and As. Context is kindness to future-you.",
+    "options": [
+      "To add context and wrap with %w",
+      "When the message is long",
+      "Only in main packages",
+      "Never — they are identical"
+    ]
+  },
+  {
+    "id": "errors-010",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "log.Fatal",
+    "q": "What does log.Fatal do after printing?",
+    "code": "if err != nil {\n\tlog.Fatal(err)\n}",
+    "a": "Calls os.Exit(1) — deferred calls never run",
+    "explain": "log.Fatal is print-plus-exit, and exit means your defers (file closes! unlocks!) never fire. Fun at 3am. Prefer returning the error; save Fatal for main().",
+    "options": [
+      "Calls os.Exit(1) — deferred calls never run",
+      "Panics with stack trace",
+      "Retries the operation",
+      "Returns err to the caller"
+    ]
+  },
+  {
+    "id": "errors-011",
+    "deck": "errors",
+    "diff": "boss",
+    "tags": "Must",
+    "q": "What happens when this Parse fails?",
+    "code": "t := template.Must(template.New(\"x\").Parse(s))",
+    "a": "It panics — strictly for init-time setup",
+    "explain": "Must converts check-this-error into crash-if-broken. Perfect for templates and regexes baked in at startup that must be valid; poison anywhere user input flows.",
+    "options": [
+      "It panics — strictly for init-time setup",
+      "It returns a nil template",
+      "It logs and continues",
+      "It retries three times"
+    ]
+  },
+  {
+    "id": "errors-012",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "Join",
+    "q": "How do you return two errors as one?",
+    "code": "err := errors.Join(e1, e2)",
+    "a": "errors.Join — Is and As see through all of them",
+    "explain": "Join (Go 1.20+) wraps a list while keeping every member inspectable: errors.Is/As walk the whole tree. Multierror handling without a library.",
+    "options": [
+      "errors.Join — Is and As see through all of them",
+      "fmt with plus signs",
+      "Only the first survives",
+      "A custom struct each time"
+    ]
+  },
+  {
+    "id": "errors-013",
+    "deck": "errors",
+    "diff": "gopher",
+    "tags": "custom type",
+    "q": "What makes MyErr work with errors.As?",
+    "code": "type MyErr struct{ Code int }\nfunc (e *MyErr) Error() string {\n\treturn \"boom\"\n}",
+    "a": "An Error() string method on it",
+    "explain": "Implement error by defining Error() string — that single method is the entire contract. Pointer receivers let As fish out the concrete type.",
+    "options": [
+      "An Error() string method on it",
+      "Embedding error inside",
+      "A Code field alone",
+      "Registering it globally"
+    ]
+  },
+  {
+    "id": "errors-014",
+    "deck": "errors",
+    "diff": "rookie",
+    "tags": "panic value",
+    "q": "Must a panic carry an error?",
+    "code": "panic(\"boom\")",
+    "a": "No — any value flies, recover catches all",
+    "explain": "panic accepts strings, ints, structs, whatever. Convention says errors, but the runtime does not check. recover gets back exactly what you threw.",
+    "options": [
+      "No — any value flies, recover catches all",
+      "Yes — errors only",
+      "Only strings allowed",
+      "Only nil panics"
+    ]
+  },
+  {
+    "id": "std-010",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "sort",
+    "q": "How do you sort these ints biggest-first, modern style?",
+    "code": "s := []int{3, 1, 2}\nslices.Sort(s)\nslices.Reverse(s)",
+    "a": "Sort ascending, then Reverse — both in slices",
+    "explain": "The slices package ended hand-rolled sort code. Sort, then Reverse for descending. For custom order there is SortFunc with a comparator.",
+    "options": [
+      "Sort ascending, then Reverse — both in slices",
+      "sort.Reverse(s) alone",
+      "A bubble sort, obviously",
+      "slices.SortDesc(s)"
+    ]
+  },
+  {
+    "id": "std-011",
+    "deck": "std",
+    "diff": "rookie",
+    "tags": "env",
+    "q": "How do you read $HOME and know if it was even set?",
+    "code": "h, ok := os.LookupEnv(\"HOME\")",
+    "a": "LookupEnv returns value plus presence",
+    "explain": "os.Getenv hides the difference between empty and unset. LookupEnv hands you ok so you can tell blank password from no password configured.",
+    "options": [
+      "LookupEnv returns value plus presence",
+      "os.Getenv covers it",
+      "Read /etc/environment",
+      "Env vars are always set"
+    ]
+  },
+  {
+    "id": "std-012",
+    "deck": "std",
+    "diff": "rookie",
+    "tags": "Fields",
+    "q": "How do you split \"a   b\" on any whitespace run?",
+    "code": "parts := strings.Fields(\"a   b\")",
+    "a": "Fields — splits on whitespace runs, drops empties",
+    "explain": "Split needs an exact separator; Fields treats any whitespace run as one delimiter and skips empties. The lazy, correct choice for human-typed text.",
+    "options": [
+      "Fields — splits on whitespace runs, drops empties",
+      "Split on single spaces",
+      "A regex every time",
+      "FieldsN with -1"
+    ]
+  },
+  {
+    "id": "std-013",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "timeouts",
+    "q": "What stops a slow handler hogging a connection?",
+    "code": "srv := &http.Server{\n\tReadTimeout: 5 * time.Second,\n}",
+    "a": "Server timeouts — set them all",
+    "explain": "Read, Write and Idle timeouts bound every phase of a connection. Without them one dripping client can hold a goroutine hostage indefinitely.",
+    "options": [
+      "Server timeouts — set them all",
+      "The OS handles it",
+      "bigger buffers",
+      "More goroutines"
+    ]
+  },
+  {
+    "id": "std-014",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "middleware",
+    "q": "What does logging middleware look like?",
+    "code": "func log(h http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tfmt.Println(r.URL.Path)\n\t\th.ServeHTTP(w, r)\n\t})\n}",
+    "a": "Handler wrapping handler, same signature",
+    "explain": "Middleware is handlers all the way down: take one, return one that does something extra. Chain auth, logging and recovery the same way.",
+    "options": [
+      "Handler wrapping handler, same signature",
+      "A special Middleware type",
+      "Only via frameworks",
+      "Global variables"
+    ]
+  },
+  {
+    "id": "std-015",
+    "deck": "std",
+    "diff": "gopher",
+    "tags": "WalkDir",
+    "q": "How do you visit every file under a dir?",
+    "code": "filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {\n\t// ...\n\treturn nil\n})",
+    "a": "WalkDir calls your func per entry",
+    "explain": "WalkDir walks the tree and calls you back per file and dir. Return SkipDir to prune a subtree, any other error to abort the walk.",
+    "options": [
+      "WalkDir calls your func per entry",
+      "os.List in a loop",
+      "filepath.Glob once",
+      "Only recursively by hand"
+    ]
+  },
+  {
+    "id": "std-016",
+    "deck": "std",
+    "diff": "rookie",
+    "tags": "slog",
+    "q": "Modern structured logging in stdlib?",
+    "code": "slog.Info(\"up\", \"port\", 8080)",
+    "a": "log/slog — key-value pairs, leveled",
+    "explain": "slog (Go 1.21+) logs attributes, not just strings: Info, Warn, Error levels plus JSON or text handlers. Printf debugging finally grew up.",
+    "options": [
+      "log/slog — key-value pairs, leveled",
+      "Only third-party libs",
+      "log.Printf forever",
+      "slog is experimental"
+    ]
+  },
+  {
+    "id": "tooling-009",
+    "deck": "tooling",
+    "diff": "rookie",
+    "tags": "gofmt",
+    "q": "How do you list every file that needs gofmt?",
+    "code": "gofmt -l .",
+    "a": "gofmt -l lists the offenders, changes nothing",
+    "explain": "The -l flag snitches: it lists files whose formatting differs without touching them. Perfect for CI. Drop -l, add -w, and it just fixes everything.",
+    "options": [
+      "gofmt -l lists the offenders, changes nothing",
+      "gofmt --check",
+      "gofmt upgrades the code",
+      "gofmt only works per-file"
+    ]
+  },
+  {
+    "id": "tooling-010",
+    "deck": "tooling",
+    "diff": "rookie",
+    "tags": "tidy",
+    "q": "What promise does go mod tidy keep?",
+    "code": "go mod tidy",
+    "a": "go.mod mirrors actual imports — nothing extra, nothing missing",
+    "explain": "Tidy scans your code and syncs go.mod and go.sum to reality: adds what you use, drops what you abandoned. Run it before every commit.",
+    "options": [
+      "go.mod mirrors actual imports — nothing extra, nothing missing",
+      "It upgrades everything",
+      "It vendors the world",
+      "It deletes the module cache"
+    ]
+  },
+  {
+    "id": "tooling-011",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "test filter",
+    "q": "How do you run only TestAdd, verbosely, everywhere?",
+    "code": "go test -run TestAdd -v ./...",
+    "a": "-run filters by regex, -v narrates each test",
+    "explain": "-run takes a regex matched against test names. -v streams every PASS and FAIL as it happens. The two flags you will type daily.",
+    "options": [
+      "-run filters by regex, -v narrates each test",
+      "-only TestAdd",
+      "-filter with -loud",
+      "Edit the test files temporarily"
+    ]
+  },
+  {
+    "id": "tooling-012",
+    "deck": "tooling",
+    "diff": "boss",
+    "tags": "build tags",
+    "q": "What does this first line do to the file?",
+    "code": "//go:build linux\n\npackage disk",
+    "a": "Build constraint — compiles on linux only",
+    "explain": "Build tags include or exclude whole files per OS, arch, or custom tags. Cross-compile for Windows and this file politely vanishes.",
+    "options": [
+      "Build constraint — compiles on linux only",
+      "A comment, nothing more",
+      "It names the package",
+      "It forces a rebuild"
+    ]
+  },
+  {
+    "id": "generics-001",
+    "deck": "generics",
+    "diff": "gopher",
+    "tags": "type params",
+    "q": "What does [T any] buy you here?",
+    "code": "func First[T any](s []T) T {\n\treturn s[0]\n}",
+    "a": "One function for every element type",
+    "explain": "Type parameters turn copy-paste overloads into one function. T is decided at each call site — ints today, strings tomorrow, zero runtime cost.",
+    "options": [
+      "One function for every element type",
+      "Faster compilation",
+      "A new syntax for loops",
+      "Dynamic typing"
+    ]
+  },
+  {
+    "id": "generics-002",
+    "deck": "generics",
+    "diff": "gopher",
+    "tags": "comparable",
+    "q": "Why comparable instead of any here?",
+    "code": "func HasKey[K comparable, V any](m map[K]V, k K) bool {\n\t_, ok := m[k]\n\treturn ok\n}",
+    "a": "Map keys must be comparable",
+    "explain": "any accepts everything, but map keys need == and !=. comparable is the constraint that promises exactly that. Slices can never satisfy it.",
+    "options": [
+      "Map keys must be comparable",
+      "It compiles faster",
+      "any is deprecated",
+      "Keys must be strings"
+    ]
+  },
+  {
+    "id": "generics-003",
+    "deck": "generics",
+    "diff": "rookie",
+    "tags": "inference",
+    "q": "Do you need First[int](s) spelled out?",
+    "code": "First([]int{1, 2})",
+    "a": "No — types infer from the arguments",
+    "explain": "The compiler reads the argument types and fills in T for you. Spell arguments out only when inference stalls, which is rarer than you fear.",
+    "options": [
+      "No — types infer from the arguments",
+      "Yes, always explicit",
+      "Only for slices",
+      "Only in tests"
+    ]
+  },
+  {
+    "id": "generics-004",
+    "deck": "generics",
+    "diff": "rookie",
+    "tags": "any",
+    "q": "What is any, really?",
+    "code": "var x any = 42",
+    "a": "Alias for interface{} — holds anything",
+    "explain": "any is exactly interface{} with better marketing: the empty interface accepts every type. Useful, but every any is a type assertion waiting to happen.",
+    "options": [
+      "Alias for interface{} — holds anything",
+      "A new primitive type",
+      "A generic wildcard",
+      "Timeout context"
+    ]
+  },
+  {
+    "id": "generics-005",
+    "deck": "generics",
+    "diff": "gopher",
+    "tags": "constraints",
+    "q": "Where do Ordered and friends live?",
+    "code": "func Min[T cmp.Ordered](a, b T) T {\n\tif a < b {\n\t\treturn a\n\t}\n\treturn b\n}",
+    "a": "cmp package — slices and maps build on it too",
+    "explain": "cmp.Ordered covers every ordered type (< works on all of them). The stdlib slices and maps packages are built on the same constraints you can import.",
+    "options": [
+      "cmp package — slices and maps build on it too",
+      "The builtin keyword",
+      "reflect package",
+      "There is no such package"
+    ]
+  },
+  {
+    "id": "generics-006",
+    "deck": "generics",
+    "diff": "boss",
+    "tags": "methods",
+    "q": "Why does this method fail to compile?",
+    "code": "func (s Stack[T]) Map[U any](f func(T) U) Stack[U] {\n\t// ...\n}",
+    "a": "Methods cannot introduce new type params",
+    "explain": "A method reuses its receiver type params but may never declare fresh ones. Need Map over U? Write a plain generic function instead — the gods demand it.",
+    "options": [
+      "Methods cannot introduce new type params",
+      "Methods cannot be generic at all",
+      "U must be comparable",
+      "Missing pointer receiver"
+    ]
+  },
+  {
+    "id": "generics-007",
+    "deck": "generics",
+    "diff": "gopher",
+    "tags": "iterators",
+    "q": "What can you range over since Go 1.23?",
+    "code": "for v := range seq {\n\tfmt.Println(v)\n}",
+    "a": "Functions yielding values — iterators",
+    "explain": "Range-over-func lets you iterate anything a function can yield: filtered streams, tree walks, custom sequences. The function pauses at each yield and resumes after.",
+    "options": [
+      "Functions yielding values — iterators",
+      "Only slices and maps still",
+      "Channels exclusively",
+      "Goroutine handles"
+    ]
+  },
+  {
+    "id": "generics-008",
+    "deck": "generics",
+    "diff": "rookie",
+    "tags": "inference",
+    "q": "When can you skip the type arguments?",
+    "code": "idx := slices.Index(s, \"go\")",
+    "a": "When they infer from the parameters",
+    "explain": "The scary-looking signature fills itself in from your arguments. Generics read worse than they write.",
+    "options": [
+      "When they infer from the parameters",
+      "Never — always explicit",
+      "Only with any",
+      "Only in package main"
+    ]
+  },
+  {
+    "id": "io-001",
+    "deck": "io",
+    "diff": "gopher",
+    "tags": "Reader",
+    "q": "What single method makes something an io.Reader?",
+    "code": "Read(p []byte) (n int, err error)",
+    "a": "Read into p, report bytes plus error",
+    "explain": "One method, entire ecosystem: files, sockets, buffers, gzip streams all speak Read. Return io.EOF when dry — that is the only special error.",
+    "options": [
+      "Read into p, report bytes plus error",
+      "Read() string with no args",
+      "Open plus Close together",
+      "ReadAll at once"
+    ]
+  },
+  {
+    "id": "io-002",
+    "deck": "io",
+    "diff": "rookie",
+    "tags": "Copy",
+    "q": "What does io.Copy return?",
+    "code": "n, err := io.Copy(w, r)",
+    "a": "Bytes copied plus first error — EOF swallowed",
+    "explain": "Copy streams reader to writer without loading everything. Fewer bytes than expected with nil error just means EOF arrived — totally normal.",
+    "options": [
+      "Bytes copied plus first error — EOF swallowed",
+      "Only the error",
+      "A new buffer",
+      "Nothing, it is void"
+    ]
+  },
+  {
+    "id": "io-003",
+    "deck": "io",
+    "diff": "gopher",
+    "tags": "json stream",
+    "q": "Decode a stream of JSON values, not one blob?",
+    "code": "dec := json.NewDecoder(r)\nfor dec.More() {\n\tvar v T\n\tdec.Decode(&v)\n}",
+    "a": "json.Decoder reads value after value",
+    "explain": "Unmarshal wants the whole document at once. Decoder pulls values incrementally — perfect for NDJSON logs and endless API streams.",
+    "options": [
+      "json.Decoder reads value after value",
+      "Unmarshal in a loop",
+      "One Decoder per byte",
+      "json.Stream (does not exist)"
+    ]
+  },
+  {
+    "id": "io-004",
+    "deck": "io",
+    "diff": "rookie",
+    "tags": "bufio",
+    "q": "Lines without loading the whole file?",
+    "code": "sc := bufio.NewScanner(f)\nfor sc.Scan() {\n\tuse(sc.Text())\n}",
+    "a": "Scanner buffers and splits for you",
+    "explain": "Scanner handles chunking and newlines; you just loop. Always check sc.Err() after — I/O errors hide there, not in Scan.",
+    "options": [
+      "Scanner buffers and splits for you",
+      "ReadAll then Split",
+      "One Read per line",
+      "mmap is mandatory"
+    ]
+  },
+  {
+    "id": "io-005",
+    "deck": "io",
+    "diff": "gopher",
+    "tags": "time format",
+    "q": "How do you print 2026-09-16 15:04?",
+    "code": "t.Format(\"2006-01-02 15:04\")",
+    "a": "Reference layout, not YYYY-MM-DD",
+    "explain": "Go formats by example: Mon Jan 2 15:04:05 MST 2006 is the magic reference. YYYY-MM-DD prints literally — the classic newcomer trap.",
+    "options": [
+      "Reference layout, not YYYY-MM-DD",
+      "t.Sprintf YYYY style",
+      "t.ToString()",
+      "time.Format(t, ISO)"
+    ]
+  },
+  {
+    "id": "io-006",
+    "deck": "io",
+    "diff": "rookie",
+    "tags": "strconv",
+    "q": "String to int, with the error handled?",
+    "code": "n, err := strconv.Atoi(\"42\")",
+    "a": "Atoi returns (int, error) — check it",
+    "explain": "Atoi is ASCII-to-integer with an error for junk input. Itoa goes the other way. Never parse without handling what failure means.",
+    "options": [
+      "Atoi returns (int, error) — check it",
+      "int(\"42\") just works",
+      "Atoi never fails",
+      "Use Sprintf instead"
+    ]
+  },
+  {
+    "id": "io-007",
+    "deck": "io",
+    "diff": "gopher",
+    "tags": "regexp",
+    "q": "MustCompile versus Compile?",
+    "code": "re := regexp.MustCompile(`\\d+`)",
+    "a": "Must panics on a bad pattern — globals only",
+    "explain": "MustCompile is for patterns baked into the program that must be valid — typically package-level vars. User-supplied patterns get Compile plus error handling.",
+    "options": [
+      "Must panics on a bad pattern — globals only",
+      "Must is always faster",
+      "Compile is deprecated",
+      "They are identical"
+    ]
+  },
+  {
+    "id": "io-008",
+    "deck": "io",
+    "diff": "rookie",
+    "tags": "Buffer",
+    "q": "Building bytes rather than a string?",
+    "code": "var b bytes.Buffer\nb.WriteString(\"hi\")",
+    "a": "bytes.Buffer — the []byte twin of Builder",
+    "explain": "strings.Builder outputs strings; bytes.Buffer accumulates bytes and also implements Reader. Pick by what the next consumer eats.",
+    "options": [
+      "bytes.Buffer — the []byte twin of Builder",
+      "bytes.String (no such thing)",
+      "A bigger slice",
+      "fmt.Print in a loop"
+    ]
+  },
+  {
+    "id": "tooling-013",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "examples",
+    "q": "What are ExampleXxx functions for?",
+    "code": "func ExampleAdd() {\n\tfmt.Println(Add(1, 1))\n\t// Output: 2\n}",
+    "a": "Runnable docs — the output comment is verified",
+    "explain": "Examples appear in godoc AND run as tests: a mismatched Output comment fails the build. Documentation that cannot rot.",
+    "options": [
+      "Runnable docs — the output comment is verified",
+      "Only pretty docs",
+      "Benchmarks in disguise",
+      "Deprecated pattern"
+    ]
+  },
+  {
+    "id": "tooling-014",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "coverage",
+    "q": "How do you see which lines tests actually hit?",
+    "code": "go test -coverprofile=c.out ./...\ngo tool cover -html=c.out",
+    "a": "coverprofile plus the HTML viewer",
+    "explain": "The profile records every executed block; the HTML viewer paints your code green and red. Chase the red that matters, ignore the rest.",
+    "options": [
+      "coverprofile plus the HTML viewer",
+      "Reading tests harder",
+      "Printf counting",
+      "Coverage is automatic"
+    ]
+  },
+  {
+    "id": "tooling-015",
+    "deck": "tooling",
+    "diff": "rookie",
+    "tags": "go doc",
+    "q": "How do you read docs offline in a terminal?",
+    "code": "go doc fmt.Println",
+    "a": "go doc — stdlib and modules included",
+    "explain": "go doc prints package and symbol docs right in your terminal, for stdlib and your dependencies alike. Faster than a browser tab.",
+    "options": [
+      "go doc — stdlib and modules included",
+      "Only godoc.org",
+      "Man pages",
+      "README files only"
+    ]
+  },
+  {
+    "id": "tooling-016",
+    "deck": "tooling",
+    "diff": "gopher",
+    "tags": "workspaces",
+    "q": "How do multiple local modules share one build?",
+    "code": "go work init ./api ./web",
+    "a": "go.work workspace — local modules resolve together",
+    "explain": "Workspaces let several modules develop side by side with local replaces handled automatically. Commit go.work for team setups, or keep it personal.",
+    "options": [
+      "go.work workspace — local modules resolve together",
+      "Copy code between repos",
+      "One giant module",
+      "Symlinks by hand"
+    ]
+  },
+  {
+    "id": "slices-018",
+    "deck": "slices",
+    "diff": "rookie",
+    "tags": "append return",
+    "q": "What does append return, and why must you keep it?",
+    "code": "s = append(s, 4)",
+    "a": "A new slice header — assign it back",
+    "explain": "append may grow into a new array; the old header keeps the old length and array. Dropping the return value silently loses the append.",
+    "options": [
+      "A new slice header — assign it back",
+      "Nothing — it edits in place",
+      "The new length",
+      "An error if it reallocates"
+    ]
+  },
+  {
+    "id": "slices-019",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "shared backing array",
+    "q": "Two slices share one backing array. You sort one. What happens to the other?",
+    "code": "a := nums[:3]\nsort.Ints(nums)",
+    "a": "It changes too — same backing array",
+    "explain": "Slices are windows, not copies: a and nums look at the same slots. Sorting through one window rearranges what the other sees.",
+    "options": [
+      "It changes too — same backing array",
+      "Nothing — slices are copies",
+      "It panics on shared arrays",
+      "Only its length changes"
+    ]
+  },
+  {
+    "id": "slices-020",
+    "deck": "slices",
+    "diff": "gopher",
+    "tags": "cap growth",
+    "q": "make([]int, 0, 3), then appends. Which append reallocates first?",
+    "code": "s := make([]int, 0, 3)",
+    "a": "The 4th — rooms run out after 3",
+    "explain": "cap 3 books three rooms: the first three appends just move tenants in. The 4th finds no room and Go allocates a bigger array and copies over.",
+    "options": [
+      "The 4th — rooms run out after 3",
+      "The 2nd — cap counts from 1",
+      "The 3rd — len and cap merge",
+      "Never — make pre-grows forever"
+    ]
+  },
+  {
+    "id": "slices-021",
+    "deck": "slices",
+    "diff": "boss",
+    "tags": "in-place dedup",
+    "q": "Dedup a sorted slice in one pass with no extra memory. What do you need?",
+    "code": "nums := []int{1, 1, 2, 3, 3}",
+    "a": "A write index for first-timers",
+    "explain": "One reader marches ahead; a writer index w only advances on new values, copying each first-timer into place. O(n) time, O(1) space — two pointers in disguise.",
+    "options": [
+      "A write index for first-timers",
+      "A second slice",
+      "A helper map",
+      "Recursion"
+    ]
+  },
+  {
+    "id": "structs-017",
+    "deck": "structs",
+    "diff": "rookie",
+    "tags": "list walk",
+    "q": "Walking a linked list: when do you stop?",
+    "code": "for cur := head; cur != nil; cur = cur.Next",
+    "a": "At nil — the address of nothing",
+    "explain": "The last box points nowhere (nil). The loop follows Next until there is no next — no counting, no indexes, just arrows to nil.",
+    "options": [
+      "At nil — the address of nothing",
+      "After len(head) steps",
+      "At the tail's value",
+      "Never — use break"
+    ]
+  },
+  {
+    "id": "structs-018",
+    "deck": "structs",
+    "diff": "gopher",
+    "tags": "pointer receiver",
+    "q": "Which method can rewire the list it is called on?",
+    "code": "func (n *Node) Append(v int)",
+    "a": "Pointer receiver — edits the original",
+    "explain": "Value receivers get a copy: rewiring the copy's Next changes nothing. *Node methods edit the real boxes through their addresses.",
+    "options": [
+      "Pointer receiver — edits the original",
+      "Value receiver — safer and faster",
+      "Either — Go auto-fixes it",
+      "Neither — use plain functions"
+    ]
+  },
+  {
+    "id": "structs-019",
+    "deck": "structs",
+    "diff": "boss",
+    "tags": "fast slow middle",
+    "q": "Slow strolls 1 box/round, fast sprints 2. Fast hits nil. Where is slow?",
+    "code": "slow, fast := head, head",
+    "a": "The middle",
+    "explain": "Fast covers twice the ground, so when it runs out of track slow has covered exactly half. One pass, no counting, no length needed.",
+    "options": [
+      "The middle",
+      "The tail",
+      "The head",
+      "One past the tail"
+    ]
+  },
+  {
+    "id": "basics-021",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "big o lookup",
+    "q": "Big-O of a map lookup by key?",
+    "code": "scores[\"zoe\"]",
+    "a": "O(1) — one hop, any size",
+    "explain": "Hashing jumps straight to the drawer: four entries or four million cost the same single hop.",
+    "options": [
+      "O(1) — one hop, any size",
+      "O(n) — scans every key",
+      "O(log n) — halves the keys",
+      "O(n²) — checks every pair"
+    ]
+  },
+  {
+    "id": "basics-022",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "binary search precondition",
+    "q": "Binary search demands what before it runs?",
+    "code": "mid := (low + high) / 2",
+    "a": "Sorted input",
+    "explain": "Halving only works when 'too small, go right' is always true — that promise is sorted order. Unsorted input makes every guess a lie.",
+    "options": [
+      "Sorted input",
+      "Unique values",
+      "A map beside it",
+      "Even length"
+    ]
+  },
+  {
+    "id": "basics-023",
+    "deck": "basics",
+    "diff": "gopher",
+    "tags": "range runes",
+    "q": "for i, r := range \"héllo\" — what are i and r?",
+    "code": "for i, r := range s",
+    "a": "Byte index + full rune",
+    "explain": "range decodes UTF-8: r is the whole letter (é is one r), i is its byte offset. Byte-thinking breaks on non-ASCII; rune-thinking doesn't.",
+    "options": [
+      "Byte index + full rune",
+      "Rune index + byte",
+      "Two runes",
+      "Letters only, no index"
+    ]
+  },
+  {
+    "id": "basics-024",
+    "deck": "basics",
+    "diff": "rookie",
+    "tags": "missing key",
+    "q": "Reading a missing map key returns what?",
+    "code": "v := scores[\"zoe\"]",
+    "a": "Zero value — no error, no panic",
+    "explain": "Missing keys read as 0/\"\"/false. The comma-ok form (v, ok := m[k]) is how you tell 'missing' apart from 'really zero'.",
+    "options": [
+      "Zero value — no error, no panic",
+      "nil",
+      "A panic",
+      "An error"
+    ]
+  },
+  {
+    "id": "basics-025",
+    "deck": "basics",
+    "diff": "boss",
+    "tags": "quadratic pairs",
+    "q": "Nested loops comparing every pair of n items cost what?",
+    "code": "for _, x := range xs {\n\tfor _, y := range xs {",
+    "a": "O(n²) — pairs multiply",
+    "explain": "Every first meets every second: double n, quadruple the work. The classic cure is a map turning the inner scan into a lookup.",
+    "options": [
+      "O(n²) — pairs multiply",
+      "O(n) — two loops, twice as fast",
+      "O(log n) — loops halve",
+      "O(1) — the compiler flattens them"
+    ]
+  }
+]

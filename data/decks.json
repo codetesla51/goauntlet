@@ -1,0 +1,56 @@
+[
+  {
+    "id": "basics",
+    "name": "Basics",
+    "icon": "ph-plant",
+    "desc": "vars · funcs · loops"
+  },
+  {
+    "id": "slices",
+    "name": "Slices & Maps",
+    "icon": "ph-stack",
+    "desc": "append · make · range"
+  },
+  {
+    "id": "structs",
+    "name": "Structs & Ifaces",
+    "icon": "ph-cube",
+    "desc": "methods · embedding"
+  },
+  {
+    "id": "gochan",
+    "name": "Goroutines",
+    "icon": "ph-rocket-launch",
+    "desc": "go · chan · select"
+  },
+  {
+    "id": "errors",
+    "name": "Errors",
+    "icon": "ph-bug",
+    "desc": "wrap · panic · defer"
+  },
+  {
+    "id": "std",
+    "name": "Stdlib Power",
+    "icon": "ph-toolbox",
+    "desc": "fmt · json · http"
+  },
+  {
+    "id": "tooling",
+    "name": "Testing & Tools",
+    "icon": "ph-hammer",
+    "desc": "test · vet · modules"
+  },
+  {
+    "id": "generics",
+    "name": "Generics & Modern",
+    "icon": "ph-brackets-angle",
+    "desc": "params · constraints · iterators"
+  },
+  {
+    "id": "io",
+    "name": "IO & Data",
+    "icon": "ph-database",
+    "desc": "reader · json · time"
+  }
+]

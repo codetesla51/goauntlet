@@ -1,0 +1,771 @@
+[
+  {
+    "id": "hello",
+    "name": "Hello, Gopher",
+    "icon": "ph-hand-waving",
+    "desc": "zero to running Go in 5 steps",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "There is no classroom today",
+        "text": "Forget tests. In this lesson you RUN real Go code in your browser, break it, fix it, and rebuild it with your bare hands.\n\nGo is a programming language built at Google for one job: turning plain text into fast programs. You need nothing installed — scroll down and meet your first program. You don't have to understand it yet. That's the whole trick here: you run it FIRST, understand it SECOND.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, Gopher!\")\n}",
+        "hint": "Just read it like a recipe for now. The running comes next — promise."
+      },
+      {
+        "kind": "run",
+        "title": "Press Run. Seriously, right now.",
+        "text": "Below is a real Go program and a real Run button. Your entire job: press Run and watch the terminal.\n\nSomewhere, an actual compiler translates your code into a program and runs it. If the words Hello, Gopher! appear below, you just compiled Go. You are officially dangerous.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, Gopher!\")\n}",
+        "expected": "Hello, Gopher!\n",
+        "goal": "Hello, Gopher!",
+        "hint": "The Run button is right under the editor. One click. That's the whole step.",
+        "predict": {
+          "options": [
+            "Hello Gopher!",
+            "Hello, Gopher",
+            "Hello, Gopher!\n"
+          ],
+          "answer": 2
+        }
+      },
+      {
+        "kind": "spot",
+        "title": "Spot the crime scene",
+        "text": "Before you fix anything, find it. One line below refuses to compile — tap the guilty line.\n\nNo penalty for wrong taps. Detectives guess.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, Gopher!)\n}",
+        "bug": 5,
+        "bugName": "unterminated string",
+        "hint": "The Println line — its text never ends."
+      },
+      {
+        "kind": "fix",
+        "title": "Break it, then save it",
+        "text": "You spotted it. Now repair it: put the missing quote back, press Run, get your greeting back.\n\nSpot, then fix — that's the entire debugging loop, and you're doing it in lesson one.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, Gopher!)\n}",
+        "expected": "Hello, Gopher!\n",
+        "goal": "Hello, Gopher!",
+        "hint": "Find the Println line — the text never ends — close it with a \" right before the closing parenthesis.",
+        "predict": {
+          "options": [
+            "hello, gopher!",
+            "Hello, Gopher!!",
+            "Hello, Gopher!\n"
+          ],
+          "answer": 2
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Rebuild Gopher, brick by brick",
+        "text": "The program got shredded into 5 lines. Drag them — or just tap them — into running order.\n\nThink like this: every Go program starts with its passport (package), then its shopping list (import), then the front door (func main). The thing it DOES goes inside the door.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tfmt.Println(\"Hello, Gopher!\")",
+          "} // func main"
+        ],
+        "hint": "package first, import second, func main opens the door, the lone } closes it last."
+      },
+      {
+        "kind": "read",
+        "title": "What you just did",
+        "text": "You compiled Go, read a compiler error, fixed real code, and assembled a program from parts. That is literally the job. Everything else is vocabulary.\n\nThree souvenirs: package main means 'this file IS a program'. import \"fmt\" means 'borrow the printing tools'. func main means 'start HERE'.\n\nNext up: Boxes with Names — how programs remember things. Or replay this one until your fingers are bored.",
+        "hint": "Done reading? Hit Finish and grab the next lesson."
+      }
+    ],
+    "deck": "basics"
+  },
+  {
+    "id": "boxes",
+    "name": "Boxes with Names",
+    "icon": "ph-package",
+    "desc": "variables without tears",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Programs forget everything",
+        "text": "A program with no memory can parrot exactly one sentence. Variables are labeled boxes where Go keeps things for you.\n\nname := \"Ada\" builds a NEW box labeled name and drops Ada inside. The := is Go saying 'make the box AND fill it'. After that, you just say name and Go fetches what's inside.\n\nRead the program below. It greets whoever is in the box.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tname := \"Ada\"\n\tfmt.Println(\"Hello, \" + name + \"!\")\n}",
+        "hint": "+ glues words together. name is fetched from its box at that moment."
+      },
+      {
+        "kind": "spot",
+        "title": "Spot the missing colon",
+        "text": "This program refuses to compile, and exactly one line is guilty. Tap it.\n\nThink: which line tries to FILL a box that was never BUILT?",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tname = \"Ada\"\n\tfmt.Println(\"Hello, \" + name + \"!\")\n}",
+        "bug": 5,
+        "bugName": "assignment without := — the box was never built",
+        "hint": "The name = line — no colon, no box."
+      },
+      {
+        "kind": "fix",
+        "title": "One letter, total carnage",
+        "text": "Located. Now repair it: give the colon back (name := ...), Run, collect the greeting.\n\nThe compiler wasn't being mean — it was pointing at the exact crime.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tname = \"Ada\"\n\tfmt.Println(\"Hello, \" + name + \"!\")\n}",
+        "expected": "Hello, Ada!\n",
+        "goal": "Hello, Ada!",
+        "hint": "Find the name = line — it must become name := ... — one colon.",
+        "predict": {
+          "options": [
+            "Hello, Ada",
+            "Hello, Ada!\n",
+            "Hello Ada!"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Steal Ada's greeting",
+        "text": "Press Run first and watch it greet Ada. THEN commit identity theft: change \"Ada\" to your own name and Run again. The greeting changes — because the box now holds YOUR word.\n\nTo finish: put Ada back exactly as she was and Run once more. The goal box below must match letter for letter.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tname := \"Ada\"\n\tfmt.Println(\"Hello, \" + name + \"!\")\n}",
+        "expected": "Hello, Ada!\n",
+        "goal": "Hello, Ada!",
+        "hint": "Change the word back to Ada — capital A, inside the quotes, quotes included.",
+        "predict": {
+          "options": [
+            "Hello, ada!",
+            "Hello, Ada!\n",
+            "Hello, Ada!!"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "build",
+        "title": "Build the greeter, dodge the decoys",
+        "text": "Six of these eight lines make a working greeter. Two are impostors: one fills a box that doesn't exist, one greets a stranger instead of using the box. Pick the right lines, in running order.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tname := \"Ada\"",
+          "\tfmt.Println(\"Hello, \" + name + \"!\")",
+          "} // func main"
+        ],
+        "decoys": [
+          "\tname = \"Bob\"",
+          "\tfmt.Println(\"Hello\")"
+        ],
+        "hint": ":= builds, = only refills. And the greeting must USE the box."
+      },
+      {
+        "kind": "read",
+        "title": "You own variables now",
+        "text": ":= builds a box and fills it. = refills a box that already exists. Use the name, get the thing. That's variables — the rest of programming is just fancier boxes.\n\nNext: Round and Round, where one word does all the looping in Go. Then, when your hands stop shaking, the Quiz is waiting to be bullied.",
+        "hint": "Hit Finish. Boxes: owned."
+      }
+    ],
+    "deck": "basics"
+  },
+  {
+    "id": "loops",
+    "name": "Round and Round",
+    "icon": "ph-arrow-clockwise",
+    "desc": "your first for loop",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Go knows ONE loop word",
+        "text": "Most languages hoard loop words: for, while, until, each, loop... Go looked at the pile and kept exactly one: for.\n\nfor i := 1; i <= 3; i++ reads like a sentence: 'start counting at 1; keep going while i is 3 or less; add one every lap.' Everything between the braces runs once per lap.\n\nRead it, then run it in the next step and count the laps.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfor i := 1; i <= 3; i++ {\n\t\tfmt.Println(i)\n\t}\n}",
+        "hint": "i++ just means 'add one to i'. i is reborn every lap with its new value."
+      },
+      {
+        "kind": "build",
+        "title": "Assemble the counter — liars included",
+        "text": "Seven of these nine lines make a true counter. The liars: one stops the count at 2 (you'll meet that crook properly in two steps), the other prints small talk instead of numbers. Build the true counter.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tfor i := 1; i <= 3; i++ {",
+          "\t\tfmt.Println(i)",
+          "\t} // for",
+          "} // func main"
+        ],
+        "decoys": [
+          "\tfor i := 1; i < 3; i++ {",
+          "\tfmt.Println(\"done\")"
+        ],
+        "hint": "The loop must reach 3, and every lap must print the counter itself."
+      },
+      {
+        "kind": "run",
+        "title": "Make it count to 5",
+        "text": "This program counts to 3. Your mission: make it count to 5. Exactly ONE character changes — find the 3 that draws the finish line, turn it into a 5, and Run.\n\nProgrammers do this 400 times a day: read, tweak one thing, run, look. Welcome to the job.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfor i := 1; i <= 3; i++ {\n\t\tfmt.Println(i)\n\t}\n}",
+        "expected": "1\n2\n3\n4\n5\n",
+        "goal": "1\n2\n3\n4\n5",
+        "hint": "The finish line is the 3 in i <= 3. Nothing else moves.",
+        "predict": {
+          "options": [
+            "1\n2\n3\n4",
+            "1\n2\n3\n4\n5\n",
+            "0\n1\n2\n3\n4\n5"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "The fencepost felony",
+        "text": "This loop SHOULD print 1, 2, 3 — but it stops at 2. Press Run and confirm the crime with your own eyes.\n\nThe crook is one character: < stops BEFORE 3, so 3 never gets its lap. Change < to <= and Run. Off-by-one errors have stolen centuries of programmer sleep. You just caught your first.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfor i := 1; i < 3; i++ {\n\t\tfmt.Println(i)\n\t}\n}",
+        "expected": "1\n2\n3\n",
+        "goal": "1\n2\n3",
+        "hint": "Find the for line: i < 3 becomes i <= 3. Let 3 in.",
+        "predict": {
+          "options": [
+            "1\n2\n3\n",
+            "1\n2",
+            "0\n1\n2\n3"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "read",
+        "title": "Loops are yours",
+        "text": "for + start + finish-line + step = every loop you will ever need in Go. while-style? for with just a condition. Forever? for with nothing.\n\nYou started knowing nothing. You now compile, fix, and assemble real programs. Go bully the Quiz — Basics deck, Rookie filter. It doesn't stand a chance.",
+        "hint": "Finish the lesson, then switch to the Quiz tab and take what's yours."
+      }
+    ],
+    "deck": "basics"
+  },
+  {
+    "id": "yesno",
+    "name": "Yes or No",
+    "icon": "ph-question",
+    "desc": "decisions with if and ==",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Programs that choose",
+        "text": "So far your programs do the same thing every time. if is a question that runs code: if the answer is yes, the block runs. If no, it skips — optionally to an else block.\n\nTwo symbols run this show: == ASKS ('is age equal to 21?'), = TELLS ('age, you are 21 now'). Mix them up and the compiler will file a complaint. Read the program: it asks one question and picks a word.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tage := 21\n\tif age >= 18 {\n\t\tfmt.Println(\"adult\")\n\t} else {\n\t\tfmt.Println(\"minor\")\n\t}\n}",
+        "hint": ">= means 'more than or equal'. The question `age >= 18` is either true or false — no maybes."
+      },
+      {
+        "kind": "order",
+        "title": "Assemble the bouncer",
+        "text": "Eight bricks. The bouncer checks IDs at the door: the if line MUST come before either answer, and every { needs its } — they nest like bowls, else-branch in the middle.\n\nDrag or tap them into running order.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tage := 21",
+          "\tif age >= 18 {",
+          "\t\tfmt.Println(\"adult\")",
+          "\t} else {",
+          "\t\tfmt.Println(\"minor\")",
+          "\t} // else",
+          "} // func main"
+        ],
+        "hint": "Passport, shopping list, front door, set the age, ask the question, yes-answer, otherwise, no-answer, close, close."
+      },
+      {
+        "kind": "spot",
+        "title": "The stolen colon returns",
+        "text": "Remember Boxes with Names — the colon thief? He's back, and this time he's hiding inside an if. This program won't compile. Tap the guilty line.\n\nSame old crime: a line that TELLS where it should ASK.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tage := 21\n\tif age = 21 {\n\t\tfmt.Println(\"adult\")\n\t} else {\n\t\tfmt.Println(\"minor\")\n\t}\n}",
+        "bug": 6,
+        "bugName": "= where == belongs",
+        "hint": "The if line — it assigns instead of asking."
+      },
+      {
+        "kind": "fix",
+        "title": "One line, wrong symbol",
+        "text": "Spotted it. Repair it: double the equals sign (==), Run, collect your adult.\n\nTelling vs asking — one character between a program that runs and one that won't compile.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tage := 21\n\tif age = 21 {\n\t\tfmt.Println(\"adult\")\n\t} else {\n\t\tfmt.Println(\"minor\")\n\t}\n}",
+        "expected": "adult\n",
+        "goal": "adult",
+        "hint": "Find the if line — age = 21 must become age == 21. Ask, don't tell.",
+        "predict": {
+          "options": [
+            "minor",
+            "Adult",
+            "adult\n"
+          ],
+          "answer": 2
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Decide who's an adult",
+        "text": "This program says minor, because age is 15. Your mission: get it to say adult. Change 15 to 21, press Run.\n\nOne number. That's the whole heist. The if does the rest.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tage := 15\n\tif age >= 18 {\n\t\tfmt.Println(\"adult\")\n\t} else {\n\t\tfmt.Println(\"minor\")\n\t}\n}",
+        "expected": "adult\n",
+        "goal": "adult",
+        "hint": "The 15 in age := 15 becomes 21. Nothing else moves.",
+        "predict": {
+          "options": [
+            "Minor",
+            "minor",
+            "adult\n"
+          ],
+          "answer": 2
+        }
+      },
+      {
+        "kind": "read",
+        "title": "You decide now",
+        "text": "== asks, = tells, if runs code on yes, else catches the no. Every decision in every program is some version of this.\n\nNext: Lists That Grow — one box that holds a whole crowd. Then the Quiz gets what's coming to it.",
+        "hint": "Hit Finish. Decisions: owned."
+      }
+    ],
+    "deck": "basics"
+  },
+  {
+    "id": "lists",
+    "name": "Lists That Grow",
+    "icon": "ph-list-bullets",
+    "desc": "slices, append and range",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "One box, many slots",
+        "text": "A variable holds ONE thing. A slice holds a crowd that can grow: fruits := []string{\"apple\", \"banana\"} builds a list of two.\n\nThree moves to learn: len(fruits) counts the crowd. append(fruits, \"mango\") returns a LONGER list — catch it with fruits = .... And for _, f := range fruits visits every slot, one lap each. Read the program, then count the output lines before you run anything.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfruits := []string{\"apple\", \"banana\"}\n\tfmt.Println(len(fruits))\n\tfor _, f := range fruits {\n\t\tfmt.Println(f)\n\t}\n}",
+        "hint": "Predict first: the program prints 3 lines. Which 3? The next step proves it."
+      },
+      {
+        "kind": "run",
+        "title": "Sneak mango past the bouncer",
+        "text": "This program prints apple and banana. Your mission: get mango printed too — by adding ONE line yourself.\n\nType exactly this on its own line, right after the fruits line and before the for line:\n\nfruits = append(fruits, \"mango\")\n\nThen Run. If the compiler yells, compare your line letter by letter — spelling counts.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfruits := []string{\"apple\", \"banana\"}\n\tfor _, f := range fruits {\n\t\tfmt.Println(f)\n\t}\n}",
+        "expected": "apple\nbanana\nmango\n",
+        "goal": "apple\nbanana\nmango",
+        "hint": "The new line goes BETWEEN the fruits line and the for line. Copy it from the lesson text above.",
+        "predict": {
+          "options": [
+            "apple\nbanana",
+            "apple\nbanana\nmango\n",
+            "mango\nbanana\napple"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "build",
+        "title": "Parade with impostors",
+        "text": "Eight lines, six belong. The impostors: one appends NOTHING (fruits = append(fruits) — no fruit!), one prints the index nobody asked for. Build the true parade.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tfruits := []string{\"apple\", \"banana\"}",
+          "\tfor _, f := range fruits {",
+          "\t\tfmt.Println(f)",
+          "\t} // for",
+          "} // func main"
+        ],
+        "decoys": [
+          "\tfruits = append(fruits)",
+          "\tfmt.Println(i)"
+        ],
+        "hint": "append needs a fruit. The parade prints fruit, not numbers."
+      },
+      {
+        "kind": "spot",
+        "title": "Spot the freeloader",
+        "text": "This program won't compile — something is dead weight. One line names a visitor that never gets greeted. Tap the freeloader.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfruits := []string{\"apple\", \"banana\", \"mango\"}\n\tfor i, f := range fruits {\n\t\tfmt.Println(f)\n\t}\n}",
+        "bug": 6,
+        "bugName": "i is named but never used",
+        "hint": "The for line names TWO visitors but only greets one."
+      },
+      {
+        "kind": "fix",
+        "title": "The compiler hates waste",
+        "text": "Freeloader located. Fire it: change i to _, Run, watch the parade.\n\n_ is Go's way of saying 'yes I see it, no I don't need it' — and the compiler accepts that.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfruits := []string{\"apple\", \"banana\", \"mango\"}\n\tfor i, f := range fruits {\n\t\tfmt.Println(f)\n\t}\n}",
+        "expected": "apple\nbanana\nmango\n",
+        "goal": "apple\nbanana\nmango",
+        "hint": "Find the for line — the i becomes _. One character.",
+        "predict": {
+          "options": [
+            "apple\nbanana\nmango\n",
+            "apple\nmango\nbanana",
+            "apple\nbanana"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "read",
+        "title": "Crowds: managed",
+        "text": "Slices hold crowds. append grows them (catch the return!). range visits everyone. _ blanks what you don't need.\n\nNext: Cabinets with Labels — finding things by NAME instead of by number. Then Quiz night.",
+        "hint": "Hit Finish. The parade marches on."
+      }
+    ],
+    "deck": "slices"
+  },
+  {
+    "id": "cabinets",
+    "name": "Cabinets with Labels",
+    "icon": "ph-key",
+    "desc": "maps and key lookups",
+    "steps": [
+      {
+        "kind": "spot",
+        "title": "Something lies in this cabinet",
+        "text": "Cold case, detective: this program runs fine and prints 0 — but Bob HAS a drawer holding 7. No errors, no crash, just a lie wearing the number 0. One line asks for the wrong drawer. Tap it.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tscores := map[string]int{\"ada\": 10, \"bob\": 7}\n\tfmt.Println(scores[\"zed\"])\n}",
+        "bug": 6,
+        "bugName": "wrong key — zed has no drawer",
+        "hint": "The Println line — which label is it really asking for?"
+      },
+      {
+        "kind": "read",
+        "title": "Boxes with name tags",
+        "text": "Slices find things by NUMBER (slot 0, slot 1...). Maps find things by NAME: scores := map[string]int{\"ada\": 10} is a cabinet where the drawer labeled ada holds 10.\n\nLookup reads scores[\"ada\"] and gets 10. Ask for a drawer that doesn't exist — scores[\"zed\"] — and Go shrugs and hands you 0 instead of crashing. Convenient. Also a trap, as you'll see.\n\nRead the program. Predict the number before moving on.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tscores := map[string]int{\"ada\": 10}\n\tfmt.Println(scores[\"ada\"])\n}",
+        "hint": "It prints 10. The drawer labeled ada exists and holds 10."
+      },
+      {
+        "kind": "run",
+        "title": "Give Bob his score",
+        "text": "This program asks for Bob's drawer — which doesn't exist — so it prints 0. Your mission: build Bob a drawer holding 7.\n\nChange the map line to exactly this:\n\nscores := map[string]int{\"ada\": 10, \"bob\": 7}\n\nThen Run. 7 means Bob exists now. (Comma between drawers. Details matter.)",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tscores := map[string]int{\"ada\": 10}\n\tfmt.Println(scores[\"bob\"])\n}",
+        "expected": "7\n",
+        "goal": "7",
+        "hint": "Only the map line changes — add , \"bob\": 7 inside the braces.",
+        "predict": {
+          "options": [
+            "7\n",
+            "0",
+            "ada"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "build",
+        "title": "Build it, dodge the lie",
+        "text": "Five good lines, one liar — the zed line from the cold case is back. Build the cabinet that tells the truth.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tscores := map[string]int{\"ada\": 10}",
+          "\tfmt.Println(scores[\"ada\"])",
+          "} // func main"
+        ],
+        "decoys": [
+          "\tfmt.Println(scores[\"zed\"])"
+        ],
+        "hint": "zed has no drawer. ada does."
+      },
+      {
+        "kind": "read",
+        "title": "Labels: filed",
+        "text": "Maps find by name. Missing drawers return 0 with a straight face — when that ambiguity matters, the comma-ok idiom (v, ok := m[key]) tells you whether the drawer exists. That's Quiz material, and now it won't scare you.\n\nNext and last of the basics: Oops, Handle It — how Go deals with failure. Then you're ready for the arena.",
+        "hint": "Hit Finish. Cabinets: organized."
+      }
+    ],
+    "deck": "slices"
+  },
+  {
+    "id": "oops",
+    "name": "Oops, Handle It",
+    "icon": "ph-warning",
+    "desc": "errors as values",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Failure is a value",
+        "text": "Most languages throw errors like grenades. Go hands failure back as an ordinary VALUE sitting next to the answer: n, err := strconv.Atoi(\"21\") tries to turn text into a number and reports back in err.\n\nThe sacred ritual, three lines you'll type a thousand times: try it, ask if err != nil, bail out early if so. Only then touch the answer. Read the program — it doubles 21 and survives anything.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc main() {\n\tn, err := strconv.Atoi(\"21\")\n\tif err != nil {\n\t\tfmt.Println(\"bad number\")\n\t\treturn\n\t}\n\tfmt.Println(n * 2)\n}",
+        "hint": "Atoi means 'ASCII to integer' — text in, number out, complaint in err if the text isn't a number."
+      },
+      {
+        "kind": "spot",
+        "title": "Spot the shredded report",
+        "text": "This program prints 0 and claims nothing is wrong. But someone shredded the error report before anyone read it — the evidence of failure was destroyed on arrival. Which line did it? Tap it.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc main() {\n\tn, _ := strconv.Atoi(\"abc\")\n\tfmt.Println(n * 2)\n}",
+        "bug": 8,
+        "bugName": "_ discards the error",
+        "hint": "The Atoi line — the _ eats the complaint."
+      },
+      {
+        "kind": "run",
+        "title": "Make it print 14",
+        "text": "This program doubles 21 into 42. Your mission: make it print 14. That means feeding it 7 instead of 21 — change the \"21\" to \"7\" and Run.\n\nNotice what you did NOT touch: the guard clause. It stands watch no matter the input. Good guards never sleep.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc main() {\n\tn, err := strconv.Atoi(\"21\")\n\tif err != nil {\n\t\tfmt.Println(\"bad number\")\n\t\treturn\n\t}\n\tfmt.Println(n * 2)\n}",
+        "expected": "14\n",
+        "goal": "14",
+        "hint": "Only the digits inside the quotes change: 21 becomes 7.",
+        "predict": {
+          "options": [
+            "7",
+            "14\n",
+            "21"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "The underscore of doom",
+        "text": "Behold the crime: n, _ := ... — the underscore takes the error report and drops it in a bin, unread. Feed it \"abc\" and Atoi fails SILENTLY; n arrives as 0 and the program prints 0 with total confidence. A lie, tersely told.\n\nPress Run and witness the 0. Then fix the input — \"abc\" becomes \"21\" — and Run for the honest 42. (Real fix: check err. That's the next arena. This step is about SEEING the lie.)",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc main() {\n\tn, _ := strconv.Atoi(\"abc\")\n\tfmt.Println(n * 2)\n}",
+        "expected": "42\n",
+        "goal": "42",
+        "hint": "Find the Atoi line — abc becomes 21. Don't touch the underscore this time; just see what it cost.",
+        "predict": {
+          "options": [
+            "21",
+            "0",
+            "42\n"
+          ],
+          "answer": 2
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Assemble the guard",
+        "text": "Ten bricks — the longest build yet. The sacred order: try it, check err IMMEDIATELY, bail before touching the answer. The guard clause sits between the attempt and the use, like a bouncer between the door and the dance floor.\n\nDrag or tap. You've done harder.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "import \"strconv\"",
+          "func main() {",
+          "\tn, err := strconv.Atoi(\"21\")",
+          "\tif err != nil {",
+          "\t\treturn",
+          "\t} // if",
+          "\tfmt.Println(n * 2)",
+          "} // func main"
+        ],
+        "hint": "Passport, two shopping lists, front door, attempt, guard opens, bail, guard closes, use the answer, close."
+      },
+      {
+        "kind": "read",
+        "title": "Graduation",
+        "text": "You started knowing nothing. You now compile real Go, read compiler errors, fix broken code, assemble programs from parts, name variables, grow lists, file maps, branch on decisions, and guard against failure.\n\nThat's not 'intro' anymore — that's a Go programmer on day one. The Quiz Basics deck is now a victory lap. Go take it.",
+        "hint": "Finish the lesson. Then go bully the Quiz."
+      }
+    ],
+    "deck": "errors"
+  },
+  {
+    "id": "spawn",
+    "name": "Spawn & Shake",
+    "icon": "ph-rocket-launch",
+    "desc": "goroutines, channels, and the handoff — you are the scheduler",
+    "deck": "gochan",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "A second pair of hands",
+        "text": "go starts a goroutine: a second cook in the same kitchen, for about 2KB instead of a thread's 1MB. main keeps cooking — both run NOW, interleaved however the machine feels.\n\nConcurrency is two cooks sharing ONE stove (taking turns); parallelism is two stoves. Go gives you concurrency cheaply; the machine adds stoves when it has them. One law: when main RETURNS, the kitchen closes — every goroutine dies mid-bite, no goodbyes.",
+        "hint": "No action needed — just read. Cheap cooks, shared kitchen, and main holds the closing key.",
+        "code": "go say(\"hi\") // second cook starts, main does NOT wait\nfmt.Println(\"main\")\n// the kitchen may close before \"hi\" prints!"
+      },
+      {
+        "kind": "trace",
+        "title": "The handoff",
+        "text": "An unbuffered channel is a HANDOFF, not a drop-off: the send parks until a receiver takes the value, and both complete together. Watch main send 1 while worker is still busy — where does the 1 wait, and what frees it? Step through all four frames.",
+        "hint": "Watch the channel lane: parked values sit there glowing until a recv collects them.",
+        "trace": {
+          "frames": [
+            {
+              "caption": "Before: channel empty, worker busy elsewhere. main is about to send 1.",
+              "lanes": [
+                { "label": "ch (unbuffered)", "cells": ["_"], "hi": [] },
+                { "label": "vars", "cells": ["_"], "hi": [] }
+              ]
+            },
+            {
+              "caption": "main sent 1 — with no receiver ready, an unbuffered send PARKS the value here until someone takes it.",
+              "lanes": [
+                { "label": "ch (unbuffered)", "cells": ["1"], "hi": [0] },
+                { "label": "vars", "cells": ["_"], "hi": [] }
+              ]
+            },
+            {
+              "caption": "worker received: 1 leaves the channel into x. The handoff completes — the parked sender unblocks at the same instant.",
+              "lanes": [
+                { "label": "ch (unbuffered)", "cells": ["_"], "hi": [] },
+                { "label": "vars", "cells": ["x=1"], "hi": [0] }
+              ]
+            },
+            {
+              "caption": "worker prints: got 1. Two goroutines, one value, zero shared memory — coordination by handoff.",
+              "lanes": [
+                { "label": "ch (unbuffered)", "cells": ["_"], "hi": [] },
+                { "label": "vars", "cells": ["x=1"], "hi": [] },
+                { "label": "log", "cells": ["got 1"], "hi": [0] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "sched",
+        "title": "You are the scheduler",
+        "text": "YOU pick who runs next: click a goroutine to run its next labeled op. main wants to send 1 then 2; worker wants to receive twice and print. Drain every op. Blocked buttons are not broken — a recv on an empty channel simply waits. Watch what unblocks them.",
+        "hint": "Nobody can receive what was never sent. Feed the waiters: sends first, then collects.",
+        "sched": {
+          "goroutines": ["main", "worker"],
+          "channels": { "ch": 0 },
+          "ops": [
+            { "gor": 0, "label": "send 1 → ch", "send": { "ch": "ch", "val": "1" } },
+            { "gor": 0, "label": "send 2 → ch", "send": { "ch": "ch", "val": "2" } },
+            { "gor": 1, "label": "recv → x, print", "recv": { "ch": "ch", "into": "x" }, "print": "got {x}" },
+            { "gor": 1, "label": "recv → x, print", "recv": { "ch": "ch", "into": "x" }, "print": "got {x}" }
+          ],
+          "goal": { "type": "drain" },
+          "success": "Every op ran. Notice the blocked buttons you met: a recv on an empty channel — or a send with nowhere to go — simply waits. Blocking is coordination, not failure. That wait is the entire contract of channels.",
+          "stuckHint": "Everyone waits: heads need what only the other side gives. Feed a waiter — run the op that fills (or frees) the channel."
+        }
+      },
+      {
+        "kind": "type",
+        "title": "What prints?",
+        "text": "Unbuffered channel, one value: main sends 7 and PARKS until worker receives; worker receives into x and prints. The send and recv complete TOGETHER — rendezvous. Type the exact line.",
+        "hint": "The value passes hand to hand: 7 in, 7 out, one fixed sentence around it.",
+        "typeA": { "answer": "got 7", "why": "Unbuffered means rendezvous: the sender waits for the receiver, the value passes hand to hand, the print shows got 7. No buffer, no reordering, no loss." }
+      },
+      {
+        "kind": "sched",
+        "title": "Deadlock hunt",
+        "text": "A mailbox, three letters, one thief: main sends 9, then COLLECTS — and might eat its own letter back. If main takes back its own 9, worker starves forever with nobody left to send. Your mission: TRAP the deadlock. (Feed worker first and you'll drain it instead — also instructive. Then reset and trap it.)",
+        "hint": "Collecting too early eats your own send. Who starves when main takes back its 9?",
+        "sched": {
+          "goroutines": ["main", "worker"],
+          "channels": { "ch": 0 },
+          "ops": [
+            { "gor": 0, "label": "send 9 → ch", "send": { "ch": "ch", "val": "9" } },
+            { "gor": 0, "label": "recv → x", "recv": { "ch": "ch", "into": "x" } },
+            { "gor": 1, "label": "recv → y", "recv": { "ch": "ch", "into": "y" } },
+            { "gor": 1, "label": "send 8 → ch", "send": { "ch": "ch", "val": "8" } }
+          ],
+          "goal": { "type": "deadlock" },
+          "success": "Frozen: worker waits on an empty channel and main is DONE — nobody left to send. THAT is deadlock — not slowness, not a crash. Real Go prints 'all goroutines are asleep' and dies. The cure is structural: feed worker BEFORE main collects.",
+          "stuckHint": "Keep scheduling — with a self-collect in play, one order drains and the other starves. Find the starving one."
+        }
+      },
+      {
+        "kind": "read",
+        "title": "Buffered mailboxes",
+        "text": "make(chan int, 2) builds a mailbox holding 2: the first two sends fit with NOBODY waiting — buffered sends park only when FULL. Recvs park only when EMPTY. And order is sacred: first in, first out, every time.\n\nUnbuffered (cap 0, the default) is a pure handoff: every send waits for its recv, completing together. Rule of thumb: unbuffered for 'wait for me', buffered for 'leave it in the box'.",
+        "hint": "No action needed — just read. Full parks senders, empty parks receivers, order never wobbles.",
+        "code": "ch := make(chan int, 2) // mailbox holds 2\nch <- 1 // fits, no waiting\nch <- 2 // fits\n// a third send would PARK until a recv frees a slot"
+      },
+      {
+        "kind": "quiz",
+        "title": "Which blocks?",
+        "text": "A box holding one letter (cap 1, contains [7]). main sends 8. worker receives. The send arrives first at a FULL box — what happens, and who moves?",
+        "hint": "Full parks senders; only a recv frees a slot. Who must go first?",
+        "quiz": {
+          "options": [
+            "The recv — it frees the slot, then the send fits",
+            "The send — senders have priority",
+            "Both proceed at once"
+          ],
+          "answer": 0,
+          "why": "The box is full, so the send parks; the recv takes 7 and frees exactly one slot — THEN the send fits. Full means wait, empty means wait: that is the entire contract of channels."
+        }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Goroutines and channels, owned: go starts cheap cooks, main's return closes the kitchen, unbuffered channels hand off (sender parks till received), buffered mailboxes absorb up to cap, empty recv and full send PARK — that wait is coordination, and forgotten waits are deadlock.\n\nNext: Two Doors, One Waiter — select, races, and the detector.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ],
+    "deck": "gochan"
+  },
+  {
+    "id": "select",
+    "name": "Two Doors, One Waiter",
+    "icon": "ph-door",
+    "desc": "select, races, and the detector that catches them",
+    "deck": "gochan",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Two doors, one waiter",
+        "text": "One goroutine, TWO channels to watch: select waits on all of them and takes the FIRST that is ready — a waiter watching two doors. Both ready at once? It picks RANDOMLY (fairness, not favoritism — never depend on which). None ready? It parks until one is. Add a default branch and it never parks at all.\n\nselect is how programs wait WELL: no polling loops, no busy spinning, just sleeping until dinner is served.",
+        "hint": "No action needed — just read. First ready wins, ties broken randomly, default never waits.",
+        "code": "select {\ncase v := <-ch1:\n\tfmt.Println(\"left\", v)\ncase v := <-ch2:\n\tfmt.Println(\"right\", v)\n}"
+      },
+      {
+        "kind": "sched",
+        "title": "Pick a door",
+        "text": "Two waiters, two full mailboxes (once main sends): click left-first and the log reads left,right — Reset and click right-first for the mirror. Bank BOTH outcomes. Same program, scheduler's choice: that right there is nondeterminism you can touch.",
+        "hint": "One full run banks one script. Reset keeps your banked scripts — schedule the mirror.",
+        "sched": {
+          "goroutines": ["main", "left", "right"],
+          "channels": { "a": 0, "b": 0 },
+          "ops": [
+            { "gor": 0, "label": "send 1 → a", "send": { "ch": "a", "val": "1" } },
+            { "gor": 0, "label": "send 2 → b", "send": { "ch": "b", "val": "2" } },
+            { "gor": 1, "label": "recv a, print", "recv": { "ch": "a", "into": "x" }, "print": "left {x}" },
+            { "gor": 2, "label": "recv b, print", "recv": { "ch": "b", "into": "y" }, "print": "right {y}" }
+          ],
+          "goal": { "type": "logs", "anyOf": [["left 1", "right 2"], ["right 2", "left 1"]], "needAll": true },
+          "success": "Both scripts banked: left-first AND right-first. Same program, two endings — the scheduler picks, never the code. Anything here that needed ONE order would be a race. select exists to wait well on many doors, not to order them.",
+          "stuckHint": "Stuck mid-run: a waiter needs its mailbox filled first. Sends before recvs — always feed first."
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Race receipt",
+        "text": "Two workers compute 1 and 2; main adds both receipts through channels: 1+2, serialized by handoffs. No schedule on earth changes 1+2 — determinism BY DESIGN. Compare with the two endings you just banked. Type the total.",
+        "hint": "Receipts arrive through channels; addition cannot wobble. One plus two.",
+        "typeA": { "answer": "3", "why": "Each receipt arrives through a channel, and + is commutative here by construction: arrival order cannot change 1+2. Channels serialize the answer — the opposite of a race." }
+      },
+      {
+        "kind": "read",
+        "title": "Share by communicating",
+        "text": "Two hands, one cookie, no rules: reads and writes interleave mid-bite and the count corrupts. That is a RACE — and races do not fail loudly; they fail on demo day, under load, once a month.\n\nGo's motto, from the masters: do not communicate by sharing memory — SHARE MEMORY BY COMMUNICATING. Send the cookie through a channel instead of grabbing it. Where sharing is unavoidable, a Mutex makes the kitchen one-cook-at-a-time — and go run -race watches your program and SHOUTS the moment two hands touch one cookie.",
+        "hint": "No action needed — just read. Channels for passing, Mutex for sharing, -race for catching.",
+        "code": "var mu sync.Mutex\nmu.Lock() // one cook in the kitchen\nbalance += 100\nmu.Unlock()"
+      },
+      {
+        "kind": "quiz",
+        "title": "Who ordered this?",
+        "text": "Two goroutines print A and B. No channels between them, no mutex, no sleep — nothing shared, nothing ordered. The scheduler interleaves however it feels: today A-first, tomorrow B-first, forever unknowable. What order hits the screen?",
+        "hint": "No synchronization, no order. What CAN you promise about two unsynchronized prints?",
+        "quiz": {
+          "options": [
+            "Either — the scheduler decides",
+            "A then B, always",
+            "B then A, always"
+          ],
+          "answer": 0,
+          "why": "With no synchronization there IS no order — just two cooks shouting. Code that needs one order here is broken by construction; channels or mutexes are how you buy order back."
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Rendezvous",
+        "text": "The full handshake, deterministic: a worker receives twice, sums, and hands the answer BACK on done — main receives everything, so every rendezvous completes and the print cannot wobble. No sleeps, no races, just handoffs. Predict the sum, then run.",
+        "hint": "1+2, handed back on done. main attends all three rendezvous: two sends, one answer.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan int)\n\tdone := make(chan int)\n\tgo func() {\n\t\ta := <-ch\n\t\tb := <-ch\n\t\tdone <- a + b\n\t}()\n\tch <- 1\n\tch <- 2\n\tfmt.Println(<-done)\n}",
+        "expected": "3",
+        "goal": "3",
+        "predict": {
+          "options": [
+            "3",
+            "1",
+            "2"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Concurrency, owned end to end: go starts, channels coordinate, unbuffered hands off, buffered absorbs, empty recv and full send park (deadlock is forgotten waiting), select waits on many doors at once, races are unsynchronized sharing with unknowable order, and -race catches them red-handed.\n\nThe gochan deck in Quiz drills the vocabulary — and races fear repetition. The whole DSA track still waits in Algo.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ],
+    "deck": "gochan"
+  }
+]

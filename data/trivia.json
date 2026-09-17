@@ -1,0 +1,530 @@
+[
+  {
+    "id": "trivia-001",
+    "q": "Go was created at which company, and first released in which year?",
+    "a": "Google, 2009",
+    "explain": "Designed at Google by Griesemer, Pike and Thompson; open-sourced in 2009. Boredom with C++ build times was a founding motive.",
+    "options": [
+      "Google, 2009",
+      "Apple, 2011",
+      "Microsoft, 2012",
+      "Sun, 2005"
+    ]
+  },
+  {
+    "id": "trivia-002",
+    "q": "Which of these is NOT a Go keyword?",
+    "a": "lambda",
+    "explain": "Go has 25 keywords and lambda is not one — anonymous functions are just func literals: func() { … }.",
+    "options": [
+      "func",
+      "lambda",
+      "chan",
+      "defer"
+    ]
+  },
+  {
+    "id": "trivia-003",
+    "q": "What does GOMAXPROCS control?",
+    "a": "Max OS threads running user code at once",
+    "explain": "It caps OS threads executing Go code (default: CPU count). Goroutines multiplex on top — tons of goroutines, few threads.",
+    "options": [
+      "Max OS threads running user code at once",
+      "Max goroutines per program",
+      "Max memory in GB",
+      "Max package imports"
+    ]
+  },
+  {
+    "id": "trivia-004",
+    "q": "Which symbol starts an exported (public) identifier?",
+    "a": "An uppercase letter",
+    "explain": "Capitalization IS the access modifier: Foo is public, foo is package-private. No public/private keywords exist.",
+    "options": [
+      "An uppercase letter",
+      "An underscore",
+      "The dollar sign",
+      "The export keyword"
+    ]
+  },
+  {
+    "id": "trivia-005",
+    "q": "What does gofmt enforce?",
+    "a": "One canonical format for all Go code",
+    "explain": "gofmt ends style debates — tabs, brace placement, alignment are fixed. Run gofmt -l in CI to catch drift.",
+    "options": [
+      "One canonical format for all Go code",
+      "Test coverage minimums",
+      "Import version pinning",
+      "Memory limits"
+    ]
+  },
+  {
+    "id": "trivia-006",
+    "q": "A nil slice and an empty slice differ in what way?",
+    "a": "Only in == nil comparison and JSON null vs []",
+    "explain": "Both have len 0 and both append fine. They differ only for == nil checks and JSON encoding (null vs []).",
+    "options": [
+      "Only in == nil comparison and JSON null vs []",
+      "Length behavior",
+      "Indexing speed",
+      "Nothing at all"
+    ]
+  },
+  {
+    "id": "trivia-007",
+    "q": "True or false: Go supports method overloading.",
+    "a": "False — one name, one signature per type",
+    "explain": "No overloading in Go. Variants get distinct names (Parse, ParseBytes, MustParse) — which arguably reads better.",
+    "options": [
+      "False — one name, one signature per type",
+      "True, like Java",
+      "True, with the overload keyword",
+      "Only for builtins"
+    ]
+  },
+  {
+    "id": "trivia-008",
+    "q": "What is a goroutine, roughly?",
+    "a": "A runtime-managed lightweight thread",
+    "explain": "Goroutines start around 2KB and grow as needed, scheduled by the Go runtime onto OS threads. Concurrency without thread-pool plumbing.",
+    "options": [
+      "A runtime-managed lightweight thread",
+      "An OS process",
+      "A CPU core",
+      "A network socket"
+    ]
+  },
+  {
+    "id": "trivia-009",
+    "q": "Which verb prints a value with Go-syntax formatting?",
+    "a": "%#v — Go-syntax representation",
+    "explain": "%#v prints the Go-syntax form (great for debugging structs), %T prints the type, %d is decimal integers.",
+    "options": [
+      "%#v — Go-syntax representation",
+      "%d — always",
+      "%T — prints source",
+      "%q — prints types"
+    ]
+  },
+  {
+    "id": "trivia-010",
+    "q": "How many return values can a Go function have?",
+    "a": "Any number, commonly value + error",
+    "explain": "Go functions return any number of values — the (value, error) pair is just convention, not a limit.",
+    "options": [
+      "Any number, commonly value + error",
+      "At most two",
+      "Exactly one",
+      "At most 255"
+    ]
+  },
+  {
+    "id": "trivia-011",
+    "q": "Which tool fixes imports and formats in one pass?",
+    "a": "goimports",
+    "explain": "goimports is gofmt plus automatic import management: adds missing imports, drops unused ones. Most editors run it on save.",
+    "options": [
+      "goimports",
+      "gofmt alone",
+      "go clean",
+      "go doc"
+    ]
+  },
+  {
+    "id": "trivia-012",
+    "q": "What happens if main() returns while goroutines still run?",
+    "a": "The program exits immediately",
+    "explain": "main returning ends the process — no joining, no cleanup. That is why examples pair go f() with WaitGroups or channels.",
+    "options": [
+      "The program exits immediately",
+      "It waits for them",
+      "It panics",
+      "They become daemons"
+    ]
+  },
+  {
+    "id": "trivia-013",
+    "q": "Which of these types is comparable with ==?",
+    "a": "Arrays (same length and element type)",
+    "explain": "Slices, maps and funcs are only comparable to nil. Arrays compare fine — one of several reasons slices won and arrays faded.",
+    "options": [
+      "Arrays (same length and element type)",
+      "Slices",
+      "Maps",
+      "Funcs"
+    ]
+  },
+  {
+    "id": "trivia-014",
+    "q": "What does defer do with its function call?",
+    "a": "Schedules it to run when the surrounding func returns",
+    "explain": "Deferred calls run LIFO at return — perfect for Unlock, Close, and cleanup that must happen on every path.",
+    "options": [
+      "Schedules it to run when the surrounding func returns",
+      "Runs it immediately",
+      "Skips it on error",
+      "Caches the result"
+    ]
+  },
+  {
+    "id": "trivia-015",
+    "q": "How do you check your Go version?",
+    "a": "go version",
+    "explain": "go version prints the toolchain. go env shows the full configuration (GOPATH, GOFLAGS, module cache…).",
+    "options": [
+      "go version",
+      "go --about",
+      "golang -v",
+      "go env VERSION"
+    ]
+  },
+  {
+    "id": "trivia-016",
+    "q": "What is the zero value of a pointer, slice, map, channel and func?",
+    "a": "nil, for all of them",
+    "explain": "Reference-ish types all start nil. Reading through most nils is safe-ish; writing through them is not.",
+    "options": [
+      "nil, for all of them",
+      "0 for all",
+      "Undefined",
+      "Empty struct"
+    ]
+  },
+  {
+    "id": "trivia-017",
+    "q": "Who designed Go?",
+    "a": "Pike, Thompson and Griesemer at Google",
+    "explain": "Rob Pike and Ken Thompson (Unix and UTF-8 legends) plus Robert Griesemer. Serious pedigree, zero interest in language fashion.",
+    "options": [
+      "Pike, Thompson and Griesemer at Google",
+      "Torvalds and Cox",
+      "Stroustrup solo",
+      "The Apache board"
+    ]
+  },
+  {
+    "id": "trivia-018",
+    "q": "What did GOPATH hold before modules took over?",
+    "a": "All third-party source, binaries and builds",
+    "explain": "Pre-modules, every dependency lived in one global GOPATH workspace. Version conflicts were a lifestyle. Modules ended the dark age.",
+    "options": [
+      "All third-party source, binaries and builds",
+      "Only the toolchain",
+      "Your shell history",
+      "Test coverage data"
+    ]
+  },
+  {
+    "id": "trivia-019",
+    "q": "Which keyword launches a goroutine?",
+    "a": "go",
+    "explain": "Two letters. The cheapest concurrency keyword in any mainstream language, and the runtime does the hard parts.",
+    "options": [
+      "go",
+      "async",
+      "spawn",
+      "fork"
+    ]
+  },
+  {
+    "id": "trivia-020",
+    "q": "What is the zero value of the error type?",
+    "a": "nil — no error, by convention",
+    "explain": "A nil error means success — the entire if-err-nil idiom rests on this. A non-nil error with empty text is still an error.",
+    "options": [
+      "nil — no error, by convention",
+      "An empty error struct",
+      "The string empty",
+      "Zero is not defined"
+    ]
+  },
+  {
+    "id": "trivia-021",
+    "q": "What is Delve?",
+    "a": "The Go debugger (dlv)",
+    "explain": "Delve is the debugger: breakpoints, stepping, goroutine inspection. dlv debug beats Println archaeology.",
+    "options": [
+      "The Go debugger (dlv)",
+      "The package proxy",
+      "A templating engine",
+      "The race detector"
+    ]
+  },
+  {
+    "id": "trivia-022",
+    "q": "What is gopls?",
+    "a": "The Go language server for editors",
+    "explain": "gopls powers autocomplete, go-to-definition and renames in VS Code, Vim, Emacs and friends. One daemon, every editor.",
+    "options": [
+      "The Go language server for editors",
+      "The playground backend",
+      "A linter bundle",
+      "The module proxy"
+    ]
+  },
+  {
+    "id": "trivia-023",
+    "q": "Go binaries are static by default. What does that buy you?",
+    "a": "Single-file deploys with no runtime to install",
+    "explain": "One binary that runs anywhere: scratch containers, tiny VMs, your Raspberry Pi. Deployment becomes copying a file.",
+    "options": [
+      "Single-file deploys with no runtime to install",
+      "Faster garbage collection",
+      "Smaller source files",
+      "Free cloud hosting"
+    ]
+  },
+  {
+    "id": "trivia-024",
+    "q": "Which two env vars cross-compile for Windows on ARM?",
+    "a": "GOOS=windows GOARCH=arm64",
+    "explain": "Set GOOS and GOARCH and go build emits a foreign binary with zero toolchain fuss. Demo it at parties.",
+    "options": [
+      "GOOS=windows GOARCH=arm64",
+      "OS=win ARCH=arm",
+      "TARGET=win-arm",
+      "PLATFORM=windows"
+    ]
+  },
+  {
+    "id": "trivia-025",
+    "q": "What does the race detector cost, roughly?",
+    "a": "2-10x slower builds — worth it in CI anyway",
+    "explain": "Instrumentation is not free, but neither are 3am data-race pages. Race in CI, full speed locally.",
+    "options": [
+      "2-10x slower builds — worth it in CI anyway",
+      "Nothing, it is free",
+      "Only test names",
+      "Just the linker"
+    ]
+  },
+  {
+    "id": "trivia-026",
+    "q": "What is errgroup (golang.org/x/sync)?",
+    "a": "WaitGroup that collects the first error",
+    "explain": "errgroup fans out goroutines like WaitGroup, but Wait returns the first non-nil error. Concurrency with accountability.",
+    "options": [
+      "WaitGroup that collects the first error",
+      "A new error type",
+      "An HTTP router",
+      "A JSON library"
+    ]
+  },
+  {
+    "id": "trivia-027",
+    "q": "Which two files pin every dependency version?",
+    "a": "go.mod plus go.sum",
+    "explain": "go.mod declares requirements, go.sum holds the hashes. Commit both or dependency roulette begins.",
+    "options": [
+      "go.mod plus go.sum",
+      "GOPATH plus GOROOT",
+      "package.json plus lock",
+      "Makefile plus Dockerfile"
+    ]
+  },
+  {
+    "id": "trivia-028",
+    "q": "How do you update all dependencies to latest minor versions?",
+    "a": "go get -u ./...",
+    "explain": "The -u flag bumps to newest minor and patch versions. Majors need explicit paths since v2+ changes import paths. Read the diff before pushing.",
+    "options": [
+      "go get -u ./...",
+      "go mod restart",
+      "go update all",
+      "go install latest"
+    ]
+  },
+  {
+    "id": "trivia-029",
+    "q": "What does GOROOT point at?",
+    "a": "The Go toolchain installation itself",
+    "explain": "GOROOT is where Go itself lives. You almost never set it by hand anymore — the toolchain found its own home.",
+    "options": [
+      "The Go toolchain installation itself",
+      "Your GOPATH workspace",
+      "The module cache",
+      "Your project root"
+    ]
+  },
+  {
+    "id": "trivia-030",
+    "q": "Does go test run vet checks too?",
+    "a": "Yes — a subset runs automatically",
+    "explain": "go test quietly runs key vet checks (printf verbs, struct tags) before your tests. Redundant safety net, zero config.",
+    "options": [
+      "Yes — a subset runs automatically",
+      "No — always separate",
+      "Only with -vet flag",
+      "Vet was removed"
+    ]
+  },
+  {
+    "id": "trivia-031",
+    "q": "What does a dot import do?",
+    "a": "Merges the package into your namespace",
+    "explain": "import . \"pkg\" drops the qualifier: Fmt.Println becomes Println. Convenient in tests, a readability hazard everywhere else.",
+    "options": [
+      "Merges the package into your namespace",
+      "Deletes the package",
+      "Only imports tests",
+      "Speeds up builds"
+    ]
+  },
+  {
+    "id": "trivia-032",
+    "q": "type A = B versus type A B?",
+    "a": "= aliases (same type); without = defines anew",
+    "explain": "The equals sign is the whole difference: alias shares identity (and methods), definition starts fresh. Refactors hinge on one character.",
+    "options": [
+      "= aliases (same type); without = defines anew",
+      "Identical either way",
+      "= is required always",
+      "Aliases are slower"
+    ]
+  },
+  {
+    "id": "trivia-033",
+    "q": "What is 1 << iota famous for?",
+    "a": "Bit-flag enums that double each line",
+    "explain": "Shifted iota mints powers of two: Read=1, Write=2, Exec=4. OR them together, AND to test. Flag sets without a library.",
+    "options": [
+      "Bit-flag enums that double each line",
+      "Random numbers",
+      "Loop counters",
+      "Memory addresses"
+    ]
+  },
+  {
+    "id": "trivia-034",
+    "q": "Can a package have multiple init() funcs?",
+    "a": "Yes — even several per file, run in order",
+    "explain": "Go runs every init in dependency order, file by file, top to bottom. Powerful, implicit, and exactly why veterans keep init tiny.",
+    "options": [
+      "Yes — even several per file, run in order",
+      "One per package max",
+      "One per file max",
+      "init is banned"
+    ]
+  },
+  {
+    "id": "trivia-035",
+    "q": "Which package does regex?",
+    "a": "regexp",
+    "explain": "regexp with MustCompile for baked-in patterns, Compile for user input. RE2 syntax: all the power, none of the catastrophic backtracking.",
+    "options": [
+      "regexp",
+      "regex",
+      "pattern",
+      "match"
+    ]
+  },
+  {
+    "id": "trivia-036",
+    "q": "What does go env GOPATH show now?",
+    "a": "Module cache home and legacy workspace root",
+    "explain": "Post-modules, GOPATH mostly hosts the download cache and build artifacts. Your code can live anywhere — freedom previous generations dreamed of.",
+    "options": [
+      "Module cache home and legacy workspace root",
+      "Nothing — removed",
+      "Your shell PATH",
+      "Test temp dirs"
+    ]
+  },
+  {
+    "id": "trivia-037",
+    "q": "What happens on an unused import?",
+    "a": "Compile error — Go refuses",
+    "explain": "Go treats unused imports as errors, not warnings. Annoying for exactly three days, then your editor auto-manages them and you never look back.",
+    "options": [
+      "Compile error — Go refuses",
+      "A warning you can ignore",
+      "It gets auto-deleted silently",
+      "Nothing at all"
+    ]
+  },
+  {
+    "id": "trivia-038",
+    "q": "Methods on another package's types?",
+    "a": "Forbidden — define locally or wrap",
+    "explain": "Go forbids adding methods to types you do not own. Wrap the foreign type in your own named type and extend that instead.",
+    "options": [
+      "Forbidden — define locally or wrap",
+      "Allowed with import",
+      "Allowed in tests only",
+      "Allowed for interfaces"
+    ]
+  },
+  {
+    "id": "trivia-039",
+    "q": "Why is Go map iteration order deliberately random?",
+    "a": "To stop you depending on any order",
+    "explain": "The runtime shuffles it on purpose: code that assumes an order breaks fast in testing instead of silently in production.",
+    "options": [
+      "To stop you depending on any order",
+      "For faster hashing",
+      "To save memory",
+      "It isn't — maps sort by key"
+    ]
+  },
+  {
+    "id": "trivia-040",
+    "q": "What does len() of a nil slice return?",
+    "a": "0 — no panic",
+    "explain": "nil slices behave like empty ones for len, cap, range and append. Only indexing or writing panics.",
+    "options": [
+      "0 — no panic",
+      "It panics",
+      "-1",
+      "It blocks forever"
+    ]
+  },
+  {
+    "id": "trivia-041",
+    "q": "Binary search on a million sorted ints takes about how many steps?",
+    "a": "About 20 halvings",
+    "explain": "2^20 is roughly a million. Halving wins so hard it feels like cheating — that is O(log n).",
+    "options": [
+      "About 20 halvings",
+      "About 500,000",
+      "About 1,000,000",
+      "Exactly 7"
+    ]
+  },
+  {
+    "id": "trivia-042",
+    "q": "Indexing past the end of a slice does what?",
+    "a": "Panics: index out of range",
+    "explain": "Go bounds-checks every access and panics instead of handing you garbage. The <= in for i <= len(s) is the classic trigger.",
+    "options": [
+      "Panics: index out of range",
+      "Returns the zero value",
+      "Wraps around to slot 0",
+      "Returns nil"
+    ]
+  },
+  {
+    "id": "trivia-043",
+    "q": "Appending to a full slice does what behind the curtain?",
+    "a": "Allocates bigger, copies over",
+    "explain": "No room means a new bigger backing array plus a full copy. That copy is why append returns a header you must keep — and why batch appends beat one-by-one growth.",
+    "options": [
+      "Allocates bigger, copies over",
+      "Overwrites slot 0",
+      "Panics immediately",
+      "Extends the same array in place"
+    ]
+  },
+  {
+    "id": "trivia-044",
+    "q": "Floyd's tortoise and hare detects what?",
+    "a": "Cycles in a linked list",
+    "explain": "Fast gains one node per round on a loop, so it must land on slow. Meeting without hitting nil proves a cycle; hitting nil proves a clean list.",
+    "options": [
+      "Cycles in a linked list",
+      "Deadlocks in channels",
+      "Memory leaks",
+      "The middle element only"
+    ]
+  }
+]

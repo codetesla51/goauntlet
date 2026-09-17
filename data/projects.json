@@ -1,0 +1,478 @@
+[
+  {
+    "id": "guess",
+    "name": "Guess the Number",
+    "icon": "ph-target",
+    "desc": "A real game: scripted guesses, warmer-or-colder verdicts, an attempt counter.",
+    "deck": "basics",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The game plan",
+        "text": "You're building a real guessing game. The computer holds a secret number. Three guesses walk in, one by one, and the game judges each: too low, too high, or correct — counting attempts along the way.\n\nThe whole game is below. You don't need to memorize it. Just notice the shape: setup at the top, a loop in the middle, a three-way judge inside. You'll build every piece yourself in the next steps.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tsecret := 7\n\tguesses := []int{3, 9, 7}\n\tattempts := 0\n\tfor _, g := range guesses {\n\t\tattempts++\n\t\tif g < secret {\n\t\t\tfmt.Println(g, \"is too low\")\n\t\t} else if g > secret {\n\t\t\tfmt.Println(g, \"is too high\")\n\t\t} else {\n\t\t\tfmt.Println(\"Correct in\", attempts, \"tries!\")\n\t\t}\n\t}\n}",
+        "hint": "No action needed — just read. The tour below names every part you will build."
+      },
+      {
+        "kind": "run",
+        "title": "Welcome the player",
+        "text": "Every game greets its player. The starter below runs fine, but its welcome is a sad little \"...\". Change that placeholder into the real greeting from the goal box. Then press Run.",
+        "hint": "Change only the text between the quotes: fmt.Println(\"Guess my number (1-10)!\") — mind the exclamation mark.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"...\")\n}",
+        "expected": "Guess my number (1-10)!",
+        "goal": "Guess my number (1-10)!",
+        "predict": {
+          "options": [
+            "...",
+            "Guess my number (1-10)!",
+            "Guess my number!"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "The judge is silent",
+        "text": "Someone built the game but forgot the happy ending: guesses get judged too low or too high, and then... nothing. A correct guess prints silence. The goal shows what SHOULD happen. Add the missing branch so a correct guess celebrates.",
+        "hint": "After the else-if block closes, add: } else { then the Correct Println, then }. The attempts variable is already counting for you.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tsecret := 7\n\tguesses := []int{3, 9, 7}\n\tattempts := 0\n\tfor _, g := range guesses {\n\t\tattempts++\n\t\tif g < secret {\n\t\t\tfmt.Println(g, \"is too low\")\n\t\t} else if g > secret {\n\t\t\tfmt.Println(g, \"is too high\")\n\t\t}\n\t}\n}",
+        "expected": "3 is too low\n9 is too high\nCorrect in 3 tries!",
+        "goal": "3 is too low\n9 is too high\nCorrect in 3 tries!",
+        "predict": {
+          "options": [
+            "3 is too low\n9 is too high",
+            "3 is too low\n9 is too high\nCorrect in 3 tries!",
+            "Correct in 3 tries!"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Lay the foundation",
+        "text": "Before any judging, the game needs its foundation: greet the player, load the list of guesses, peek at the first one. Six lines, all shuffled. A real program this time — the correct order compiles and runs.",
+        "hint": "package first, import second, func main opens the door, the greeting prints first, the list loads before anything peeks at it, and the lone brace closes main last.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tfmt.Println(\"Guess my number (1-10)!\")",
+          "\tguesses := []int{3, 9, 7}",
+          "\tfmt.Println(\"Trying:\", guesses[0])",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "build",
+        "title": "Deliver the verdict",
+        "text": "The setup stands. Now the judge: a three-way verdict for each guess — too low, too high, or correct. Pick the real lines from the pool (two impostors are mixed in) and place them in order.",
+        "hint": "if opens, else-if continues, else closes the debate. The final lone brace closes the if — and watch out for the line that forgot to print the guess.",
+        "lines": [
+          "if g < secret {",
+          "\tfmt.Println(g, \"is too low\")",
+          "} else if g > secret {",
+          "\tfmt.Println(g, \"is too high\")",
+          "} else {",
+          "\tfmt.Println(\"Correct in\", attempts, \"tries!\")",
+          "} // if"
+        ],
+        "decoys": [
+          "\tfmt.Println(\"is too low\")",
+          "} // for"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Spot the cheat",
+        "text": "Playtesters keep winning on the first try. Suspicious. Somewhere in this game there's a line that leaks the secret to the player before they guess. Tap it.",
+        "hint": "The leak is a Println that mentions the secret. Honest games never print it.",
+        "bugName": "secret leak",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tsecret := 7\n\tfmt.Println(\"psst - the secret is\", secret)\n\tguesses := []int{3, 9, 7}\n\tfor _, g := range guesses {\n\t\tif g < secret {\n\t\t\tfmt.Println(g, \"is too low\")\n\t\t} else {\n\t\t\tfmt.Println(\"Correct!\")\n\t\t}\n\t}\n}",
+        "bug": 6
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole game, assembled — secret, guesses, counter, loop, judge. Nothing missing, nothing broken. Press Run and watch your game play all three rounds.",
+        "hint": "No edits needed. Just press Run and enjoy the show.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tsecret := 7\n\tguesses := []int{3, 9, 7}\n\tattempts := 0\n\tfor _, g := range guesses {\n\t\tattempts++\n\t\tif g < secret {\n\t\t\tfmt.Println(g, \"is too low\")\n\t\t} else if g > secret {\n\t\t\tfmt.Println(g, \"is too high\")\n\t\t} else {\n\t\t\tfmt.Println(\"Correct in\", attempts, \"tries!\")\n\t\t}\n\t}\n}",
+        "expected": "3 is too low\n9 is too high\nCorrect in 3 tries!",
+        "goal": "3 is too low\n9 is too high\nCorrect in 3 tries!",
+        "predict": {
+          "options": [
+            "3 is too low\n9 is too high\nCorrect in 3 tries!",
+            "3 is too low\n9 is too high",
+            "3 is too low\n9 is too high\nCorrect in 2 tries!"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Off by one",
+        "text": "The game runs and celebrates — but it lies about the score: it claims 2 tries when all three guesses played. The counter line is in the wrong place: it ticks AFTER the verdict instead of BEFORE it. Move one line so the count is honest.",
+        "hint": "attempts++ sits at the bottom of the loop, after the judge. Move it to the top of the loop, before the if. Same line, different home.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tsecret := 7\n\tguesses := []int{3, 9, 7}\n\tattempts := 0\n\tfor _, g := range guesses {\n\t\tif g < secret {\n\t\t\tfmt.Println(g, \"is too low\")\n\t\t} else if g > secret {\n\t\t\tfmt.Println(g, \"is too high\")\n\t\t} else {\n\t\t\tfmt.Println(\"Correct in\", attempts, \"tries!\")\n\t\t}\n\t\tattempts++\n\t}\n}",
+        "expected": "3 is too low\n9 is too high\nCorrect in 3 tries!",
+        "goal": "3 is too low\n9 is too high\nCorrect in 3 tries!",
+        "predict": {
+          "options": [
+            "3 is too low\n9 is too high\nCorrect in 2 tries!",
+            "3 is too low\n9 is too high",
+            "3 is too low\n9 is too high\nCorrect in 3 tries!"
+          ],
+          "answer": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "words",
+    "name": "Word Counter",
+    "icon": "ph-article",
+    "desc": "A real tally: split a sentence, count every word, crown the winner.",
+    "deck": "slices",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The plan",
+        "text": "You're building a word counter: split a sentence, tally every word in a map, scan for the champion. The whole program is below — setup, tally loop, winner scan. You'll build every piece yourself next.",
+        "hint": "No action needed — just read. Fields splits, the map tallies, the scan crowns.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\ts := \"go is fun go is fast go rules\"\n\tcounts := map[string]int{}\n\tfor _, w := range strings.Fields(s) {\n\t\tcounts[w]++\n\t}\n\ttop, best := \"\", 0\n\tfor w, c := range counts {\n\t\tif c > best {\n\t\t\tbest, top = c, w\n\t\t}\n\t}\n\tfmt.Println(top, best)\n}"
+      },
+      {
+        "kind": "run",
+        "title": "How many words?",
+        "text": "First question, simplest tool: strings.Fields splits on ANY whitespace — spaces, tabs, newlines, doubles. Our sentence holds 8 words. Predict, then run. No edits — just feel Fields.",
+        "hint": "Count them on your fingers: go-is-fun-go-is-fast-go-rules. Eight.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\ts := \"go is fun go is fast go rules\"\n\tfmt.Println(len(strings.Fields(s)))\n}",
+        "expected": "8",
+        "goal": "8",
+        "predict": {
+          "options": [
+            "8",
+            "6",
+            "3"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Split on air",
+        "text": "Someone split on commas — but the sentence has no commas, so the whole thing lands in ONE chunk and the count reads 1. The goal is 8. Swap the comma-split for Fields, then run.",
+        "hint": "strings.Split(s, \",\") sees zero commas and returns one giant chunk. Fields sees whitespace.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\ts := \"go is fun go is fast go rules\"\n\tfmt.Println(len(strings.Split(s, \",\")))\n}",
+        "expected": "8",
+        "goal": "8",
+        "predict": {
+          "options": [
+            "1",
+            "8",
+            "0"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Tally loop",
+        "text": "The engine room: split, walk, bump. Assemble the full mini-program — it prints the whole tally map (Go prints maps sorted by key, so the output is stable).",
+        "hint": "Imports ride together in one block. The map is born empty, the loop bumps, the print shows all.",
+        "lines": [
+          "package main",
+          "import (",
+          "\t\"fmt\"",
+          "\t\"strings\"",
+          ")",
+          "func main() {",
+          "\ts := \"go is fun\"",
+          "\tcounts := map[string]int{}",
+          "\tfor _, w := range strings.Fields(s) {",
+          "\t\tcounts[w]++",
+          "\t}",
+          "\tfmt.Println(counts)",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "build",
+        "title": "Crown the winner",
+        "text": "The tally stands. Now scan for the champion: strictly-greater keeps the FIRST max it meets. Pick the true lines — one impostor crowns ties wrongly, another assigns backwards.",
+        "hint": "Strictly greater (>) keeps the first champion. >= would crown the LAST tied word instead.",
+        "lines": [
+          "top, best := \"\", 0",
+          "for w, c := range counts {",
+          "\tif c > best {",
+          "\t\tbest, top = c, w",
+          "\t}",
+          "} // for"
+        ],
+        "decoys": [
+          "\tif c >= best {",
+          "\ttop, best = w, best"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "The nil tally",
+        "text": "The counter panics before counting a single word. The map was declared but never made — reading a nil map is fine, writing to it explodes. Tap the line writing to thin air.",
+        "hint": "var counts map[string]int is a signpost with no wall. Which line hangs a coat on it?",
+        "bugName": "write to nil map",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar counts map[string]int\n\tcounts[\"go\"]++\n\tfmt.Println(counts[\"go\"])\n}",
+        "bug": 6
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole counter, assembled — split, tally, crown. 'go' appears 3 times, nothing else tops 2. Predict the champion pair, then run.",
+        "hint": "go-go-go: three sightings. Strictly-greater keeps the first max — and nothing ties it.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\ts := \"go is fun go is fast go rules\"\n\tcounts := map[string]int{}\n\tfor _, w := range strings.Fields(s) {\n\t\tcounts[w]++\n\t}\n\ttop, best := \"\", 0\n\tfor w, c := range counts {\n\t\tif c > best {\n\t\t\tbest, top = c, w\n\t\t}\n\t}\n\tfmt.Println(top, best)\n}",
+        "expected": "go 3",
+        "goal": "go 3",
+        "predict": {
+          "options": [
+            "go 3",
+            "go 2",
+            "is 2"
+          ],
+          "answer": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "todos",
+    "name": "Todo CLI",
+    "icon": "ph-check-square",
+    "desc": "A real task list: structs, slices, and the range-copy trap.",
+    "deck": "structs",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The plan",
+        "text": "You're building a todo list: a Task struct (title + done flag), a slice holding two tasks, one marked finished, and a filter printing what's left. Full program below — structs, append,(indexing, and a range filter you'll assemble yourself.",
+        "hint": "No action needed — just read. Struct shapes the data, the slice holds it, the loop filters it.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype Task struct {\n\tTitle string\n\tDone  bool\n}\n\nfunc main() {\n\ttasks := []Task{}\n\ttasks = append(tasks, Task{Title: \"write tests\"}, Task{Title: \"ship it\"})\n\ttasks[0].Done = true\n\tleft := []string{}\n\tfor _, t := range tasks {\n\t\tif !t.Done {\n\t\t\tleft = append(left, t.Title)\n\t\t}\n\t}\n\tfmt.Println(len(left), \"left:\", strings.Join(left, \", \"))\n}"
+      },
+      {
+        "kind": "run",
+        "title": "Add two",
+        "text": "Two tasks appended, zero finished. Predict the count line, then run. Notice the append style: two struct literals in ONE call.",
+        "hint": "Two appends, one call, no finishing yet. The count is honest.",
+        "code": "package main\n\nimport \"fmt\"\n\ntype Task struct {\n\tTitle string\n\tDone  bool\n}\n\nfunc main() {\n\ttasks := []Task{}\n\ttasks = append(tasks, Task{Title: \"write tests\"}, Task{Title: \"ship it\"})\n\tfmt.Println(len(tasks), \"tasks\")\n}",
+        "expected": "2 tasks",
+        "goal": "2 tasks",
+        "predict": {
+          "options": [
+            "2 tasks",
+            "0 tasks",
+            "1 tasks"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Done means done",
+        "text": "The loop 'finishes' every task — yet both print false. range hands you COPIES: t.Done = true decorates a copy and throws it away. The goal is true true. Rewrite the loop to write through indexes, then run.",
+        "hint": "for i := range tasks, then tasks[i].Done = true. Index in, write through — copies can't save you.",
+        "code": "package main\n\nimport \"fmt\"\n\ntype Task struct {\n\tTitle string\n\tDone  bool\n}\n\nfunc main() {\n\ttasks := []Task{{Title: \"write tests\"}, {Title: \"ship it\"}}\n\tfor _, t := range tasks {\n\t\tt.Done = true\n\t}\n\tfmt.Println(tasks[0].Done, tasks[1].Done)\n}",
+        "expected": "true true",
+        "goal": "true true",
+        "predict": {
+          "options": [
+            "false false",
+            "true true",
+            "true false"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "order",
+        "title": "List the pending",
+        "text": "Filter and print: walk both tasks, keep the unfinished titles, join them. Assemble the full program — it prints exactly one line: the survivor.",
+        "hint": "Type rides up top, imports in a block, the filter keeps only !Done, Join glues the survivors.",
+        "lines": [
+          "package main",
+          "import (",
+          "\t\"fmt\"",
+          "\t\"strings\"",
+          ")",
+          "type Task struct {",
+          "\tTitle string",
+          "\tDone  bool",
+          "}",
+          "func main() {",
+          "\ttasks := []Task{{Title: \"write tests\", Done: true}, {Title: \"ship it\"}}",
+          "\tleft := []string{}",
+          "\tfor _, t := range tasks {",
+          "\t\tif !t.Done {",
+          "\t\t\tleft = append(left, t.Title)",
+          "\t\t}",
+          "\t} // for",
+          "\tfmt.Println(strings.Join(left, \", \"))",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "build",
+        "title": "Finish one",
+        "text": "Mark 'ship it' done by TITLE: walk with indexes, compare, write through. Pick the true lines — one impostor ranges copies again, another writes the copy.",
+        "hint": "Range copies won't save you twice — index in with i, compare tasks[i].Title, write tasks[i].Done.",
+        "lines": [
+          "for i := range tasks {",
+          "\tif tasks[i].Title == \"ship it\" {",
+          "\t\ttasks[i].Done = true",
+          "\t}",
+          "} // for"
+        ],
+        "decoys": [
+          "\tfor _, t := range tasks {",
+          "\t\tt.Done = true"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "The phantom index",
+        "text": "Two tasks in the list — and one line reaches for a third. Slot 2 does not exist, and Go answers with a panic instead of garbage. Tap the line grabbing the ghost.",
+        "hint": "Two tenants, slots 0 and 1. Which line knocks on slot 2?",
+        "bugName": "index out of range",
+        "code": "package main\n\nimport \"fmt\"\n\ntype Task struct {\n\tTitle string\n\tDone  bool\n}\n\nfunc main() {\n\ttasks := []Task{{Title: \"write tests\"}, {Title: \"ship it\"}}\n\ttasks[2].Done = true\n\tfmt.Println(len(tasks))\n}",
+        "bug": 11
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole list, assembled — two tasks in, first one finished, filter the rest. Predict the final line, then run.",
+        "hint": "tasks[0] is done, tasks[1] survives the filter. One left, by name.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype Task struct {\n\tTitle string\n\tDone  bool\n}\n\nfunc main() {\n\ttasks := []Task{}\n\ttasks = append(tasks, Task{Title: \"write tests\"}, Task{Title: \"ship it\"})\n\ttasks[0].Done = true\n\tleft := []string{}\n\tfor _, t := range tasks {\n\t\tif !t.Done {\n\t\t\tleft = append(left, t.Title)\n\t\t}\n\t}\n\tfmt.Println(len(left), \"left:\", strings.Join(left, \", \"))\n}",
+        "expected": "1 left: ship it",
+        "goal": "1 left: ship it",
+        "predict": {
+          "options": [
+            "1 left: ship it",
+            "2 left: write tests, ship it",
+            "0 left: "
+          ],
+          "answer": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "jsonrescue",
+    "name": "JSON Rescue",
+    "icon": "ph-brackets-curly",
+    "desc": "A real decoder: structs, tags, and the errors you must not swallow.",
+    "deck": "std",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The plan",
+        "text": "You're decoding real JSON: a blob describing a repo, a struct with tags telling each field where to land, an error check guarding the door, and a print of the result. Full program below — tags do the mapping, err does the guarding.",
+        "hint": "No action needed — just read. Tags map, Unmarshal fills, err guards, print shows.",
+        "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Repo struct {\n\tTitle string `json:\"title\"`\n\tStars int    `json:\"stars\"`\n}\n\nfunc main() {\n\tdata := []byte(`{\"title\":\"Gopher\",\"stars\":6}`)\n\tvar r Repo\n\terr := json.Unmarshal(data, &r)\n\tif err != nil {\n\t\tfmt.Println(\"bad json\")\n\t\treturn\n\t}\n\tfmt.Println(r.Title, \"has\", r.Stars, \"stars\")\n}"
+      },
+      {
+        "kind": "run",
+        "title": "Read the label",
+        "text": "Decode and print just the title. The tag matches, the JSON is valid, the door is guarded. Predict the word, then run.",
+        "hint": "title tag meets title key. One word comes out.",
+        "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Repo struct {\n\tTitle string `json:\"title\"`\n\tStars int    `json:\"stars\"`\n}\n\nfunc main() {\n\tdata := []byte(`{\"title\":\"Gopher\",\"stars\":6}`)\n\tvar r Repo\n\terr := json.Unmarshal(data, &r)\n\tif err != nil {\n\t\tfmt.Println(\"bad json\")\n\t\treturn\n\t}\n\tfmt.Println(r.Title)\n}",
+        "expected": "Gopher",
+        "goal": "Gopher",
+        "predict": {
+          "options": [
+            "Gopher",
+            "gopher",
+            ""
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Deaf tags",
+        "text": "The stars arrive, the title doesn't: it prints ' has 6 stars' — a ghost with a count. The Title tag listens on 'name' while the JSON shouts 'title'. Tags are exact-match contracts. Fix the one wrong word, then run.",
+        "hint": "json:\"name\" hears nothing because the blob says title. Retune the tag to title.",
+        "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Repo struct {\n\tTitle string `json:\"name\"`\n\tStars int    `json:\"stars\"`\n}\n\nfunc main() {\n\tdata := []byte(`{\"title\":\"Gopher\",\"stars\":6}`)\n\tvar r Repo\n\terr := json.Unmarshal(data, &r)\n\tif err != nil {\n\t\tfmt.Println(\"bad json\")\n\t\treturn\n\t}\n\tfmt.Println(r.Title, \"has\", r.Stars, \"stars\")\n}",
+        "expected": "Gopher has 6 stars",
+        "goal": "Gopher has 6 stars",
+        "predict": {
+          "options": [
+            " has 6 stars",
+            "Gopher has 6 stars",
+            "Gopher has 0 stars"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Guard the door",
+        "text": "Decode into a plain map and guard the door: bad JSON must print 'bad json', good JSON prints the value. Assemble the full program — error check included, no swallowing.",
+        "hint": "Unmarshal first, interrogate err second, use the map third. The guard returns early.",
+        "lines": [
+          "package main",
+          "import (",
+          "\t\"encoding/json\"",
+          "\t\"fmt\"",
+          ")",
+          "func main() {",
+          "\tdata := []byte(`{\"ok\":true}`)",
+          "\tvar v map[string]bool",
+          "\terr := json.Unmarshal(data, &v)",
+          "\tif err != nil {",
+          "\t\tfmt.Println(\"bad json\")",
+          "\t\treturn",
+          "\t}",
+          "\tfmt.Println(v[\"ok\"])",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "quiz",
+        "title": "Unmarshal into what?",
+        "text": "json.Unmarshal needs a HOME for the data — and here is a proper gotcha: decoding a JSON object into a NIL map. Assignment to a nil map panics, but what does Unmarshal do?",
+        "hint": "Unmarshal OWNS the map it fills. Who makes it — you, or the decoder?",
+        "quiz": {
+          "options": [
+            "It allocates and fills — no panic",
+            "It panics like assignment",
+            "It returns an error"
+          ],
+          "answer": 0,
+          "why": "Unmarshal owns the map it fills: nil map plus a JSON object comes back freshly made. Assignment panics, unmarshaling provides — opposite rules, same nil."
+        }
+      },
+      {
+        "kind": "spot",
+        "title": "The silent failure",
+        "text": "Broken JSON in, zero values out — and NOT A WORD about it. The Unmarshal call's error return floats into the void, unchecked. Tap the line that swallows the failure.",
+        "hint": "Somebody called a function that returns an error and looked away. Which line?",
+        "bugName": "unchecked Unmarshal error",
+        "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Repo struct {\n\tTitle string `json:\"title\"`\n\tStars int    `json:\"stars\"`\n}\n\nfunc main() {\n\tdata := []byte(`{broken`)\n\tvar r Repo\n\tjson.Unmarshal(data, &r)\n\tfmt.Println(r.Title, r.Stars)\n}",
+        "bug": 15
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole rescue, assembled — tags tuned, door guarded, result printed. Predict the final line, then run.",
+        "hint": "title tag meets title key, stars land as 6. One clean line out.",
+        "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Repo struct {\n\tTitle string `json:\"title\"`\n\tStars int    `json:\"stars\"`\n}\n\nfunc main() {\n\tdata := []byte(`{\"title\":\"Gopher\",\"stars\":6}`)\n\tvar r Repo\n\terr := json.Unmarshal(data, &r)\n\tif err != nil {\n\t\tfmt.Println(\"bad json\")\n\t\treturn\n\t}\n\tfmt.Println(r.Title, \"has\", r.Stars, \"stars\")\n}",
+        "expected": "Gopher has 6 stars",
+        "goal": "Gopher has 6 stars",
+        "predict": {
+          "options": [
+            "Gopher has 6 stars",
+            " has 6 stars",
+            "Gopher has 0 stars"
+          ],
+          "answer": 0
+        }
+      }
+    ]
+  }
+]

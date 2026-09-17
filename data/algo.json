@@ -1,0 +1,1610 @@
+[
+  {
+    "id": "bigo",
+    "name": "Big O, By Hand",
+    "icon": "ph-trend-up",
+    "desc": "Count the checks: feel O(1), O(log n), O(n) and O(n²) in your hands.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "visual",
+        "title": "Count the checks",
+        "text": "Big O answers ONE question: as the list grows, how fast does the WORK grow? This page is a counting machine for exactly that.\n\nWhat you see: 7 bricks = 7 numbers in a row. The target 38 hides in one of them. There are no tricks here — no sorting, no shortcuts — so the only possible strategy is checking bricks one by one, left to right. The glowing brick is the one being checked right now.\n\nWhat to do: press Next guess and count out loud with it: 1, 2, 3... The target sits in the LAST slot on purpose. This is the worst case — the unluckiest possible run — and Big O always measures the worst case, never the lucky one.\n\nWhat it proves: 7 items cost 7 checks, and 14 items would cost 14. Work that grows exactly with the list has a name: O(n), 'order of n'. Remember the feeling of check 7 of 7 — that feeling IS linear time.",
+        "hint": "Nothing to solve — just count. The number on the last frame is the whole lesson.",
+        "viz": {
+          "nums": [
+            2,
+            5,
+            8,
+            12,
+            16,
+            23,
+            38
+          ],
+          "target": 38,
+          "frames": [
+            {
+              "low": 0,
+              "high": 6,
+              "mid": -1,
+              "found": -1,
+              "note": "7 bricks in a row, no sorting tricks. Target: 38. The only strategy is checking left to right — count every check with me."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 0,
+              "found": -1,
+              "note": "Check 1: slot 0 holds 2. Not it — 1 check spent."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 1,
+              "found": -1,
+              "note": "Check 2: slot 1 holds 5. Not it — 2 spent."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 2,
+              "found": -1,
+              "note": "Check 3: slot 2 holds 8. Not it — 3 spent."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 3,
+              "found": -1,
+              "note": "Check 4: slot 3 holds 12. Not it — 4 spent."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 4,
+              "found": -1,
+              "note": "Check 5: slot 4 holds 16. Not it — 5 spent."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 5,
+              "found": -1,
+              "note": "Check 6: slot 5 holds 23. Not it — 6 spent."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 6,
+              "found": 6,
+              "note": "Check 7: slot 6 holds 38. FOUND — last slot, the unluckiest run. 7 items, 7 checks: work grew exactly with size. That is O(n)."
+            }
+          ]
+        }
+      },
+      {
+        "kind": "quiz",
+        "title": "Worst case?",
+        "text": "You just counted to 7 — because 38 hid in the last slot. Now the definition that matters: Big O ALWAYS counts the worst case. Finding it in slot 1 proves nothing about the algorithm (that is luck); needing slot 7 proves everything (that is the guarantee).\n\nSo answer like a veteran: 7 items, linear search, worst case. How many checks?",
+        "hint": "Worst case means unlucky. Where does the target hide when luck runs out?",
+        "quiz": {
+          "options": [
+            "1 — first try, lucky",
+            "4 — the middle one",
+            "7 — the last slot, unlucky"
+          ],
+          "answer": 2,
+          "why": "Worst case means unlucky: target last (or missing entirely). 7 items → 7 checks. That is O(n): the work grows with the list."
+        }
+      },
+      {
+        "kind": "read",
+        "title": "Double the trouble",
+        "text": "Now grow the list and watch two strategies react DIFFERENTLY to the same doubling. 7 suspects become 14: linear search doubles to 14 checks — work tracks size one-to-one. Binary search? It went from 3 rounds to 4 — ONE extra round for twice the suspects, because every round throws away half of everything remaining.\n\nDouble again to 28: linear climbs to 28, binary ticks to 5. Same growth, two totally different reactions. That reaction — how work responds to size — is the ONLY thing Big O measures.",
+        "hint": "No action needed — just feel the two growth speeds. Doubling hurts one of them and barely touches the other."
+      },
+      {
+        "kind": "quiz",
+        "title": "A million suspects",
+        "text": "Feel halving at real scale. A sorted million, binary search discarding half every round: a million, 500 thousand, 250 thousand, 125 thousand... Halve a few times in your head (or use 2^10 is about 1,000, so 2^20 is about 1,000,000). How many rounds until one suspect is left?",
+        "hint": "Halve a million in your head a few times, or remember: 2 to the what is about a million?",
+        "quiz": {
+          "options": [
+            "About 20 halvings",
+            "About 500,000 checks",
+            "About 1,000,000 checks"
+          ],
+          "answer": 0,
+          "why": "2^20 is about a million. Twenty halvings leave one suspect — so binary search on a million items takes ~20 rounds, not a million checks."
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Feel n²",
+        "text": "Third shape of work: EVERY pair. Four names, each paired with each — the outer loop picks a first name, the inner loop walks ALL four second names, including each name with itself. Assemble the double loop, run it in your head first, and count the lines out loud: 16. That count — pairs, not items — is what nested loops do to growth.",
+        "hint": "Outer loop picks a first name, inner loop pairs it with all four. Four firsts times four seconds.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tnames := []string{\"a\", \"b\", \"c\", \"d\"}",
+          "\tfor _, x := range names {",
+          "\t\tfor _, y := range names {",
+          "\t\t\tfmt.Println(x, y)",
+          "\t\t}",
+          "\t} // for",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "quiz",
+        "title": "Double to eight?",
+        "text": "Four names printed 16 lines. Now double the list to eight — same program, nothing else changes. Think in pairs, not loops: every first name meets every second name, so the count multiplies: 8 firsts times 8 seconds. How many lines come out — and what does that say about doubling?",
+        "hint": "Pairs multiply: every first name meets every second name. 8 times 8?",
+        "quiz": {
+          "options": [
+            "16 — same as before",
+            "32 — doubled",
+            "64 — quadrupled"
+          ],
+          "answer": 2,
+          "why": "Pairs multiply: 8×8 = 64. Double the list, quadruple the work. That explosive growth is O(n²) — fine for 4, fatal for 40,000."
+        }
+      },
+      {
+        "kind": "run",
+        "title": "One hop",
+        "text": "Fourth shape: the map lookup — no scanning, no halving, no pairs. The key hashes straight to its drawer in a single hop, whether the wall holds 4 drawers or 4 million. Run it and read the answer: that number came back in constant time. Then glance at the decoys: 0 is what a MISSING key returns (zero value, not an error), and 10 is just the first entry showing off.",
+        "hint": "No edits needed. But study the decoys: 0 is what a MISSING key returns, and 10 is just the first entry showing off.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tscores := map[string]int{\"ada\": 10, \"grace\": 9, \"linus\": 8, \"zoe\": 7}\n\tfmt.Println(scores[\"zoe\"])\n}",
+        "expected": "7",
+        "goal": "7",
+        "predict": {
+          "options": [
+            "10",
+            "7",
+            "0"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "read",
+        "title": "The ladder",
+        "text": "Four shapes, slowest growth first — this ladder is the whole vocabulary of Big O:\n\nO(1), 'one hop': map lookup. Any size, same single cost.\nO(log n), 'halving': binary search. Double the list, pay one extra round.\nO(n), 'scanning': linear search. Double the list, double the work.\nO(n²), 'pairs': nested loops. Double the list, QUADRUPLE the work.\n\nPlus one veteran habit: drop the small stuff. A loop doing 2n+3 checks is O(n) — at n = a million, the +3 is dust and the 2 is a rounding error. Only the SHAPE of growth survives.",
+        "hint": "No action needed — just climb the ladder slowly. One hop, halving, scanning, pairs."
+      },
+      {
+        "kind": "quiz",
+        "title": "Slowest horse",
+        "text": "A million items, four programs, one race. Do not compare speeds — compare SHAPES. One hop never notices size. Halving pays about 20. Scanning pays a million. Pairs pay a million TIMES a million — a trillion. Which one finishes last, and why is it not close?",
+        "hint": "Picture each shape at a million: one hop, twenty halvings, a million scans, a million TIMES a million pairs.",
+        "quiz": {
+          "options": [
+            "Map lookup by key",
+            "Halving a sorted list",
+            "Scanning one by one",
+            "Comparing every pair"
+          ],
+          "answer": 3,
+          "why": "Every pair on a million items is a trillion comparisons. O(n²) always loses the race; the O(1) lookup barely notices the size."
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Twenty, from memory",
+        "text": "Binary search, a million sorted items — and this time there are NO options to tap. Close your eyes, halve a million down to one (2^10 is about 1,000 is the shortcut), and TYPE the number of rounds.",
+        "hint": "2 to the what is about a million? You answered this with options in 'A million suspects'.",
+        "typeA": { "answer": "20", "why": "Twenty halvings leave one suspect: 2^20 is about 1,000,000. From memory this time — options are training wheels." }
+      },
+      {
+        "kind": "run",
+        "title": "Count, don't guess",
+        "text": "Final proof, counted by a program YOU run: it hunts 38 with a linear counter (breaking at the find, so the counter stops at 7), then prints binary's known cost beside it — 3 rounds, which you proved yourself back in 'A million suspects'. Predict the scoreboard. When it prints linear 7, binary 3, you do not believe in O(n) vs O(log n) — you have MEASURED it.\n\nNext: Arrays — the shelf everything in this track lives on.",
+        "hint": "38 sits in the last slot, so the linear counter runs the full list. Binary's 3 is printed as a fact — you proved it three steps ago.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 38\n\tchecks := 0\n\tfor _, n := range nums {\n\t\tchecks++\n\t\tif n == target {\n\t\t\tbreak\n\t\t}\n\t}\n\tfmt.Println(\"linear:\", checks)\n\tfmt.Println(\"binary:\", 3)\n}",
+        "expected": "linear: 7\nbinary: 3",
+        "goal": "linear: 7\nbinary: 3",
+        "predict": {
+          "options": [
+            "linear: 7\nbinary: 3",
+            "linear: 3\nbinary: 7",
+            "linear: 6\nbinary: 2"
+          ],
+          "answer": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "arrays",
+    "name": "Arrays & Slices",
+    "icon": "ph-list-numbers",
+    "desc": "Shelves with numbers: indexes, reversing in place, make and append.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The shelf with numbers on it",
+        "text": "Every list in this track is a shelf with numbered slots — and Go numbers them from ZERO. In [2 5 8 12 16 23 38], slot 0 holds 2 and slot 6 holds 38. Slot 7 does not exist, and knocking on it panics the program: Go bounds-checks instead of handing you garbage.\n\nArrays are fixed-size furniture (all 7 slots declared up front). Slices are the same shelf with room to grow: make() books empty rooms, append() moves tenants in. This exact shelf carries the whole track — learn its slots by heart.",
+        "hint": "No action needed — just read. Zero-based counting is the source of half of all bugs you will ever meet.",
+        "code": "nums := [7]int{2, 5, 8, 12, 16, 23, 38} // fixed shelf, 7 slots\nnums[0] // 2 — counting starts at 0\nlen(nums) // 7"
+      },
+      {
+        "kind": "run",
+        "title": "First and last",
+        "text": "Two slots every program reaches for: first and last. First is always slot 0. Last is len-1 — because counting starts at 0, the COUNT (7) is always one PAST the last slot (6). Reaching for slot len is the most common crash in programming, in every language. Predict both numbers, then run.",
+        "hint": "Slots count from 0, so the last slot is len-1 — never len.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\tfmt.Println(nums[0], nums[len(nums)-1])\n}",
+        "expected": "2 38",
+        "goal": "2 38",
+        "predict": {
+          "options": [
+            "2 38",
+            "2 7",
+            "0 6"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Reverse in place",
+        "text": "Reversing with NO second shelf: finger A starts at slot 0, finger B at slot 6. Swap what is under them, step both inward, repeat — until they meet in the middle. (The middle of an odd shelf swaps with itself: harmless.) Assemble all nine lines, then trace one round on paper: after it, the shelf starts 38 ... 2. You just did two pointers before learning the name.",
+        "hint": "Fingers start at 0 and len-1, swap, step inward. They stop when they meet: i < j.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tnums := []int{2, 5, 8, 12, 16, 23, 38}",
+          "\tfor i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {",
+          "\t\tnums[i], nums[j] = nums[j], nums[i]",
+          "\t} // for",
+          "\tfmt.Println(nums)",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Off the edge",
+        "text": "This printer should print 7 lines and stop. Instead it crashes right after the 7th print. The loop condition invites slots 0 through 7 — SEVEN valid slots plus one ghost. Somewhere a < became <=. Tap the line with the extra slot — and notice the crash is Go doing you a favor: a bounds-checked panic beats silent garbage.",
+        "hint": "Valid slots are 0 to len-1. Which line's condition allows len itself?",
+        "bugName": "loop runs past the last slot",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\tfor i := 0; i <= len(nums); i++ {\n\t\tfmt.Println(nums[i])\n\t}\n}",
+        "bug": 6
+      },
+      {
+        "kind": "run",
+        "title": "Make room",
+        "text": "make([]int, 0, 3) is a work order: an EMPTY shelf (length 0 — no tenants) with 3 rooms booked (capacity 3). Appends below capacity just move tenants in: no moving van, no copying, no reallocation. len counts tenants, cap counts rooms — two different numbers with one confusingly similar name. Predict both after two appends, then run.",
+        "hint": "len counts tenants, cap counts rooms. make([]int, 0, 3): no tenants yet, three rooms booked.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := make([]int, 0, 3)\n\ts = append(s, 2, 5)\n\tfmt.Println(len(s), cap(s))\n}",
+        "expected": "2 3",
+        "goal": "2 3",
+        "predict": {
+          "options": [
+            "2 3",
+            "2 2",
+            "3 3"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Double it",
+        "text": "Scale every slot by its own NUMBER: slot 0 times 0, slot 1 times 1, slot 2 times 2, and so on. The starter scales by i+1 — every slot one too rich. The fingerprint: slot 0 prints 2 instead of 0. Whenever slot 0 is wrong, suspect the counting — arrays start at 0 and the math must too. Predict the true shelf, then delete the tiny thief.",
+        "hint": "Slots count from 0, and the scale must too. The +1 flatters every slot.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\tfor i := range nums {\n\t\tnums[i] = nums[i] * (i + 1)\n\t}\n\tfmt.Println(nums)\n}",
+        "expected": "[0 5 16 36 64 115 228]",
+        "goal": "[0 5 16 36 64 115 228]",
+        "predict": {
+          "options": [
+            "[2 10 24 48 80 138 266]",
+            "[0 5 16 36 64 115 228]",
+            "[2 5 8 12 16 23 38]"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "quiz",
+        "title": "Dedup, sorted?",
+        "text": "Sorted shelf, doubles inside: 1 1 2 3 3. One reader marches left to right; a writer finger w only steps forward on FIRST-TIMERS, copying each into place. No nested loop, no extra shelf, no map — every item touched a constant number of times. What does that cost — and what does it tell you about 'needing' extra memory?",
+        "hint": "One forward march, no nested loop, no extra drawers. How many times is each item touched?",
+        "quiz": {
+          "options": [
+            "O(n) — every item visited once",
+            "O(n²) — pairs again",
+            "O(1) — maps do it"
+          ],
+          "answer": 0,
+          "why": "One forward march, no nested loop, no extra drawers: each item read once, each first-timer written once. In-place dedup is two pointers wearing a disguise — a later lesson names them."
+        }
+      },
+      {
+        "kind": "trace",
+        "title": "Same shelf, two windows",
+        "text": "t := s[:2] borrows slots WITHOUT copying: two windows, ONE wall. Step through a sort and watch the borrower change without being touched. Then answer: who owns the cells?",
+        "hint": "Watch the t lane while the sort runs — nobody touches t, yet t changes.",
+        "trace": {
+          "frames": [
+            {
+              "caption": "s holds [3 1 2]; t := s[:2] borrows the first two slots. Two windows, ONE wall — t copied nothing.",
+              "lanes": [
+                { "label": "backing wall", "cells": ["3", "1", "2"], "hi": [] },
+                { "label": "s (whole shelf)", "cells": ["3", "1", "2"], "hi": [0, 1, 2] },
+                { "label": "t (first two)", "cells": ["3", "1"], "hi": [0, 1] }
+              ]
+            },
+            {
+              "caption": "sort.Ints(s) rearranges the WALL to [1 2 3] — and t now reads [1 2] without anyone touching t. Sorting through one window rearranges what the other sees.",
+              "lanes": [
+                { "label": "backing wall", "cells": ["1", "2", "3"], "hi": [0, 1, 2] },
+                { "label": "s (whole shelf)", "cells": ["1", "2", "3"], "hi": [0, 1, 2] },
+                { "label": "t (first two)", "cells": ["1", "2"], "hi": [0, 1] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "trace",
+        "title": "The shelf moves house",
+        "text": "Appending to a FULL slice (len == cap) cannot squeeze: Go builds a bigger wall, copies everyone over, and moves s across. Step through and watch BOTH walls exist at once. Then answer: who still sees the old tenants?",
+        "hint": "Two walls on screen at once: which one does s point at after the append — and who points at the other?",
+        "trace": {
+          "frames": [
+            {
+              "caption": "s is full: 3 tenants, 3 rooms. Appending a 4th needs a room that does not exist.",
+              "lanes": [
+                { "label": "s (len 3, cap 3)", "cells": ["1", "2", "3"], "hi": [0, 1, 2] }
+              ]
+            },
+            {
+              "caption": "append built a BIGGER wall (cap 3 → 6, Go doubles), copied everyone over, added 4. s moved house.",
+              "lanes": [
+                { "label": "old wall", "cells": ["1", "2", "3"], "hi": [] },
+                { "label": "s (len 4, cap 6)", "cells": ["1", "2", "3", "4"], "hi": [3] }
+              ]
+            },
+            {
+              "caption": "The old wall still stands with [1 2 3] — anyone still holding it sees the old tenants. Keep append's return value, or you live in the old house.",
+              "lanes": [
+                { "label": "old wall", "cells": ["1", "2", "3"], "hi": [] },
+                { "label": "s (len 4, cap 6)", "cells": ["1", "2", "3", "4"], "hi": [] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Name the last slot",
+        "text": "Seven slots, numbered from zero — and this time no options. Type the index of the LAST slot: the one <= invites, < protects, and every 'last item' expression must name.",
+        "hint": "The count is 7. Counting starts at 0. So the last slot is…?",
+        "typeA": { "answer": "6", "why": "Slots 0 to 6: the count (7) is always one past the last slot (6). len-1, always, in every language that counts from zero." }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Arrays and slices, owned: zero-based slots, len (tenants) vs cap (rooms), make books rooms, append moves tenants in but may relocate the whole shelf (keep the return value!), reverse with two fingers, and <= is the edge thief that invites ghost slots.\n\nNext: Strings — letters that arrive frozen, and the []byte key that thaws them.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ]
+  },
+  {
+    "id": "strings",
+    "name": "Strings",
+    "icon": "ph-text-aa",
+    "desc": "Frozen letters: runes, []byte thawing, and reading UTF-8 the safe way.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Frozen letters",
+        "text": "Go strings arrive FROZEN — read-only bytes. s[0] = 'G' does not misbehave at runtime; the compiler refuses to BUILD it. The legal ritual is thaw-edit-freeze: []byte(s) makes a mutable COPY, you rearrange the bytes, string() freezes a NEW string from them. The original never changes — every string 'edit' is really a thawed copy.\n\nSecond fact: bytes are not letters. range hands you RUNES (full unicode letters) plus byte offsets. The letter e with an accent is ONE rune but TWO bytes — code that counts bytes miscounts letters, and most string bugs on earth are exactly that confusion.",
+        "hint": "No action needed — just read. Frozen original, mutable []byte copy, string() freezes it back.",
+        "code": "s := \"gopher\"\n// s[0] = 'G' // REFUSED: strings are read-only\nb := []byte(s) // thaw: mutable copy\nb[0] = 'G'\nstring(b) // \"Gopher\" — freeze it back"
+      },
+      {
+        "kind": "run",
+        "title": "Count the vowels",
+        "text": "Count vowels in 'gopher' the rune way: walk all six letters, bump the counter on a, e, i, o, u. Only o and e sing here — the answer is 2. Predict it, then run — and notice what the loop variable r actually is: a rune (a number that means a letter), compared against single-quoted rune literals. Double quotes would be strings, and Go would refuse the comparison.",
+        "hint": "g-o-p-h-e-r: which two sing? The loop sees six runes, the counter moves twice.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvowels := 0\n\tfor _, r := range \"gopher\" {\n\t\tif r == 'a' || r == 'e' || r == 'i' || r == 'o' || r == 'u' {\n\t\t\tvowels++\n\t\t}\n\t}\n\tfmt.Println(vowels)\n}",
+        "expected": "2",
+        "goal": "2",
+        "predict": {
+          "options": [
+            "2",
+            "6",
+            "1"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "spot",
+        "title": "The byte that broke",
+        "text": "Someone skipped the thaw and wrote straight onto the frozen string. Go will not even build this — the compiler stops at the crime, no crash needed. Six lines, one illegal overwrite, and the error message names it exactly. Tap the line the compiler points to.",
+        "hint": "s[0] = 'G' looks innocent — the compiler disagrees. Which line tries to rewrite the frozen?",
+        "bugName": "assign to string index",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := \"gopher\"\n\ts[0] = 'G'\n\tfmt.Println(s)\n}",
+        "bug": 6
+      },
+      {
+        "kind": "order",
+        "title": "Reverse a string",
+        "text": "Same inward walk as arrays — strings just need the ritual around it. Thaw to bytes FIRST (frozen letters cannot swap), two-finger swap like arrays, freeze back with string() for printing (printing raw bytes prints NUMBERS). Assemble all ten lines: 'gopher' in, 'rehpog' out. Miss the thaw and it will not compile; miss the freeze and the output is digits.",
+        "hint": "Same inward walk as arrays — only the thaw (line 5) and the freeze (line 9) are new.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\ts := \"gopher\"",
+          "\tb := []byte(s)",
+          "\tfor i, j := 0, len(b)-1; i < j; i, j = i+1, j-1 {",
+          "\t\tb[i], b[j] = b[j], b[i]",
+          "\t} // for",
+          "\tfmt.Println(string(b))",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "run",
+        "title": "Shout it",
+        "text": "The strings package does the boring chores so you never hand-roll them: ToUpper returns a SHOUTED copy while the original stays frozen lowercase. Rule of the whole package: library functions return NEW strings — nothing edits in place, because nothing CAN. Predict the shout, then run.",
+        "hint": "No edits needed. ToUpper returns a NEW string — the original stays frozen lowercase.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tfmt.Println(strings.ToUpper(\"go\"))\n}",
+        "expected": "GO",
+        "goal": "GO",
+        "predict": {
+          "options": [
+            "GO",
+            "go",
+            "G O"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "build",
+        "title": "Bytes, not bricks",
+        "text": "The whole ritual in three lines: thaw with []byte, edit the BYTES, freeze back with string(). Two impostors hide here: one edits the frozen original directly (will not compile — that is yesterday's crime), one 'freezes' with string(s), which on a string is a mere copy, not a thaw — the bytes never become mutable. Pick the true ritual.",
+        "hint": "Thaw with []byte, edit the BYTES, freeze back with string(). The impostors touch the frozen original.",
+        "lines": [
+          "b := []byte(s)",
+          "b[0] = 'G'",
+          "s = string(b)"
+        ],
+        "decoys": [
+          "s[0] = 'G'",
+          "b := string(s)"
+        ]
+      },
+      {
+        "kind": "quiz",
+        "title": "range gives you what?",
+        "text": "for i, r := range \"héllo\" — FIVE letters, but the accented letter occupies TWO bytes, so the bytes run 0 to 5 (six of them). The loop still runs five rounds (one per rune), which proves the index cannot be counting letters. So what is i counting — and what exactly is r?",
+        "hint": "é takes two bytes but one loop round. So i can't be counting letters — what is it counting?",
+        "quiz": {
+          "options": [
+            "byte index + rune (full unicode letter)",
+            "rune index + byte",
+            "letters only, indexes hidden"
+          ],
+          "answer": 0,
+          "why": "range decodes UTF-8: r is the full rune (é is ONE r), i is its BYTE offset (é sits on bytes 1-2, so indexes jump 0,1,3,4,5). Byte-thinking breaks on non-ASCII — rune-thinking doesn't."
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Count the bytes",
+        "text": "'héllo': five letters — but é costs two bytes, and bytes are what len() counts. No options: how many BYTES does len() report? Type the number.",
+        "hint": "h(1) + é(?) + l(1) + l(1) + o(1). The accented letter is the only one that costs double.",
+        "typeA": { "answer": "6", "why": "h(1) + é(2) + l(1) + l(1) + o(1) = 6 bytes, 5 runes. len() counts bytes; range counts runes — know which ruler you're holding." }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Strings, owned: frozen originals, []byte thawing, string() refreezing, runes over bytes, range giving byte-offset + rune, library functions returning new strings.\n\nNext: Hash Tables — labeled drawers that trade memory for speed.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ]
+  },
+  {
+    "id": "hashmaps",
+    "name": "Hash Tables",
+    "icon": "ph-hash",
+    "desc": "Labeled drawers: O(1) lookups that turn nested loops into single passes.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The labeled drawers",
+        "text": "Arrays find things by NUMBER; maps find them by NAME — strings, numbers, runes, anything hashable. Go hashes the key and jumps straight to its drawer: one hop for 4 drawers or 4 million. No scanning, no halving, no pairs.\n\nTwo survival facts. One: a missing key returns the ZERO value (0, '', false) — never an error — so v, ok := m[k], the comma-ok, is how you tell 'missing' from 'really zero'. Two: every item rents a drawer, so maps trade MEMORY for speed. That trade — space for time — is the oldest deal in the book, and two-sum is where it pays.",
+        "hint": "No action needed — just read. scores[\"zoe\"] is 0, but ok is false: missing, not zero.",
+        "code": "scores := map[string]int{\"ada\": 10, \"grace\": 9}\nscores[\"ada\"] // 10 — one hop, any size\nv, ok := scores[\"zoe\"] // 0, false — the comma-ok tells missing apart from zero"
+      },
+      {
+        "kind": "run",
+        "title": "Frequency table",
+        "text": "The map's day job: counting. Walk 'banana', bump each letter's drawer, read the a drawer: b-a-n-a-n-a holds three a's. Predict 3, then run — and notice the engine: counts[r]++ works on FIRST sight, because a missing drawer reads 0 and 0+1 = 1. The zero value does half the counting for you.",
+        "hint": "b-a-n-a-n-a: the a drawer is bumped three times. A missing drawer would read 0 — the zero value.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tcounts := map[rune]int{}\n\tfor _, r := range \"banana\" {\n\t\tcounts[r]++\n\t}\n\tfmt.Println(counts['a'])\n}",
+        "expected": "3",
+        "goal": "3",
+        "predict": {
+          "options": [
+            "2",
+            "3",
+            "6"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Two sum, one pass",
+        "text": "The famous one: which TWO numbers add to 10? Nested loops check every pair — O(n²). The map way asks each number 'is my complement already filed?' — one pass, O(n). This starter files each number BEFORE asking, so when it reaches 5 (and 10 = 5+5) it finds ITSELF and answers '1 1'. Filing first lets a number marry itself. The true pair is 2+8 at slots 0 and 2 — predict '0 2', then move the filing AFTER the asking.",
+        "hint": "Check the drawer first, file second. Filing first lets a number marry itself whenever the target is double one item.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 10\n\tseen := map[int]int{}\n\tfor i, v := range nums {\n\t\tneed := target - v\n\t\tseen[v] = i\n\t\tif j, ok := seen[need]; ok {\n\t\t\tfmt.Println(j, i)\n\t\t\treturn\n\t\t}\n\t}\n\tfmt.Println(\"none\")\n}",
+        "expected": "0 2",
+        "goal": "0 2",
+        "predict": {
+          "options": [
+            "1 1",
+            "0 2",
+            "none"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "order",
+        "title": "First duplicate",
+        "text": "First duplicate in 2 5 8 5 23, with a 'seen it' set of bool drawers. Unseen? File it, walk on. Seen? Print and LEAVE — the first repeat wins, so the answer is the second 5, found before the walk ends. Assemble all thirteen lines. Notice the order inside the loop: ask the drawer BEFORE filing — the same rule that fixed two-sum.",
+        "hint": "Ask the drawer BEFORE filing: seen means duplicate (print and leave), unseen means file it and walk on.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tnums := []int{2, 5, 8, 5, 23}",
+          "\tseen := map[int]bool{}",
+          "\tfor _, v := range nums {",
+          "\t\tif seen[v] {",
+          "\t\t\tfmt.Println(v)",
+          "\t\t\treturn",
+          "\t\t}",
+          "\t\tseen[v] = true",
+          "\t} // for",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "The nil map trap",
+        "text": "Two lines declare a map and write to it; the program panics on the second. var counts map[string]int builds a NIL map — a signpost with no wall behind it. Reading a nil map returns zeroes all day; WRITING needs real drawers from make() or a literal. Tap the line that hangs a coat on thin air — then never declare-and-write again.",
+        "hint": "var counts map[string]int makes a nil map — a signpost with no wall behind it. Which line hangs a coat on it?",
+        "bugName": "write to nil map",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar counts map[string]int\n\tcounts[\"ada\"] = 1\n\tfmt.Println(counts[\"ada\"])\n}",
+        "bug": 6
+      },
+      {
+        "kind": "quiz",
+        "title": "What does the map buy?",
+        "text": "Two sum, two prices. Nested loops: O(n²) time, O(1) memory. Map version: O(n) time, O(n) drawers. Same answer, different currencies — every real optimization is secretly a currency trade. What exactly did the map buy, and what did it spend?",
+        "hint": "Count the currencies: time versus drawers. What got spent, what got saved?",
+        "quiz": {
+          "options": [
+            "O(n²) pairs become O(n) lookups — rent a drawer per item",
+            "Maps sort your data for free",
+            "Nested loops get faster on their own"
+          ],
+          "answer": 0,
+          "why": "Each value pays one drawer of memory; in return every 'have I seen you?' is one hop, not a full scan. Space for time — the oldest trade in the book."
+        }
+      },
+      {
+        "kind": "trace",
+        "title": "Watch the drawers fill",
+        "text": "Two-sum's map, built one filing at a time. Target 10, shelf starting [2 5 8 ...]: each round asks 'is my complement filed?' and files only on NO. Step through to the moment drawer 2→0 pays off.",
+        "hint": "Each frame files one drawer — until a need matches a drawer instead of missing.",
+        "trace": {
+          "frames": [
+            {
+              "caption": "Empty wall. First item 2: need is 10−2 = 8. Drawer 8? Missing — file 2→0.",
+              "lanes": [
+                { "label": "seen drawers", "cells": ["_"], "hi": [] }
+              ]
+            },
+            {
+              "caption": "Filed: 2 lives at slot 0. Next item 5: need is 5. Drawer 5? Missing — file 5→1.",
+              "lanes": [
+                { "label": "seen drawers", "cells": ["2→0"], "hi": [0] }
+              ]
+            },
+            {
+              "caption": "Filed: 5 lives at slot 1. Next item 8: need is 2...",
+              "lanes": [
+                { "label": "seen drawers", "cells": ["2→0", "5→1"], "hi": [1] }
+              ]
+            },
+            {
+              "caption": "Need 2 — drawer 2→0 OPENS: slots 0 and 2. Complement asked, drawer answered, pair found. Ask before filing, always.",
+              "lanes": [
+                { "label": "seen drawers", "cells": ["2→0", "5→1"], "hi": [0] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Name the complement",
+        "text": "Target 10, current value 8, drawers holding 2→0 and 5→1. The code asks BEFORE filing. No options: type exactly what it looks up.",
+        "hint": "need = target − v. The lookup key, not the answer pair.",
+        "typeA": { "answer": "2", "why": "need = 10 − 8 = 2, and drawer 2→0 is already filed: open it, read slot 0, pair (0, 2). Complement first, filing second." }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Hash tables, owned: one-hop lookup, zero value for missing keys, comma-ok separating missing from zero, frequency tables, two-sum in one pass, ask-before-filing, nil maps read fine but panic on write.\n\nNext: Linked Lists — boxes chained by address, where 'next' replaces the index.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ]
+  },
+  {
+    "id": "linkedlist",
+    "name": "Linked Lists",
+    "icon": "ph-link",
+    "desc": "Boxes with addresses: structs, pointers, and following arrows to nil.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Boxes with addresses",
+        "text": "An array is a shelf: every slot has a number. A linked list is a treasure hunt: every box holds a value AND the address of the next box. In Go a box is a struct and an address is a pointer — the little star in *Node meaning 'I know where the next one lives'.\n\nThree boxes, chained: 1 points to 2, 2 points to 3, 3 points to NOWHERE — nil, the address of nothing. No counting, no indexes: you start at the head and follow addresses until nil. That 'until nil' is the list's whole contract.",
+        "hint": "No action needed — just read. The star in *Node means 'address of a Node'. nil means 'no address'.",
+        "code": "type Node struct {\n\tVal  int\n\tNext *Node\n}\n\n// 1 -> 2 -> 3 -> nil\nhead := &Node{Val: 1, Next: &Node{Val: 2, Next: &Node{Val: 3}}}"
+      },
+      {
+        "kind": "run",
+        "title": "Walk the chain",
+        "text": "Walking = start at head, print, step to Next, stop at nil. Three boxes, three prints, head first — predict all three lines, then run. Notice the for-loop's shape: start at head, condition AGAINST nil (not a count!), step by following the arrow. This shape walks a list of ANY length.",
+        "hint": "The loop stops at nil — box 3's Next. So all three print, head first.",
+        "code": "package main\n\nimport \"fmt\"\n\ntype Node struct {\n\tVal  int\n\tNext *Node\n}\n\nfunc main() {\n\thead := &Node{Val: 1, Next: &Node{Val: 2, Next: &Node{Val: 3}}}\n\tfor cur := head; cur != nil; cur = cur.Next {\n\t\tfmt.Println(cur.Val)\n\t}\n}",
+        "expected": "1\n2\n3",
+        "goal": "1\n2\n3",
+        "predict": {
+          "options": [
+            "1\n2\n3",
+            "1\n2",
+            "3\n2\n1"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Reverse the arrows",
+        "text": "Reversing means flipping every arrow: 1->2->3 becomes 1<-2<-3, head becomes old tail. Three hands: prev (the finished, flipped part), cur (the box under repair), next (the REST — lose it and boxes vanish). The rule: SAVE next before flipping, because the flip overwrites the only address you had. Assemble all thirteen lines — then trace it on paper, because tracing pointers on paper is the actual skill.",
+        "hint": "Save next BEFORE flipping — flip first and the rest of the list is gone. The double assignment walks both hands forward together.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "type Node struct { Val int; Next *Node }",
+          "func main() {",
+          "\thead := &Node{Val: 1, Next: &Node{Val: 2, Next: &Node{Val: 3}}}",
+          "\tvar prev *Node",
+          "\tfor cur := head; cur != nil; {",
+          "\t\tnext := cur.Next",
+          "\t\tcur.Next = prev",
+          "\t\tprev, cur = cur, next",
+          "\t} // for",
+          "\tfmt.Println(prev.Val)",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Lost the rest",
+        "text": "This reverse compiles — and prints 1, then stops, swallowing boxes 2 and 3. The flip ran BEFORE the save: cur.Next = prev overwrote the address of the rest, and next := cur.Next 'rescued' the trashed value (nil). One line sits in the wrong seat — the save must come first. Tap the line that flips too early.",
+        "hint": "next is supposed to rescue the address of the rest — but it copies AFTER the flip trashed it. Which line flips?",
+        "bugName": "flip before save",
+        "code": "package main\n\nimport \"fmt\"\n\ntype Node struct {\n\tVal  int\n\tNext *Node\n}\n\nfunc main() {\n\thead := &Node{Val: 1, Next: &Node{Val: 2, Next: &Node{Val: 3}}}\n\tvar prev *Node\n\tcur := head\n\tfor cur != nil {\n\t\tcur.Next = prev\n\t\tnext := cur.Next\n\t\tprev = cur\n\t\tcur = next\n\t}\n\tfmt.Println(prev.Val)\n}",
+        "bug": 14
+      },
+      {
+        "kind": "fix",
+        "title": "Find the middle",
+        "text": "Two walkers, two speeds: slow strolls one box per round, fast sprints two. When fast runs OUT of track, slow stands exactly in the middle — no counting, no length needed, one pass. This starter's 'fast' walker strolls like slow (fast = fast.Next), so slow rides all the way to the caboose (5). Five boxes, true middle 3: predict it, then make fast actually sprint with fast.Next.Next. The loop guard already protects both hops — that is what fast.Next != nil is FOR.",
+        "hint": "fast must cover TWO boxes per round: fast = fast.Next.Next. The loop guard already protects both hops.",
+        "code": "package main\n\nimport \"fmt\"\n\ntype Node struct {\n\tVal  int\n\tNext *Node\n}\n\nfunc main() {\n\thead := &Node{Val: 1, Next: &Node{Val: 2, Next: &Node{Val: 3, Next: &Node{Val: 4, Next: &Node{Val: 5}}}}}\n\tslow, fast := head, head\n\tfor fast != nil && fast.Next != nil {\n\t\tslow = slow.Next\n\t\tfast = fast.Next\n\t}\n\tfmt.Println(slow.Val)\n}",
+        "expected": "3",
+        "goal": "3",
+        "predict": {
+          "options": [
+            "5",
+            "3",
+            "4"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "build",
+        "title": "Delete at position",
+        "text": "Deleting box 2 of 1->2->3->4: walk to box 1, then skip the victim by pointing 1 straight at 3 — nothing is 'removed', it is just unlinked and forgotten (Go's garbage collector buries it). Position 0 is special: nothing stands before it, so the HEAD itself moves. Two impostors: one 'moves' head to itself (a no-op in disguise), one skips TWO boxes. Pick the true surgery.",
+        "hint": "Walk to the box BEFORE the victim (pos-1 hops), then stitch across it. Head deletion has no 'before' — move head itself.",
+        "lines": [
+          "if pos == 0 {",
+          "\thead = head.Next",
+          "}",
+          "cur := head",
+          "for i := 0; i < pos-1; i++ {",
+          "\tcur = cur.Next",
+          "}",
+          "cur.Next = cur.Next.Next"
+        ],
+        "decoys": [
+          "\thead = head",
+          "\tcur = cur.Next.Next"
+        ]
+      },
+      {
+        "kind": "quiz",
+        "title": "Tortoise meets hare?",
+        "text": "Same two walkers — but the track LOOPS: the last box points back to an earlier one, so nil never comes. Slow strolls, fast sprints, forever. Think relatively: on a loop, fast gains exactly one box per round on slow, so the gap must hit zero. What does that meeting PROVE — and what would reaching nil have proven instead?",
+        "hint": "On a loop, the gap between them shrinks by one every round. What hits zero?",
+        "quiz": {
+          "options": [
+            "They meet inside the loop — proof of a cycle",
+            "Fast laps slow forever, never meeting",
+            "Slow catches fast from behind"
+          ],
+          "answer": 0,
+          "why": "Fast gains one box per round on a loop, so it must land on slow eventually. Meeting without hitting nil means cycle — Floyd's algorithm. No meeting and a nil ending means a clean list."
+        }
+      },
+      {
+        "kind": "trace",
+        "title": "One flip, frozen",
+        "text": "One reversal round, frozen mid-motion: box 1's arrow swinging from 2 to nil while next guards the rest. Step through the three moments — save, flip, walk.",
+        "hint": "The flip is only safe because next already holds the rest. Which frame proves it?",
+        "trace": {
+          "frames": [
+            {
+              "caption": "Before: prev holds the finished part (nothing yet), cur is box 1 under repair, next rescues the rest (2→3).",
+              "lanes": [
+                { "label": "prev", "cells": ["nil"], "hi": [] },
+                { "label": "cur", "cells": ["1→2"], "hi": [0] },
+                { "label": "next", "cells": ["2→3"], "hi": [] }
+              ]
+            },
+            {
+              "caption": "Flip: cur.Next swings to prev. Box 1 now ends the flipped part — and the ONLY surviving copy of '→2' lives in next.",
+              "lanes": [
+                { "label": "prev", "cells": ["nil"], "hi": [] },
+                { "label": "cur", "cells": ["1→nil"], "hi": [0] },
+                { "label": "next", "cells": ["2→3"], "hi": [0] }
+              ]
+            },
+            {
+              "caption": "Walk: prev advances onto 1, cur advances onto the rescued 2→3. One arrow flipped, two rounds to go — same move, twice more.",
+              "lanes": [
+                { "label": "prev", "cells": ["1→nil"], "hi": [0] },
+                { "label": "cur", "cells": ["2→3"], "hi": [] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Count the hops",
+        "text": "Head is box 1, destination box 3. Lists don't know their length — hops are the only ruler. No options: how many Next hops to stand ON box 3?",
+        "hint": "head→2 is the first hop. Then?",
+        "typeA": { "answer": "2", "why": "head→2 is one hop, 2→3 is the second. No len, no index — following arrows and counting steps." }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Linked lists, owned: boxes (structs) chained by addresses (pointers), walked to nil, reversed with three hands (save before flip!), middled with two speeds, cycles caught when walkers meet instead of ending.\n\nNext: Stacks — a list with house rules: last on, first off.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ]
+  },
+  {
+    "id": "stacks",
+    "name": "Stacks",
+    "icon": "ph-stack",
+    "desc": "Last on, first off: push with append, pop with a slice haircut.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The plate pile",
+        "text": "A stack is a pile of plates: add to the top (push), take from the top (pop). Last on, FIRST off — LIFO. In Go the pile is just a slice: push is append, pop is 'read the last slot, THEN shorten the slice'. Both halves matter: reading alone leaves the plate on the pile — that is a peek, not a pop.\n\nTwo rules veterans never break: never pop an empty pile (s[:len(s)-1] on empty asks for slot -1 and panics), and pop means read AND shorten, always together.",
+        "hint": "No action needed — just read. len(s)-1 is always the top plate; s[:len(s)-1] is the pile without it.",
+        "code": "s := []int{} // empty pile\ns = append(s, 1, 2, 3) // push 1, push 2, push 3\ntop := s[len(s)-1] // peek: 3\ns = s[:len(s)-1] // pop: pile is now [1 2]"
+      },
+      {
+        "kind": "run",
+        "title": "Push, pop, peek",
+        "text": "Three plates on (1, 2, 3), one plate off. top reads the last slot WITHOUT shortening (a peek: 3). The pop shortens 3 tenants to 2. Predict BOTH numbers — the value AND the length — then run. If you said '3 2', you already think in push and pop.",
+        "hint": "top reads the last slot (3). Pop shortens but keeps the rest: length drops 3 to 2.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := []int{}\n\ts = append(s, 1, 2, 3)\n\ttop := s[len(s)-1]\n\ts = s[:len(s)-1]\n\tfmt.Println(top, len(s))\n}",
+        "expected": "3 2",
+        "goal": "3 2",
+        "predict": {
+          "options": [
+            "3 2",
+            "3 3",
+            "1 2"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Balanced brackets",
+        "text": "Open brackets push, close brackets pop-and-match: every closer must meet the opener waiting on top. A leftover pile means unclosed openers; popping empty means a closer with no opener. Assemble the checker for '(()())' — openers and closers interleaved, pile empty at the end, prints true. (This input is KIND: it never pops empty. The next step is not.)",
+        "hint": "'(' pushes. ')' pops. An empty pile at the end means every opener found its closer.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\ts := \"(()())\"",
+          "\tvar st []rune",
+          "\tfor _, c := range s {",
+          "\t\tif c == '(' {",
+          "\t\t\tst = append(st, c)",
+          "\t\t} else {",
+          "\t\t\tst = st[:len(st)-1]",
+          "\t\t}",
+          "\t} // for",
+          "\tfmt.Println(len(st) == 0)",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Pop from nothing",
+        "text": "Same checker, hostile input: ')(' — the FIRST character is a closer, the pile is empty, and the pop runs anyway. s[:len(s)-1] at length 0 asks for slot -1: panic. Real checkers guard every pop with len(st) > 0. Tap the line that pops from nothing — the exact line the guard must wrap.",
+        "hint": "s[:len(s)-1] with length 0 asks for slot -1. Which line runs it on the very first character?",
+        "bugName": "pop from empty slice",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := \")(\"\n\tvar st []rune\n\tfor _, c := range s {\n\t\tif c == '(' {\n\t\t\tst = append(st, c)\n\t\t} else {\n\t\t\tst = st[:len(st)-1]\n\t\t}\n\t}\n\tfmt.Println(len(st) == 0)\n}",
+        "bug": 11
+      },
+      {
+        "kind": "fix",
+        "title": "Min in one hop",
+        "text": "A min-stack answers 'what is smallest?' INSTANTLY — O(1), no scanning — by keeping a SECOND pile of minimums-so-far. Every push grows both piles; every pop must shrink both. This starter pops the value pile but forgets the minimums pile: after pushing 5, 1, popping, pushing 4, the stale minimums still remember the popped 1 and answer 1. But the live pile holds [5, 4] — true minimum 4. Predict it, then teach pop both piles. One missing line.",
+        "hint": "Every push grows BOTH piles, so every pop must shrink BOTH. One line is missing after the vals pop.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvals := []int{}\n\tmins := []int{}\n\tpush := func(v int) {\n\t\tvals = append(vals, v)\n\t\tif len(mins) == 0 || v < mins[len(mins)-1] {\n\t\t\tmins = append(mins, v)\n\t\t} else {\n\t\t\tmins = append(mins, mins[len(mins)-1])\n\t\t}\n\t}\n\tpush(5)\n\tpush(1)\n\tvals = vals[:len(vals)-1]\n\tpush(4)\n\tfmt.Println(mins[len(mins)-1])\n}",
+        "expected": "4",
+        "goal": "4",
+        "predict": {
+          "options": [
+            "1",
+            "4",
+            "5"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "quiz",
+        "title": "Why two piles?",
+        "text": "Why burn a whole second pile instead of keeping one min variable? Push 5, push 1, pop — and ask. One variable still says 1 (it never heard about the pop); the parallel pile rewound to 5 exactly as the values rewound. What does the pile remember that the variable cannot?",
+        "hint": "Push 5, push 1, pop. What should getMin say — and what would one lonely variable say after the pop?",
+        "quiz": {
+          "options": [
+            "Popping the minimum must reveal the PREVIOUS minimum",
+            "Two piles use less memory than one",
+            "Go slices cannot store minimums"
+          ],
+          "answer": 0,
+          "why": "One variable forgets history: pop the 1 and nothing remembers 5 was next. The parallel pile rewinds minimums exactly as values rewind."
+        }
+      },
+      {
+        "kind": "trace",
+        "title": "Two piles, four moves",
+        "text": "Min-stack's parallel piles through push 5, push 1, pop, push 4. Both piles move on EVERY op — that lockstep is the whole invention. Step through all four moves and read the top at the end.",
+        "hint": "Push grows both, pop shrinks both. What does the top read after all four?",
+        "trace": {
+          "frames": [
+            {
+              "caption": "Push 5: both piles grow. Minimum so far: 5.",
+              "lanes": [
+                { "label": "vals", "cells": ["5"], "hi": [] },
+                { "label": "mins", "cells": ["5"], "hi": [] }
+              ]
+            },
+            {
+              "caption": "Push 1: new minimum — recorded on top of BOTH piles.",
+              "lanes": [
+                { "label": "vals", "cells": ["5", "1"], "hi": [1] },
+                { "label": "mins", "cells": ["5", "1"], "hi": [1] }
+              ]
+            },
+            {
+              "caption": "Pop: BOTH piles shrink. The 1 leaves the values AND the minimums — 5 rules again. (The bug you fixed forgot this frame.)",
+              "lanes": [
+                { "label": "vals", "cells": ["5"], "hi": [] },
+                { "label": "mins", "cells": ["5"], "hi": [] }
+              ]
+            },
+            {
+              "caption": "Push 4: mins records min(4,5) = 4 on top. Top reads 4 — one hop, no scanning, history intact.",
+              "lanes": [
+                { "label": "vals", "cells": ["5", "4"], "hi": [1] },
+                { "label": "mins", "cells": ["5", "4"], "hi": [1] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Stacks, owned: push with append, pop by reading the last slot AND shortening, empty-pop panics (guard with len), parallel piles remember history (min-stack), brackets match by push-and-pop.\n\nNext: Queues — same slice tricks, opposite manners: first on, first off.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ]
+  },
+  {
+    "id": "queues",
+    "name": "Queues",
+    "icon": "ph-queue",
+    "desc": "First in, first out: append at the back, serve from the front.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The checkout line",
+        "text": "A queue is a checkout line: newcomers join the BACK (enqueue = append), the FRONT gets served first (dequeue = read slot 0, drop it with q = q[1:]). FIFO — first in, first out. Opposite manners from stacks, same slice underneath.\n\nOne veteran warning: q[1:] does NOT free the front slot. Reslicing moves the window's start pointer — O(1), beautifully cheap — but the whole backing array stays alive while anyone holds it. Learning-sized lines: ignore that. Million-customer lines: a ring buffer earns its keep.",
+        "hint": "No action needed — just read. Append at the back, serve from the front. The only new syntax is q[1:] — 'everything after the first'."
+      },
+      {
+        "kind": "run",
+        "title": "Serve in order",
+        "text": "Three customers join: a, b, c. Serve two FROM THE FRONT. First served: a. Second: b. Leftover line: [c] — fmt prints slices with brackets. Predict all three pieces ('a b [c]'), then run. If you served c first, you built a stack in disguise — two steps from now shows that exact crime.",
+        "hint": "Serve from the FRONT: a first, then b. fmt prints the leftover slice with brackets: [c].",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tq := []string{}\n\tq = append(q, \"a\", \"b\", \"c\")\n\tfirst := q[0]\n\tq = q[1:]\n\tsecond := q[0]\n\tq = q[1:]\n\tfmt.Println(first, second, q)\n}",
+        "expected": "a b [c]",
+        "goal": "a b [c]",
+        "predict": {
+          "options": [
+            "a b [c]",
+            "c b [a]",
+            "a b c"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Reverse the line",
+        "text": "A stack reverses anything it touches — weaponize that: dequeue the WHOLE line into a pile (the front becomes the BOTTOM), then pop it all back into the line. 'a b c' in, '[c b a]' out. Assemble all sixteen lines. Two machines, one program: the drain loop (while len(q) > 0) and the rebuild loop (while len(st) > 0).",
+        "hint": "Front of the line becomes the BOTTOM of the pile — so it comes back last. Drain with q[1:], rebuild with append.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tq := []string{\"a\", \"b\", \"c\"}",
+          "\tvar st []string",
+          "\tfor len(q) > 0 {",
+          "\t\tst = append(st, q[0])",
+          "\t\tq = q[1:]",
+          "\t} // for",
+          "\tfor len(st) > 0 {",
+          "\t\ttop := st[len(st)-1]",
+          "\t\tst = st[:len(st)-1]",
+          "\t\tq = append(q, top)",
+          "\t} // for",
+          "\tfmt.Println(q)",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Serving from the wrong end",
+        "text": "This 'queue' serves c FIRST — the last customer walks out first. FIFO serves slot 0; somewhere slot 0 was swapped for the back slot (q[len(q)-1]), with matching back-shortening to hide it. The output even confesses: 'c [a b]'. Tap the line serving the wrong end.",
+        "hint": "FIFO serves slot 0. Which line reads the LAST slot instead?",
+        "bugName": "serves from the back",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tq := []string{\"a\", \"b\", \"c\"}\n\tfirst := q[len(q)-1]\n\tq = q[:len(q)-1]\n\tfmt.Println(first, q)\n}",
+        "bug": 6
+      },
+      {
+        "kind": "fix",
+        "title": "Evens first, odds after",
+        "text": "Split 1 to 6 into evens-then-odds with NEITHER group scrambled: [2 4 6 1 3 5]. This starter parks odds by PREPENDING (append([]int{n}, odds...)) — each newcomer lands in FRONT, so odds exit 5 3 1, reversed. Prepending is stack manners wearing a queue costume. Queues join at the BACK. Predict the true order, then swap one expression for append(odds, n).",
+        "hint": "Prepending (append([]int{n}, odds...)) stacks newcomers in FRONT — last odd lands first. Queues append at the BACK: odds = append(odds, n).",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{1, 2, 3, 4, 5, 6}\n\tevens := []int{}\n\todds := []int{}\n\tfor _, n := range nums {\n\t\tif n%2 == 0 {\n\t\t\tevens = append(evens, n)\n\t\t} else {\n\t\t\todds = append([]int{n}, odds...)\n\t\t}\n\t}\n\tfmt.Println(append(evens, odds...))\n}",
+        "expected": "[2 4 6 1 3 5]",
+        "goal": "[2 4 6 1 3 5]",
+        "predict": {
+          "options": [
+            "[2 4 6 5 3 1]",
+            "[2 4 6 1 3 5]",
+            "[1 3 5 2 4 6]"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "quiz",
+        "title": "Slice dequeue costs?",
+        "text": "q = q[1:] on a 10,000-customer line. No slots move — only the window's start pointer does — so TIME is O(1), always. But what stays expensive? The backing array keeps every served slot alive until nobody holds the slice. Shifting with copy() would be O(n) time but frees as it goes. So: which price do you pay, and when does each hurt?",
+        "hint": "No slots move — only the window's start. So time is cheap; WHAT stays expensive?",
+        "quiz": {
+          "options": [
+            "O(1) time — but the backing array keeps every served slot alive",
+            "O(n) time — all slots shift left",
+            "It frees the front slot immediately"
+          ],
+          "answer": 0,
+          "why": "Reslicing only moves the start pointer — O(1). The price is memory: slots before the new start stay referenced until NOBODY holds the array. Shifting with copy() would be O(n) time but frees as it goes — pick your poison."
+        }
+      },
+      {
+        "kind": "trace",
+        "title": "The window slides",
+        "text": "Serving a, then b, from [a b c] — no slots move, only the window's start. Step through two serves and watch the backing wall keep what the window drops.",
+        "hint": "The q lane narrows; the backing lane never does. Who pays for that?",
+        "trace": {
+          "frames": [
+            {
+              "caption": "q covers the whole wall; slot 0 (a) is next to serve.",
+              "lanes": [
+                { "label": "backing wall", "cells": ["a", "b", "c"], "hi": [] },
+                { "label": "q window", "cells": ["a", "b", "c"], "hi": [0] }
+              ]
+            },
+            {
+              "caption": "Serve a: q = q[1:] slides the window — O(1), zero slots moved. But the backing wall still holds a: memory kept, not freed.",
+              "lanes": [
+                { "label": "backing wall", "cells": ["a", "b", "c"], "hi": [0] },
+                { "label": "q window", "cells": ["b", "c"], "hi": [0] }
+              ]
+            },
+            {
+              "caption": "Serve b: window narrows again, two served slots still referenced. Reslicing is cheap in time and pricey in memory — pick your poison knowingly.",
+              "lanes": [
+                { "label": "backing wall", "cells": ["a", "b", "c"], "hi": [0, 1] },
+                { "label": "q window", "cells": ["c"], "hi": [] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Queues, owned: append at back, serve from front, reslice is O(1) time but holds memory, wrong-end serving makes a stack in disguise, prepending reverses (stack manners!).\n\nThe sorted half of the track is next: Binary Search already waits — same seven suspects, brand-new speed.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ]
+  },
+  {
+    "id": "binsearch",
+    "name": "Binary Search",
+    "icon": "ph-magnifying-glass",
+    "desc": "Halve the list till the answer falls out — the guessing game, with a name.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "visual",
+        "title": "Watch the hunt",
+        "text": "Binary search is the guessing game with a name — but it charges ONE admission fee: the list must be SORTED. Sorted means every guess teaches you about HALF the list: too small? everything left is innocent. Too big? everything right is.\n\nWhat you see: the same 7 bricks, target 23. The L and H markers fence the still-possible — everything outside them is cleared WITHOUT being checked (grey bricks). M is the current guess: the middle of the fence.\n\nWhat to do: press Next guess to the very end and count the guesses: 2. Linear search needed 6 for this same target. Then scale it: at a million items, guesses go to ~20 while checks go to a million. That gap has a name: O(log n).",
+        "hint": "Nothing to solve — just step through. Watch the grey bricks: those suspects are cleared without ever being checked.",
+        "viz": {
+          "nums": [
+            2,
+            5,
+            8,
+            12,
+            16,
+            23,
+            38
+          ],
+          "target": 23,
+          "frames": [
+            {
+              "low": 0,
+              "high": 6,
+              "mid": -1,
+              "found": -1,
+              "note": "7 suspects in a sorted row, target 23. L and H fence the whole row as still-possible — nothing cleared yet. Sorting is the admission fee: without it, no guess teaches anything."
+            },
+            {
+              "low": 0,
+              "high": 6,
+              "mid": 3,
+              "found": -1,
+              "note": "Round 1: middle of slots 0 to 6 is slot 3, holding 12. Too small — so slots 0 to 3 are ALL innocent. Three suspects cleared with ONE guess; L marches to 4."
+            },
+            {
+              "low": 4,
+              "high": 6,
+              "mid": -1,
+              "found": -1,
+              "note": "3 suspects left (16, 23, 38) between L=4 and H=6. The hunt continues INSIDE this smaller row — the cleared half is never looked at again."
+            },
+            {
+              "low": 4,
+              "high": 6,
+              "mid": 5,
+              "found": -1,
+              "note": "Round 2: middle of 4 to 6 is slot 5, holding 23. The target — case closed in 2 rounds. Linear search needed 6 checks for this same target."
+            },
+            {
+              "low": 4,
+              "high": 6,
+              "mid": 5,
+              "found": 5,
+              "note": "7 suspects, 2 guesses, 1 answer. Every round threw away half of everything left — that halving is O(log n), and you just watched it work."
+            }
+          ]
+        }
+      },
+      {
+        "kind": "read",
+        "title": "You already know this one",
+        "text": "Secret 7. Guesses 3 (too low — bottom half gone), 9 (too high — top half gone), 7. You have PLAYED binary search; it just never introduced itself. The program below is that game, formalized: two borders (low, high), a middle guess, three fates — found means celebrate, too small means low jumps PAST middle, too big means high drops BELOW middle. Read it slowly; you build every line of it next.",
+        "hint": "No action needed — just read. Notice the loop keeps two borders, low and high, and squeezes them together.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 23\n\tlow, high := 0, len(nums)-1\n\tfor low <= high {\n\t\tmid := (low + high) / 2\n\t\tif nums[mid] == target {\n\t\t\tfmt.Println(\"Found at\", mid)\n\t\t\treturn\n\t\t} else if nums[mid] < target {\n\t\t\tlow = mid + 1\n\t\t} else {\n\t\t\thigh = mid - 1\n\t\t}\n\t}\n\tfmt.Println(\"Not found\")\n}"
+      },
+      {
+        "kind": "run",
+        "title": "Find the middle",
+        "text": "Every round starts identically: point at the middle of the borders. Borders 0 and 7 give (0+7)/2 — but Go divides whole numbers the whole-number way: remainders are THROWN AWAY, not rounded, so 7/2 is 3. There is no slot 3.5. Predict (dodge the 3.5 trap), then run.",
+        "hint": "7 / 2 in Go is 3, not 3.5 — remainders are thrown away, not rounded.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tlow, high := 0, 7\n\tmid := (low + high) / 2\n\tfmt.Println(mid)\n}",
+        "expected": "3",
+        "goal": "3",
+        "predict": {
+          "options": [
+            "3.5",
+            "3",
+            "4"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "order",
+        "title": "The slow way first",
+        "text": "Before the fast way, FEEL the slow way: linear search checks every item front to back, never throwing anything away. Nine lines, full program, shuffled. Assemble it — and notice what it never does: no borders, no middle, no discarding. That absence is exactly what binary search adds.",
+        "hint": "package, import, func main opens the door. The list loads before the loop, the loop opens before the check, and the two lone braces close for, then func.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tnums := []int{2, 5, 8, 12, 16, 23, 38}",
+          "\tfor i, n := range nums {",
+          "\t\tif n == 23 {",
+          "\t\t\tfmt.Println(\"Found at\", i)",
+          "\t\t}",
+          "\t} // for",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "build",
+        "title": "The halving heart",
+        "text": "The core, six lines: look at the middle, then throw away the half that CANNOT hold the answer. Equal celebrates. Smaller middle means the answer hides RIGHT — so low jumps PAST middle (mid+1, never mid: a zero-move loops forever). Two classic real-world bugs hide in the pool: one moves the WRONG border, one moves by ZERO. Pick only true lines.",
+        "hint": "Equal means celebrate. Smaller middle means the answer hides right — move low up. And never trust a line that moves a border by zero: the range must shrink every round.",
+        "lines": [
+          "mid := (low + high) / 2",
+          "if nums[mid] == target {",
+          "\tfmt.Println(\"Found at\", mid)",
+          "} else if nums[mid] < target {",
+          "\tlow = mid + 1",
+          "} // if"
+        ],
+        "decoys": [
+          "\thigh = mid + 1",
+          "\tlow = mid"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "The loop that never ends",
+        "text": "This search compiles clean — and runs FOREVER. When the middle is too small, low = mid moves the border by ZERO whenever low already equals mid: the range never shrinks, the loop never exits, the program hangs instead of crashing. Hangs are worse than panics — no error, just silence. Tap the line that traps it. (It forgot three characters: ' + 1'.)",
+        "hint": "When the middle is too small, low must jump PAST the middle. Which line forgets the +1?",
+        "bugName": "range never shrinks",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 23\n\tlow, high := 0, len(nums)-1\n\tfor low <= high {\n\t\tmid := (low + high) / 2\n\t\tif nums[mid] == target {\n\t\t\tfmt.Println(\"Found at\", mid)\n\t\t\treturn\n\t\t} else if nums[mid] < target {\n\t\t\tlow = mid\n\t\t} else {\n\t\t\thigh = mid - 1\n\t\t}\n\t}\n}",
+        "bug": 14
+      },
+      {
+        "kind": "fix",
+        "title": "The edge thief",
+        "text": "This search works — except it can NEVER find the last item. Hunting 38 prints 'Not found' with 38 sitting at index 6. The loop condition for low < high quits one round early: when the borders MEET on the final slot, < calls it done without checking. One character steals the edge. First predict the ending this SHOULD have ('Found at 6'), then give the character back (<=).",
+        "hint": "for low < high stops when the borders meet — but a single remaining slot still needs checking. The condition needs one more character.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 38\n\tlow, high := 0, len(nums)-1\n\tfor low < high {\n\t\tmid := (low + high) / 2\n\t\tif nums[mid] == target {\n\t\t\tfmt.Println(\"Found at\", mid)\n\t\t\treturn\n\t\t} else if nums[mid] < target {\n\t\t\tlow = mid + 1\n\t\t} else {\n\t\t\thigh = mid - 1\n\t\t}\n\t}\n\tfmt.Println(\"Not found\")\n}",
+        "expected": "Found at 6",
+        "goal": "Found at 6",
+        "predict": {
+          "options": [
+            "Not found",
+            "Found at 6",
+            "Found at 5"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole search, healthy: sorted list, two borders, halving middle, honest edges (<=), celebration on equality. Hunting 23 at slot 5 — the same hunt you watched in bricks, now in code. Predict 'Found at 5', run it, and match the output against the two rounds you stepped through: which round found it?",
+        "hint": "No edits needed. But call it first — the prediction box is watching.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 23\n\tlow, high := 0, len(nums)-1\n\tfor low <= high {\n\t\tmid := (low + high) / 2\n\t\tif nums[mid] == target {\n\t\t\tfmt.Println(\"Found at\", mid)\n\t\t\treturn\n\t\t} else if nums[mid] < target {\n\t\t\tlow = mid + 1\n\t\t} else {\n\t\t\thigh = mid - 1\n\t\t}\n\t}\n\tfmt.Println(\"Not found\")\n}",
+        "expected": "Found at 5",
+        "goal": "Found at 5",
+        "predict": {
+          "options": [
+            "Found at 5",
+            "Found at 4",
+            "Not found"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Name the jump",
+        "text": "Middle too small — low must jump PAST it, never onto it. Not the line, the landing: type EXACTLY where low goes. Three tokens.",
+        "hint": "Past the checked middle. mid, plus…?",
+        "typeA": { "answer": "mid + 1", "why": "low = mid + 1: past the middle, never onto it. Landing ON mid is the zero-move — the infinite loop you already spotted." }
+      },
+      {
+        "kind": "run",
+        "title": "Prove the absence",
+        "text": "Final exam — a REAL solve, not a replay. The starter hunts 23 and finds it. Your job: prove 7 is NOT in the list. Change target to 7, predict the new ending FIRST ('Not found' — the borders squeeze to nothing and the loop falls out without celebrating), then run the proof. Searching includes proving absence: a search that cannot say 'not here' is half a search.",
+        "hint": "Change target := 23 to target := 7. The search will squeeze the borders to nothing and fall out of the loop.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 23\n\tlow, high := 0, len(nums)-1\n\tfor low <= high {\n\t\tmid := (low + high) / 2\n\t\tif nums[mid] == target {\n\t\t\tfmt.Println(\"Found at\", mid)\n\t\t\treturn\n\t\t} else if nums[mid] < target {\n\t\t\tlow = mid + 1\n\t\t} else {\n\t\t\thigh = mid - 1\n\t\t}\n\t}\n\tfmt.Println(\"Not found\")\n}",
+        "expected": "Not found",
+        "goal": "Not found",
+        "predict": {
+          "options": [
+            "Found at 5",
+            "Not found",
+            "Found at 2"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "read",
+        "title": "Why halving wins",
+        "text": "Count the work, then scale it. Seven items: linear checks up to 7, binary needs at most 3 rounds. A million sorted items: linear checks up to a MILLION; binary halves (a million, 500 thousand, 250 thousand...) and after just 20 rounds one item is left. Twenty versus a million. 2^20 is about a million — that arithmetic IS O(log n), and you now own it, in bricks and in code.\n\nNext in this track: Two Pointers — the inward walk you already know, finally named.",
+        "hint": "No action needed — just feel the numbers. 2 to the power of 20 is about a million."
+      }
+    ]
+  },
+  {
+    "id": "twopointer",
+    "name": "Two Pointers",
+    "icon": "ph-arrows-horizontal",
+    "desc": "Two fingers, one list: opposite ends, same direction, fast and slow.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Two fingers on the list",
+        "text": "Every finger-walk you have done gets its name today — and the name reveals the PATTERN. Opposite ends (reverses, palindromes, sorted two-sum): fingers start wide and squeeze. Same direction (dedup's writer chasing the reader): one finger never passes the other. Fast and slow (middle, cycles): different speeds, same track.\n\nThree shapes, one law: every round must SHRINK the unknown. Opposite ends squeeze the window, same direction advances the frontier, fast and slow spend the track. A finger that shrinks nothing is a loop that never ends.",
+        "hint": "No action needed — just name what you already own: reverse walked opposite ends, dedup walked same direction, middle walked fast and slow."
+      },
+      {
+        "kind": "run",
+        "title": "Sorted two sum",
+        "text": "Sorted shelf, target 28 — and sorting is what makes fingers work. Too big? The BIG end is guilty: step hi down (smaller values live left). Too small? The SMALL end is innocent: step lo up. Trace it: 2+38=40 too big (hi falls), 2+23=25 too small (lo climbs), 5+23=28 — slots 1 and 5. Predict '1 5', then run. Compare with the MAP two-sum: same question, no sorting needed there — fingers are the price of skipping the map.",
+        "hint": "Too big? The biggest finger steps down. Too small? The smallest steps up. 40 too big, 25 too small, 28 just right.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 28\n\tlo, hi := 0, len(nums)-1\n\tfor lo < hi {\n\t\tsum := nums[lo] + nums[hi]\n\t\tif sum == target {\n\t\t\tfmt.Println(lo, hi)\n\t\t\treturn\n\t\t} else if sum < target {\n\t\t\tlo++\n\t\t} else {\n\t\t\thi--\n\t\t}\n\t}\n\tfmt.Println(\"none\")\n}",
+        "expected": "1 5",
+        "goal": "1 5",
+        "predict": {
+          "options": [
+            "1 5",
+            "0 6",
+            "2 4"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Palindrome check",
+        "text": "'racecar' reads the same from both ends — fingers start wide (0 and 6), compare letters, squeeze. First mismatch ends it (break, false); a full squeeze means true. Assemble all twelve lines. The squeeze rides in the for-post (i+1, j-1): compare in the body, move in the header.",
+        "hint": "Compare the fingers' letters first; one mismatch ends it. The squeeze (i up, j down) rides in the for-post.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\ts := \"racecar\"",
+          "\tok := true",
+          "\tfor i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {",
+          "\t\tif s[i] != s[j] {",
+          "\t\t\tok = false",
+          "\t\t\tbreak",
+          "\t\t}",
+          "\t} // for",
+          "\tfmt.Println(ok)",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Crossed wires",
+        "text": "This sorted hunt NEVER finishes. When the sum is too big, the code grows the big end (hi++) INSTEAD of shrinking it — the window swells forever, the answer recedes forever. The law broken: no round shrinks the unknown. Tap the line marching the wrong way. The fix is two characters (--) in the same seat.",
+        "hint": "Sum too big means the BIG end must shrink. Which line grows it instead?",
+        "bugName": "wrong finger moves",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 5, 8, 12, 16, 23, 38}\n\ttarget := 28\n\tlo, hi := 0, len(nums)-1\n\tfor lo < hi {\n\t\tsum := nums[lo] + nums[hi]\n\t\tif sum == target {\n\t\t\tfmt.Println(lo, hi)\n\t\t\treturn\n\t\t} else if sum < target {\n\t\t\tlo++\n\t\t} else {\n\t\t\thi++\n\t\t}\n\t}\n\tfmt.Println(\"none\")\n}",
+        "bug": 16
+      },
+      {
+        "kind": "fix",
+        "title": "Dedup, fingered",
+        "text": "Sorted dedup with a writer finger w: copy each first-timer into place. This starter BUMPS before writing (w++, then nums[w] = ...): w runs ahead, slot 1 keeps its stale twin, and [1 1 2 3 3] comes out [1 1 2] — the 3 lost, a ghost 1 kept. The order of two lines is the entire bug: write FIRST at w (claim the slot), THEN bump (move the frontier). Predict the true shelf, then swap the order.",
+        "hint": "Bump-then-write skips a slot: w runs ahead and slot 1 keeps its stale twin. Write FIRST at w, then bump.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{1, 1, 2, 3, 3}\n\tw := 1\n\tfor i := 1; i < len(nums); i++ {\n\t\tif nums[i] != nums[i-1] {\n\t\t\tw++\n\t\t\tnums[w] = nums[i]\n\t\t}\n\t}\n\tfmt.Println(nums[:w])\n}",
+        "expected": "[1 2 3]",
+        "goal": "[1 2 3]",
+        "predict": {
+          "options": [
+            "[1 1 2]",
+            "[1 2 3]",
+            "[1 1 2 3 3]"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "build",
+        "title": "The sorted hunt",
+        "text": "The opposite-ends engine, seven lines: borders at the ends (0 and len-1), loop while unmet (lo < hi — meeting means the window is empty), read the pair, celebrate equality with coordinates, squeeze by comparison. Two impostors: one grows the big end (the 'Crossed wires' criminal), one swaps the walkers (lo, hi = hi, lo — instant chaos). Pick the true engine.",
+        "hint": "Borders start at the ends, the loop runs while they haven't met, too-small steps lo up, too-big steps hi down.",
+        "lines": [
+          "lo, hi := 0, len(nums)-1",
+          "for lo < hi {",
+          "\tsum := nums[lo] + nums[hi]",
+          "\tif sum == target {",
+          "\t\tfmt.Println(lo, hi)",
+          "\t\treturn",
+          "\t} // if"
+        ],
+        "decoys": [
+          "\t\thi++",
+          "\tlo, hi = hi, lo"
+        ]
+      },
+      {
+        "kind": "quiz",
+        "title": "When do fingers stop?",
+        "text": "Opposite-ends walk, any list: lo only climbs, hi only falls, so the window between them shrinks EVERY round and cannot skip a pair. lo >= hi means the window is EMPTY — everything was tried exactly once, each pair seen by exactly one round. What does that prove about cost — and why can neither finger cross the other?",
+        "hint": "lo only climbs, hi only falls. What does the window between them do every round?",
+        "quiz": {
+          "options": [
+            "When lo meets hi — every pair checked",
+            "When both reach the end",
+            "After exactly n steps"
+          ],
+          "answer": 0,
+          "why": "lo only climbs, hi only falls: the window between them shrinks every round and can't skip a pair. lo >= hi means the window is empty — everything was tried exactly once. That shrinking window is O(n)."
+        }
+      },
+      {
+        "kind": "trace",
+        "title": "Watch the squeeze",
+        "text": "Sorted shelf, target 28, fingers wide. Too big? hi falls. Too small? lo climbs. Step through three rounds to the pair — every round visibly smaller than the last.",
+        "hint": "Each frame's window is smaller. Which round finds it?",
+        "trace": {
+          "frames": [
+            {
+              "caption": "Fingers wide: lo=0 (2), hi=6 (38). Sum 40 — too big, and only the big end can be guilty.",
+              "lanes": [
+                { "label": "shelf [2 5 8 12 16 23 38]", "cells": ["2", "5", "8", "12", "16", "23", "38"], "hi": [0, 6] }
+              ]
+            },
+            {
+              "caption": "hi falls to 5 (23): 2+23=25 — too small now, so the small end is innocent. lo climbs.",
+              "lanes": [
+                { "label": "shelf [2 5 8 12 16 23 38]", "cells": ["2", "5", "8", "12", "16", "23", "38"], "hi": [0, 5] }
+              ]
+            },
+            {
+              "caption": "lo=1, hi=5: 5+23=28. Pair at slots 1 and 5 — found by squeezing, never by scanning.",
+              "lanes": [
+                { "label": "shelf [2 5 8 12 16 23 38]", "cells": ["2", "5", "8", "12", "16", "23", "38"], "hi": [1, 5] }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Where the frontier starts",
+        "text": "Dedup writer w: slot 0 is 'kept' by definition — nothing before it to duplicate. So writing starts at the NEXT slot. No options: type w's starting value.",
+        "hint": "The first slot needs no check. The frontier starts one past it.",
+        "typeA": { "answer": "1", "why": "nums[0] is trivially unique, so newcomers are compared into slots starting at 1. Start at 0 and you compare the shelf against itself." }
+      },
+      {
+        "kind": "read",
+        "title": "What you own now",
+        "text": "Two pointers, owned: opposite ends squeeze sorted ground (two-sum, palindrome), same-direction writers chase readers (dedup), fast and slow split tracks (middle, cycles), every round must shrink the unknown.\n\nFinal lesson: Sliding Window — a frame that glides instead of recounting.",
+        "hint": "Replay any step above with the Back button — steps pay XP once, practice is free."
+      }
+    ]
+  },
+  {
+    "id": "slidingwindow",
+    "name": "Sliding Window",
+    "icon": "ph-slideshow",
+    "desc": "A frame that glides: fixed slides, variable chases, never recount.",
+    "deck": "",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The frame that slides",
+        "text": "A window is a frame over the list — and the whole trick is NEVER recounting it. Two species. FIXED window (size GIVEN: max sum of exactly k): slide it whole — subtract the outgoing slot, add the incoming one. VARIABLE window (size IS the answer: longest stretch under budget): grow the right finger every round, chase with the left WHILE invalid.\n\nRecounting each frame from scratch also works — at O(nk). Sliding costs O(n): every slot enters once, leaves once. That enter-once-leave-once is the entire lesson.",
+        "hint": "No action needed — just hold the two shapes: given size slides whole, answer size grows-and-chases."
+      },
+      {
+        "kind": "run",
+        "title": "Max sum of 3",
+        "text": "Five numbers, frame of 3. First frame: 1+4+2 = 7, counted directly (someone has to). Then SLIDE, never recount: drop the leftmost, pull the next. 7-1+10 = 16. 16-4+3 = 15. Champion: 16. Predict it, then run — and notice best updating only upward: it remembers the champion while the frame moves on.",
+        "hint": "First frame 1+4+2=7. Then slide: drop the leftmost, pull the next — 7-1+10=16, 16-4+3=15. Best of three.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{1, 4, 2, 10, 3}\n\twindow := nums[0] + nums[1] + nums[2]\n\tbest := window\n\tfor i := 3; i < len(nums); i++ {\n\t\twindow = window - nums[i-3] + nums[i]\n\t\tif window > best {\n\t\t\tbest = window\n\t\t}\n\t}\n\tfmt.Println(best)\n}",
+        "expected": "16",
+        "goal": "16",
+        "predict": {
+          "options": [
+            "16",
+            "7",
+            "15"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Slide, don't recount",
+        "text": "The GENERAL slider: build frame one with a loop (k = 3), then glide — nums[i] enters, nums[i-k] leaves, one line, every round. Assemble all sixteen lines; it prints 16. The eviction index i-k is the whole genius: the slot falling out the back is always exactly k behind the newcomer.",
+        "hint": "First loop builds frame one. Second loop glides: nums[i] enters, nums[i-k] leaves. best only moves up.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tnums := []int{1, 4, 2, 10, 3}",
+          "\tk := 3",
+          "\twindow := 0",
+          "\tfor i := 0; i < k; i++ {",
+          "\t\twindow += nums[i]",
+          "\t} // for",
+          "\tbest := window",
+          "\tfor i := k; i < len(nums); i++ {",
+          "\t\twindow += nums[i] - nums[i-k]",
+          "\t\tif window > best {",
+          "\t\t\tbest = window",
+          "\t\t}",
+          "\t} // for",
+          "\tfmt.Println(best)",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "visual",
+        "title": "The growing frame",
+        "text": "Variable frame, LIVE: longest stretch of [2 1 5 1 3 2] summing to 7 or less. No fixed size — the ANSWER sets the size. Right grows every round (exploring); whenever the sum breaks budget, left CHASES until legal again (repairing). L and H fence the live frame; the starred slot marks each new best's end.\n\nStep to the end and watch the two jobs alternate: grow, repair, grow, repair. Final answer: length 3 — reached twice, never beaten.",
+        "hint": "Watch left: it only moves when the sum misbehaves. Every chase re-locks the longest legal frame ending at right.",
+        "viz": {
+          "nums": [
+            2,
+            1,
+            5,
+            1,
+            3,
+            2
+          ],
+          "target": 7,
+          "frames": [
+            {
+              "low": 0,
+              "high": 0,
+              "mid": -1,
+              "found": -1,
+              "note": "Right lands on slot 0: frame [2], sum 2, legal. Best length so far: 1. Right explores, left repairs — remember those two jobs."
+            },
+            {
+              "low": 0,
+              "high": 2,
+              "mid": -1,
+              "found": -1,
+              "note": "Grow right twice: [2 1 5], sum 8 — OVER the budget of 7. The frame is illegal, so left must chase until it behaves."
+            },
+            {
+              "low": 1,
+              "high": 2,
+              "mid": -1,
+              "found": -1,
+              "note": "Left drops slot 0: [1 5], sum 6 — legal again. Best length 2. Notice: left moved EXACTLY as far as needed, no further."
+            },
+            {
+              "low": 1,
+              "high": 3,
+              "mid": -1,
+              "found": 3,
+              "note": "Grow right: [1 5 1], sum exactly 7 — legal, length 3. New best, starring its end slot. Records live at the budget's edge."
+            },
+            {
+              "low": 3,
+              "high": 5,
+              "mid": -1,
+              "found": 5,
+              "note": "Right runs to the end while left chases past the 5: [1 3 2], sum 6, length 3. Ties the best — never beats it. Final answer: 3. Every slot entered once, left once: O(n)."
+            }
+          ]
+        }
+      },
+      {
+        "kind": "spot",
+        "title": "One short",
+        "text": "This variable hunt reports 2 where the true best is 3. The frame is RIGHT — the RULER is wrong. right-left counts the GAPS between slots; tenants are gaps+1. A frame from slot 1 to slot 3 holds THREE tenants (1, 2, 3), but right-left says 2. The condition uses +1 correctly while the assignment forgets it — same formula, two spellings, one of them lying. Tap the lying line.",
+        "hint": "A frame from slot 1 to slot 3 holds THREE tenants (1,2,3) — right-left says 2. Which line believes it?",
+        "bugName": "window length off by one",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{2, 1, 5, 1, 3, 2}\n\tbest := 0\n\tleft := 0\n\tsum := 0\n\tfor right := 0; right < len(nums); right++ {\n\t\tsum += nums[right]\n\t\tfor sum > 7 {\n\t\t\tsum -= nums[left]\n\t\t\tleft++\n\t\t}\n\t\tif right-left+1 > best {\n\t\t\tbest = right - left\n\t\t}\n\t}\n\tfmt.Println(best)\n}",
+        "bug": 16
+      },
+      {
+        "kind": "fix",
+        "title": "Longest without repeats",
+        "text": "The classic: longest substring of 'abba' with all-unique letters — answer 2 ('ab' or 'ba'). The starter jumps left to the last sighting BLINDLY: on the final a it time-travels BACKWARDS from slot 2 to slot 0 (seen[a] = 0, stale from round one!) and reports 4 — a window holding TWO a's, invalid on its face. left must NEVER walk backwards: jump to seen[c]+1 ONLY when that sighting is INSIDE the frame (seen[c] >= left). Stale drawers outside the frame are ancient history. Predict 2, then forbid time travel.",
+        "hint": "left must NEVER walk backwards: only jump to seen[c]+1 when that drawer is INSIDE the frame (seen[c] >= left). 'abba' punishes time-travel with 4.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := \"abba\"\n\tseen := map[byte]int{}\n\tleft := 0\n\tbest := 0\n\tfor right := 0; right < len(s); right++ {\n\t\tc := s[right]\n\t\tif _, ok := seen[c]; ok {\n\t\t\tleft = seen[c]\n\t\t}\n\t\tseen[c] = right\n\t\tif right-left+1 > best {\n\t\t\tbest = right - left + 1\n\t\t}\n\t}\n\tfmt.Println(best)\n}",
+        "expected": "2",
+        "goal": "2",
+        "predict": {
+          "options": [
+            "4",
+            "2",
+            "3"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "type",
+        "title": "Name the evicted",
+        "text": "Fixed window, k=3, newcomer arriving at i=4. One slot falls out the back this round — which one? Type it EXACTLY as code, brackets and all.",
+        "hint": "The evictee is always k behind the newcomer: i minus k, as an index into nums.",
+        "typeA": { "answer": "nums[1]", "why": "nums[i-k] = nums[4-3] = nums[1]. That expression is the whole genius of the slide: the slot leaving is always exactly k behind." }
+      },
+      {
+        "kind": "quiz",
+        "title": "Fixed or variable?",
+        "text": "Problem A: max sum of EXACTLY 3 in a row — the size is stamped on the problem. Problem B: longest stretch with sum 7 or less — the size IS the answer you are hunting. One slides whole, one grows-and-chases. Which window for which — and what breaks if you swap them? (A variable frame on A still works but thinks too hard; a fixed frame on B cannot even start.)",
+        "hint": "Is the size stamped on the problem — or is the size the answer you're hunting?",
+        "quiz": {
+          "options": [
+            "A fixed, B variable",
+            "A variable, B fixed",
+            "Both fixed"
+          ],
+          "answer": 0,
+          "why": "Given size slides whole: subtract outgoing, add incoming (A). Answer-sized grows right and chases left while invalid (B). A glides in five lines; B hunts with two fingers."
+        }
+      },
+      {
+        "kind": "read",
+        "title": "The whole shelf",
+        "text": "Ten lessons, top to bottom — the whole track is yours now. Big O counts the checks. Arrays shelve by number. Strings freeze letters you thaw with []byte. Maps trade drawers for speed. Lists chain boxes by address. Stacks pile plates, queues line customers. Halving beats scanning. Fingers squeeze sorted ground. Frames glide instead of recounting.\n\nGo vocabulary owned along the way: slices, make, append, range, maps, comma-ok, structs, pointers, nil, closures, runes, methods live next door. Replay anything with Back — mastery compounds.",
+        "hint": "You finished the DSA track. The daily quest loves fresh masteries — go earn them in Quiz."
+      }
+    ]
+  }
+]

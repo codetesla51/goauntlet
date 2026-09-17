@@ -1,0 +1,233 @@
+[
+  {
+    "id": "order-001",
+    "deck": "basics",
+    "tags": "assemble",
+    "q": "Assemble the hello program in execution order.",
+    "lines": [
+      "package main",
+      "import \"fmt\"",
+      "func main() {",
+      "  fmt.Println(\"hi\")",
+      "}"
+    ],
+    "explain": "package, then imports, then main. Go always starts at func main — everything else is setup for that moment."
+  },
+  {
+    "id": "order-002",
+    "deck": "slices",
+    "tags": "assemble",
+    "q": "Assemble the slice summer.",
+    "lines": [
+      "total := 0",
+      "for _, v := range nums {",
+      "  total += v",
+      "}",
+      "fmt.Println(total)"
+    ],
+    "explain": "Seed the accumulator, loop and add, then print. total must exist before the loop touches it."
+  },
+  {
+    "id": "order-003",
+    "deck": "structs",
+    "tags": "assemble",
+    "q": "Assemble a struct type and its first use.",
+    "lines": [
+      "type User struct {",
+      "  Name string",
+      "  Age  int",
+      "}",
+      "u := User{Name: \"Ada\", Age: 36}",
+      "fmt.Println(u.Name)"
+    ],
+    "explain": "Declare the shape before you pour data into it. Types first, values after — the compiler reads top to bottom."
+  },
+  {
+    "id": "order-004",
+    "deck": "gochan",
+    "tags": "assemble",
+    "q": "Assemble send, close, and receive in working order.",
+    "lines": [
+      "ch := make(chan int, 1)",
+      "ch <- 42",
+      "close(ch)",
+      "fmt.Println(<-ch)"
+    ],
+    "explain": "Buffered channel holds one value, send fills it, close ends the stream, receive drains it. Unbuffered would deadlock on line two."
+  },
+  {
+    "id": "order-005",
+    "deck": "errors",
+    "tags": "assemble",
+    "q": "Assemble the guard clause correctly.",
+    "lines": [
+      "data, err := os.ReadFile(f)",
+      "if err != nil {",
+      "  return err",
+      "}",
+      "use(data)"
+    ],
+    "explain": "Try, check, bail early, then use. Code after the guard runs only in the happy path — that is the whole trick."
+  },
+  {
+    "id": "order-006",
+    "deck": "std",
+    "tags": "assemble",
+    "q": "Assemble biggest-first sort, then print.",
+    "lines": [
+      "s := []int{3, 1, 2}",
+      "slices.Sort(s)",
+      "slices.Reverse(s)",
+      "fmt.Println(s)"
+    ],
+    "explain": "Ascending sort first, flip it after, print last. Reverse before Sort would just get re-sorted."
+  },
+  {
+    "id": "order-007",
+    "deck": "tooling",
+    "tags": "assemble",
+    "q": "Assemble a benchmark that actually measures.",
+    "lines": [
+      "func BenchmarkAdd(b *testing.B) {",
+      "  for i := 0; i < b.N; i++ {",
+      "    Add(1, 2)",
+      "  ",
+      "}",
+      "}"
+    ],
+    "explain": "Benchmark prefix, loop exactly b.N times, work inside. No loop and you benchmarked an empty function at lightning speed."
+  },
+  {
+    "id": "order-008",
+    "deck": "basics",
+    "tags": "assemble",
+    "q": "Assemble the even-checker.",
+    "lines": [
+      "for i := 1; i <= 3; i++ {",
+      "  if i%2 == 0 {",
+      "    fmt.Println(\"even\")",
+      "  }",
+      "}"
+    ],
+    "explain": "Loop, test each value, act inside the branch. Structure nests like bowls: loop outside, condition inside, action innermost."
+  },
+  {
+    "id": "order-009",
+    "deck": "errors",
+    "tags": "assemble",
+    "q": "Assemble open-check-defer-use.",
+    "lines": [
+      "f, err := os.Open(p)",
+      "if err != nil {",
+      "  return err",
+      "}",
+      "defer f.Close()",
+      "use(f)"
+    ],
+    "explain": "Open, bail on error, defer the close immediately, then work. Defer early so no path forgets."
+  },
+  {
+    "id": "order-010",
+    "deck": "structs",
+    "tags": "assemble",
+    "q": "Assemble the locked increment.",
+    "lines": [
+      "func (c *Counter) Inc() {",
+      "  mu.Lock()",
+      "  defer mu.Unlock()",
+      "  c.n++",
+      "}"
+    ],
+    "explain": "Lock, defer unlock, mutate, return. The defer sits right under the lock so no future edit can strand it."
+  },
+  {
+    "id": "order-011",
+    "deck": "tooling",
+    "tags": "assemble",
+    "q": "Assemble a failing-capable test.",
+    "lines": [
+      "func TestAdd(t *testing.T) {",
+      "  if Add(1, 1) != 2 {",
+      "    t.Fatal(\"wrong\")",
+      "  }",
+      "}"
+    ],
+    "explain": "Test prefix, condition, Fatal on failure, braces balanced. Skip any piece and go test silently ignores you."
+  },
+  {
+    "id": "order-012",
+    "deck": "gochan",
+    "tags": "assemble",
+    "q": "Assemble serve-one-endpoint.",
+    "lines": [
+      "http.HandleFunc(\"/\", func(w http.ResponseWriter, r *http.Request) {",
+      "  fmt.Fprintln(w, \"hi\")",
+      "})",
+      "http.ListenAndServe(\":8080\", nil)"
+    ],
+    "explain": "Register the route, then block serving forever. nil means the default mux you just registered on."
+  },
+  {
+    "id": "order-013",
+    "deck": "slices",
+    "tags": "assemble",
+    "q": "Assemble the in-place reverse.",
+    "lines": [
+      "package main",
+      "import \"fmt\"",
+      "func main() {",
+      "  nums := []int{2, 5, 8, 12, 16, 23, 38}",
+      "  for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {",
+      "    nums[i], nums[j] = nums[j], nums[i]",
+      "  }",
+      "  fmt.Println(nums)",
+      "}"
+    ],
+    "explain": "Fingers start wide (0 and len-1), swap, squeeze. They stop at meeting (i < j) — no second shelf needed."
+  },
+  {
+    "id": "order-014",
+    "deck": "basics",
+    "tags": "assemble",
+    "q": "Assemble the window slider: max sum of 3.",
+    "lines": [
+      "package main",
+      "import \"fmt\"",
+      "func main() {",
+      "  nums := []int{1, 4, 2, 10, 3}",
+      "  k := 3",
+      "  window := 0",
+      "  for i := 0; i < k; i++ {",
+      "    window += nums[i]",
+      "  }",
+      "  best := window",
+      "  for i := k; i < len(nums); i++ {",
+      "    window += nums[i] - nums[i-k]",
+      "    if window > best {",
+      "      best = window",
+      "    }",
+      "  }",
+      "  fmt.Println(best)",
+      "}"
+    ],
+    "explain": "Build frame one, then glide: each step pulls one slot in and evicts one. best only moves up — prints 16."
+  },
+  {
+    "id": "order-015",
+    "deck": "structs",
+    "tags": "assemble",
+    "q": "Assemble the list walker: print every box.",
+    "lines": [
+      "package main",
+      "import \"fmt\"",
+      "type Node struct { Val int; Next *Node }",
+      "func main() {",
+      "  head := &Node{Val: 1, Next: &Node{Val: 2}}",
+      "  for cur := head; cur != nil; cur = cur.Next {",
+      "    fmt.Println(cur.Val)",
+      "  }",
+      "}"
+    ],
+    "explain": "Start at head, print, step to Next, stop at nil. Two boxes, two prints: 1 then 2."
+  }
+]

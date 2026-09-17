@@ -1,0 +1,21 @@
+{
+  "name": "goauntlet",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:js": "tsc -p src",
+    "build": "npm run build:js && node scripts/stamp.cjs",
+    "test": "node scripts/validate-content.cjs && node scripts/check-handlers.cjs && tsc -p src --noEmit && npm run build:js && node tests/run.mjs",
+    "typecheck": "tsc -p src --noEmit",
+    "validate:content": "node scripts/validate-content.cjs",
+    "serve": "python3 -u scripts/serve.py 8080"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
