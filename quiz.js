@@ -3,7 +3,7 @@ import { $, setText, esc, norm, highlight, beep, sfx, toast, xpBurst, pulse, cop
 import { DECKS, CARDS, TRIVIA, DEBUG, ORDER, LESSONS, PROJECTS, rankBlurb } from './content.js';
 import { S, G, save, persistUI, touchActive, bumpQuest } from './state.js';
 import { updateHUD, unlock, checkAch, level, rankFor, confetti, needRevive, syncTabs, quip, showLevelUp, updateDeckProgress } from './ui.js';
-import { interleave, memorize, dueValue, freshFirst } from './logic.js';
+import { interleave, memorize, dueValue, freshFirst, mergeTriviaOrder, num } from './logic.js';
 import { mountArrange, mountCodeLines, mountOptions, markOptions } from './widgets.js';
 import { setMode, goCards } from './boot.js';
 import { lesNext } from './lessons.js';
@@ -373,11 +373,17 @@ function startTrivia() {
     if (!TRIVIA.length)
         return;
     $('triviaZone').classList.remove('hidden');
-    const saved = (S.trivOrder || []).filter(id => TRIVIA.some(t => t.id === id));
-    if (saved.length) {
-        trivOrder = saved.map(id => TRIVIA.find(t => t.id === id));
-        trivIdx = (S.trivIdx || 0) % trivOrder.length;
-        trivScore = S.trivScore || 0;
+    const allIds = TRIVIA.map(t => t.id);
+    const savedValid = (S.trivOrder || []).filter(id => TRIVIA.some(t => t.id === id));
+    if (savedValid.length) {
+        // Resume: same order (so the saved position still points at the same
+        // question) and same session score; newly-added questions are appended
+        // shuffled instead of wiping progress. Position/score survive reloads
+        // and mode hops via saveTriv().
+        const mergedIds = mergeTriviaOrder(S.trivOrder || [], allIds);
+        trivOrder = mergedIds.map(id => TRIVIA.find(t => t.id === id));
+        trivIdx = trivOrder.length ? num(S.trivIdx) % trivOrder.length : 0;
+        trivScore = num(S.trivScore);
     }
     else {
         trivOrder = freshFirst(TRIVIA, t => t.id, S.seenIds).sort(() => Math.random() - .5);
@@ -625,8 +631,11 @@ function renderOrder() {
 }
 function undoOrd() { if (ordCtl)
     ordCtl.undoLast(); }
-function resetOrd() { if (ordLocked || !ordCtl)
-    return; renderOrder(); }
+/* Reset stays on the SAME puzzle and asks it fresh: new shuffle, tries back
+   to 2, result cleared. Must work even when locked (after a fail/success),
+   otherwise the button looks dead exactly when the player needs it. */
+function resetOrd() { if (!ordCtl)
+    return; ordTries = 2; ordGood = 0; renderOrder(); }
 function gradeOrder() {
     if (!ordCtl)
         return;
