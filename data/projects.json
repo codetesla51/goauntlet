@@ -474,5 +474,272 @@
         }
       }
     ]
+  },
+  {
+    "id": "taskcli",
+    "name": "Task CLI",
+    "icon": "ph-terminal",
+    "desc": "A real command line: usage guards, switch dispatch, numbered lists.",
+    "deck": "basics",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The plan",
+        "text": "You're building a real command line: os.Args carries the words, a usage guard catches empty hands, a switch dispatches commands, unknown words get a verdict. Full program below — playground passes NO arguments, so keep that in mind for the next step.",
+        "hint": "No action needed — just read. [0] is the program's own path; real words start at [1].",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\ttasks := []string{\"write tests\"}\n\targs := os.Args[1:]\n\tif len(args) == 0 {\n\t\tfmt.Println(\"usage: todo <add|list> [task]\")\n\t\treturn\n\t}\n\tswitch args[0] {\n\tcase \"add\":\n\t\tif len(args) < 2 {\n\t\t\tfmt.Println(\"add what?\")\n\t\t\treturn\n\t\t}\n\t\ttasks = append(tasks, args[1])\n\t\tfmt.Println(\"added:\", args[1])\n\tcase \"list\":\n\t\tfor i, t := range tasks {\n\t\t\tfmt.Println(i+1, t)\n\t\t}\n\tdefault:\n\t\tfmt.Println(\"unknown command:\", args[0])\n\t}\n}"
+      },
+      {
+        "kind": "run",
+        "title": "First run",
+        "text": "Playground passes NO arguments: os.Args holds only the exe path, args is empty, and the usage guard fires before the switch. Predict the handshake line, then run. No edits.",
+        "hint": "No args in the playground: the len guard fires first. The handshake, exactly as written.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\ttasks := []string{\"write tests\"}\n\targs := os.Args[1:]\n\tif len(args) == 0 {\n\t\tfmt.Println(\"usage: todo <add|list> [task]\")\n\t\treturn\n\t}\n\tswitch args[0] {\n\tcase \"add\":\n\t\tif len(args) < 2 {\n\t\t\tfmt.Println(\"add what?\")\n\t\t\treturn\n\t\t}\n\t\ttasks = append(tasks, args[1])\n\t\tfmt.Println(\"added:\", args[1])\n\tcase \"list\":\n\t\tfor i, t := range tasks {\n\t\t\tfmt.Println(i+1, t)\n\t\t}\n\tdefault:\n\t\tfmt.Println(\"unknown command:\", args[0])\n\t}\n}",
+        "expected": "usage: todo <add|list> [task]",
+        "goal": "usage: todo <add|list> [task]",
+        "predict": {
+          "options": [
+            "usage: todo <add|list> [task]",
+            "added: ship it",
+            "1 write tests"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Dispatch table",
+        "text": "The judge of the CLI: a switch on the command. Assemble the list branch as a full program — it prints every task numbered from 1.",
+        "hint": "Switch opens on cmd, the list branch numbers from i+1, default catches strangers, braces close switch then main.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\ttasks := []string{\"write tests\", \"ship it\"}",
+          "\tcmd := \"list\"",
+          "\tswitch cmd {",
+          "\tcase \"list\":",
+          "\t\tfor i, t := range tasks {",
+          "\t\t\tfmt.Println(i+1, t)",
+          "\t\t}",
+          "\tdefault:",
+          "\t\tfmt.Println(\"unknown command:\", cmd)",
+          "\t}",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "fix",
+        "title": "Off by one",
+        "text": "The list prints '0 write tests' — machines count from 0, humans queue from 1. Numbered lists start at i+1. Predict the human numbering, then fix one expression.",
+        "hint": "Machines count from 0, humans from 1: numbered lists print i+1.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ttasks := []string{\"write tests\", \"ship it\"}\n\tcmd := \"list\"\n\tswitch cmd {\n\tcase \"list\":\n\t\tfor i, t := range tasks {\n\t\t\tfmt.Println(i, t)\n\t\t}\n\tdefault:\n\t\tfmt.Println(\"unknown command:\", cmd)\n\t}\n}",
+        "expected": "1 write tests\n2 ship it",
+        "goal": "1 write tests\n2 ship it",
+        "predict": {
+          "options": [
+            "0 write tests\n1 ship it",
+            "1 write tests\n2 ship it",
+            "1 write tests"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "build",
+        "title": "Add branch",
+        "text": "New command: add takes a task — but ONLY with a word present. Bare 'add' must print 'add what?' and stop. Pick the true lines; one impostor guards the wrong bound, another echoes the command instead of the task.",
+        "hint": "args[0] is the command itself — the task lives at [1], which exists only when len is 2+.",
+        "lines": [
+          "case \"add\":",
+          "\tif len(args) < 2 {",
+          "\t\tfmt.Println(\"add what?\")",
+          "\t\treturn",
+          "\t} // if"
+        ],
+        "decoys": [
+          "\tif len(args) < 1 {",
+          "\t\tfmt.Println(\"added:\", args[0])"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Wrong slot",
+        "text": "Every run prints 'unknown command: /tmp/go-build...' — it dispatches on its OWN path. os.Args[0] is the exe; real words start at [1]. Tap the line reading the wrong slot.",
+        "hint": "args[0] is the program's own path. Which line crowns it commander?",
+        "bugName": "dispatches on exe path",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\ttasks := []string{\"write tests\"}\n\targs := os.Args\n\tcmd := args[0]\n\tswitch cmd {\n\tcase \"list\":\n\t\tfmt.Println(tasks)\n\tdefault:\n\t\tfmt.Println(\"unknown command:\", cmd)\n\t}\n}",
+        "bug": 10
+      },
+      {
+        "kind": "quiz",
+        "title": "Why len check first?",
+        "text": "args[1] with no arguments handed over: what does Go do?",
+        "hint": "Slices don't negotiate. What happens at index 1 of length 1?",
+        "quiz": {
+          "options": [
+            "Panics: index out of range",
+            "Hands back an empty string",
+            "Returns a nil error"
+          ],
+          "answer": 0,
+          "why": "os.Args is just a slice, and [1] on a 1-long slice panics. Guard len BEFORE indexing — usage-first is the CLI author's handshake."
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole CLI, assembled — usage guard, switch, add branch, list branch, stranger default. Playground hands it nothing, so opening night prints the handshake. Predict it, then run.",
+        "hint": "No args, so the guard fires first. The handshake, exactly as written.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\ttasks := []string{\"write tests\"}\n\targs := os.Args[1:]\n\tif len(args) == 0 {\n\t\tfmt.Println(\"usage: todo <add|list> [task]\")\n\t\treturn\n\t}\n\tswitch args[0] {\n\tcase \"add\":\n\t\tif len(args) < 2 {\n\t\t\tfmt.Println(\"add what?\")\n\t\t\treturn\n\t\t}\n\t\ttasks = append(tasks, args[1])\n\t\tfmt.Println(\"added:\", args[1])\n\tcase \"list\":\n\t\tfor i, t := range tasks {\n\t\t\tfmt.Println(i+1, t)\n\t\t}\n\tdefault:\n\t\tfmt.Println(\"unknown command:\", args[0])\n\t}\n}",
+        "expected": "usage: todo <add|list> [task]",
+        "goal": "usage: todo <add|list> [task]",
+        "predict": {
+          "options": [
+            "usage: todo <add|list> [task]",
+            "added: ship it",
+            "unknown command: "
+          ],
+          "answer": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "mdprint",
+    "name": "Mini Markdown",
+    "icon": "ph-file-text",
+    "desc": "A real renderer: prefixes in, HTML out, one pass.",
+    "deck": "std",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "The plan",
+        "text": "A tiny renderer: split markdown into lines, match each prefix, emit HTML into a strings.Builder. Three rules (# goes h1, - goes li, everything else goes p), one pass, no dependencies. Full program below.",
+        "hint": "No action needed — just read. Split, match, emit. The switch reads prefixes; Builder collects.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc render(md string) string {\n\tvar out strings.Builder\n\tfor _, ln := range strings.Split(md, \"\\n\") {\n\t\tswitch {\n\t\tcase strings.HasPrefix(ln, \"# \"):\n\t\t\tfmt.Fprintf(&out, \"<h1>%s</h1>\\n\", strings.TrimPrefix(ln, \"# \"))\n\t\tcase strings.HasPrefix(ln, \"- \"):\n\t\t\tfmt.Fprintf(&out, \"<li>%s</li>\\n\", strings.TrimPrefix(ln, \"- \"))\n\t\tdefault:\n\t\t\tfmt.Fprintf(&out, \"<p>%s</p>\\n\", ln)\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Print(render(\"# Hi\\n- a\\n- b\\nbye\"))\n}"
+      },
+      {
+        "kind": "run",
+        "title": "First tag",
+        "text": "One line in, one tag out: render('# Hi') prints a single h1. Predict the exact bytes (tags included), then run.",
+        "hint": "TrimPrefix eats '# ', the format wraps the rest. Exact bytes.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc render(md string) string {\n\tvar out strings.Builder\n\tfor _, ln := range strings.Split(md, \"\\n\") {\n\t\tswitch {\n\t\tcase strings.HasPrefix(ln, \"# \"):\n\t\t\tfmt.Fprintf(&out, \"<h1>%s</h1>\\n\", strings.TrimPrefix(ln, \"# \"))\n\t\tcase strings.HasPrefix(ln, \"- \"):\n\t\t\tfmt.Fprintf(&out, \"<li>%s</li>\\n\", strings.TrimPrefix(ln, \"- \"))\n\t\tdefault:\n\t\t\tfmt.Fprintf(&out, \"<p>%s</p>\\n\", ln)\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Print(render(\"# Hi\"))\n}",
+        "expected": "<h1>Hi</h1>\n",
+        "goal": "<h1>Hi</h1>\n",
+        "predict": {
+          "options": [
+            "<h1>Hi</h1>\n",
+            "# Hi\n",
+            "<p># Hi</p>\n"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Greedy prefix",
+        "text": "'## Sub' is NOT our h1 (we only crown '# ' with the space) — but the starter matches bare '#' and crowns it anyway. One space is the whole bug. Predict the TRUE rendering, then fix the prefix.",
+        "hint": "'#' matches '##' too — demand the space.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc render(md string) string {\n\tvar out strings.Builder\n\tfor _, ln := range strings.Split(md, \"\\n\") {\n\t\tswitch {\n\t\tcase strings.HasPrefix(ln, \"#\"):\n\t\t\tfmt.Fprintf(&out, \"<h1>%s</h1>\\n\", strings.TrimPrefix(ln, \"# \"))\n\t\tcase strings.HasPrefix(ln, \"- \"):\n\t\t\tfmt.Fprintf(&out, \"<li>%s</li>\\n\", strings.TrimPrefix(ln, \"- \"))\n\t\tdefault:\n\t\t\tfmt.Fprintf(&out, \"<p>%s</p>\\n\", ln)\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Print(render(\"## Sub\\nok\"))\n}",
+        "expected": "<p>## Sub</p>\n<p>ok</p>\n",
+        "goal": "<p>## Sub</p>\n<p>ok</p>\n",
+        "predict": {
+          "options": [
+            "<h1>## Sub</h1>\n<p>ok</p>\n",
+            "<p>## Sub</p>\n<p>ok</p>\n",
+            "<h1>Sub</h1>\n<p>ok</p>\n"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Assemble the switch",
+        "text": "The whole matcher, shuffled: main calls, render matches — h1 branch, li branch, default paragraph. Assemble all twenty lines.",
+        "hint": "main calls first (legal Go), render matches after: h1 branch, li branch, default paragraph, close everything in order.",
+        "lines": [
+          "package main",
+          "import (",
+          "\t\"fmt\"",
+          "\t\"strings\"",
+          ")",
+          "func main() {",
+          "\tfmt.Print(render(\"# Hi\\n- a\"))",
+          "}",
+          "func render(md string) string {",
+          "\tvar out strings.Builder",
+          "\tfor _, ln := range strings.Split(md, \"\\n\") {",
+          "\t\tswitch {",
+          "\t\tcase strings.HasPrefix(ln, \"# \"):",
+          "\t\t\tfmt.Fprintf(&out, \"<h1>%s</h1>\\n\", strings.TrimPrefix(ln, \"# \"))",
+          "\t\tcase strings.HasPrefix(ln, \"- \"):",
+          "\t\t\tfmt.Fprintf(&out, \"<li>%s</li>\\n\", strings.TrimPrefix(ln, \"- \"))",
+          "\t\tdefault:",
+          "\t\t\tfmt.Fprintf(&out, \"<p>%s</p>\\n\", ln)",
+          "\t\t}",
+          "\t}",
+          "\treturn out.String()",
+          "}"
+        ]
+      },
+      {
+        "kind": "build",
+        "title": "List items",
+        "text": "The li branch, exact: match '- ' prefix, trim it, emit the tag WITH its newline — a missing newline glues items into one blob. Pick the true lines; one impostor drops the newline, another trims the wrong end.",
+        "hint": "TrimPrefix eats the marker; the newline ends the line. TrimSuffix eats the wrong end; missing newline glues the list.",
+        "lines": [
+          "case strings.HasPrefix(ln, \"- \"):",
+          "\t\tfmt.Fprintf(&out, \"<li>%s</li>\\n\", strings.TrimPrefix(ln, \"- \"))",
+          "\tdefault:",
+          "\t\tfmt.Fprintf(&out, \"<p>%s</p>\\n\", ln)"
+        ],
+        "decoys": [
+          "\t\tfmt.Fprintf(&out, \"<li>%s</li>\", strings.TrimPrefix(ln, \"- \"))",
+          "\t\tfmt.Fprintf(&out, \"<li>%s</li>\\n\", strings.TrimSuffix(ln, \"- \"))"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "The glued list",
+        "text": "Two items in, ONE blob out: '<li>a</li><li>b</li>' on a single line. The li Fprintf lost its newline — every item glues to the last. Tap the line missing its newline.",
+        "hint": "One Fprintf ends without a newline. Which tag's line never breaks?",
+        "bugName": "missing newline glues list",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc render(md string) string {\n\tvar out strings.Builder\n\tfor _, ln := range strings.Split(md, \"\\n\") {\n\t\tswitch {\n\t\tcase strings.HasPrefix(ln, \"# \"):\n\t\t\tfmt.Fprintf(&out, \"<h1>%s</h1>\\n\", strings.TrimPrefix(ln, \"# \"))\n\t\tcase strings.HasPrefix(ln, \"- \"):\n\t\t\tfmt.Fprintf(&out, \"<li>%s</li>\", strings.TrimPrefix(ln, \"- \"))\n\t\tdefault:\n\t\t\tfmt.Fprintf(&out, \"<p>%s</p>\\n\", ln)\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Print(render(\"- a\\n- b\"))\n}",
+        "bug": 14
+      },
+      {
+        "kind": "quiz",
+        "title": "Why Builder?",
+        "text": "Why strings.Builder instead of s += tag, over and over?",
+        "hint": "Immutable means every += rebuilds the world. Who avoids that?",
+        "quiz": {
+          "options": [
+            "+= copies the whole prefix every time (O(n²))",
+            "Builder is required by fmt",
+            "fmt cannot print strings"
+          ],
+          "answer": 0,
+          "why": "Strings are immutable: s += x copies everything so far, every time — quadratic. Builder buffers and materializes once: O(n). Same letters, honest cost."
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole renderer, assembled — split, match all three, emit, print. Predict the four lines exactly, then run.",
+        "hint": "h1, li, li, p — in order, each terminated.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc render(md string) string {\n\tvar out strings.Builder\n\tfor _, ln := range strings.Split(md, \"\\n\") {\n\t\tswitch {\n\t\tcase strings.HasPrefix(ln, \"# \"):\n\t\t\tfmt.Fprintf(&out, \"<h1>%s</h1>\\n\", strings.TrimPrefix(ln, \"# \"))\n\t\tcase strings.HasPrefix(ln, \"- \"):\n\t\t\tfmt.Fprintf(&out, \"<li>%s</li>\\n\", strings.TrimPrefix(ln, \"- \"))\n\t\tdefault:\n\t\t\tfmt.Fprintf(&out, \"<p>%s</p>\\n\", ln)\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Print(render(\"# Hi\\n- a\\n- b\\nbye\"))\n}",
+        "expected": "<h1>Hi</h1>\n<li>a</li>\n<li>b</li>\n<p>bye</p>\n",
+        "goal": "<h1>Hi</h1>\n<li>a</li>\n<li>b</li>\n<p>bye</p>\n",
+        "predict": {
+          "options": [
+            "<h1>Hi</h1>\n<li>a</li>\n<li>b</li>\n<p>bye</p>\n",
+            "<h1>Hi</h1>\n<li>a</li>\n<p>bye</p>\n",
+            "<p># Hi</p>\n<p>- a</p>\n<p>- b</p>\n<p>bye</p>\n"
+          ],
+          "answer": 0
+        }
+      }
+    ]
   }
 ]

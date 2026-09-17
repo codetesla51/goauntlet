@@ -7,7 +7,8 @@
   "scripts": {
     "build:js": "tsc -p src",
     "build": "npm run build:js && node scripts/stamp.cjs",
-    "test": "node scripts/validate-content.cjs && node scripts/check-handlers.cjs && tsc -p src --noEmit && npm run build:js && node tests/run.mjs",
+    "test": "node scripts/validate-content.cjs && node scripts/check-handlers.cjs && tsc -p src --noEmit && npm run build:js && node tests/run.mjs && node scripts/check-snippets.mjs",
+    "check:snippets": "node scripts/check-snippets.mjs",
     "typecheck": "tsc -p src --noEmit",
     "validate:content": "node scripts/validate-content.cjs",
     "serve": "python3 -u scripts/serve.py 8080"

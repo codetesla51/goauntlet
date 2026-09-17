@@ -41,11 +41,13 @@ npm run serve
 
 Then open http://localhost:8080. The proxy is required for lesson Run buttons. Any other static host works for everything else, but `file://` does not (content loads via fetch).
 
-Run the checks. Content validator, typecheck, build, and unit tests in one command:
+Run the checks. Content validator, typecheck, build, unit tests, and real execution of every runnable snippet in one command:
 
 ```bash
 npm test
 ```
+
+Snippet execution needs a Go toolchain. Without one it warns and passes, and `SKIP_SNIPPETS=1 npm test` skips it explicitly.
 
 Add content. Quiz cards, lessons, and projects are plain JSON in `data/`. For example, a quiz card is just an object with stable id, question, options, and answer:
 
