@@ -62,12 +62,12 @@ export function freshFirst(items, key, seen) {
     const fresh = items.filter(t => !seen[key(t)]);
     return fresh.length ? fresh : items.slice();
 }
-/* Trivia session resume: order + position + score survive reloads and mode
+/* Session resume for Trivia/Debug: order + position survive reloads and mode
    hops. Saved ids that still exist keep their order (so the position still
-   points at the same question); newly-added content is appended shuffled so
-   it appears without wiping progress; removed ids are dropped. Pure so
-   tests can drive it; quiz.ts wires it to S.trivOrder. */
-export function mergeTriviaOrder(savedIds, allIds, rand = Math.random) {
+   points at the same item); newly-added content is appended shuffled so it
+   appears without wiping progress; removed ids are dropped. Pure so tests
+   can drive it; quiz.ts wires it to S.trivOrder / S.dbgOrder. */
+export function mergeSessionOrder(savedIds, allIds, rand = Math.random) {
     // Dedupe defensively (hand-edited saves): first occurrence wins.
     const seen = new Set();
     const valid = [];

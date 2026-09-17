@@ -4,8 +4,8 @@ import { num, dayKey, nextStreak } from './logic.js';
 /* Save schema version. Bump when SaveState gains/loses fields and add the
    step to migrateSaveVersion — old installs then upgrade without losing a
    single XP, and new topics never disturb anyone's state. */
-const SAVE_VERSION = 2;
-let S = load() || { v: SAVE_VERSION, xp: 0, coins: 0, streak: 0, best: 0, hearts: 3, mastered: {}, seen: 0, correct: 0, wrong: 0, quest: 0, questDay: dayStr(), ach: {}, shield: false, starred: {}, bestSpeed: 0, trivBest: 0, trivDone: 0, trivOrder: [], trivIdx: 0, trivScore: 0, dbgSolved: 0, dbgDone: 0, dayStreak: 0, lastDay: dayStr(), lastActiveDay: '', deckId: 'basics', diff: 'all', mode: 'learn', score: {}, mistakes: {}, lessonsDone: {}, lessonStep: {}, projectsDone: {}, projectStep: {}, algosDone: {}, algoStep: {}, memory: {}, seenIds: {}, questHistory: {}, questPaidDay: '' };
+const SAVE_VERSION = 3;
+let S = load() || { v: SAVE_VERSION, xp: 0, coins: 0, streak: 0, best: 0, hearts: 3, mastered: {}, seen: 0, correct: 0, wrong: 0, quest: 0, questDay: dayStr(), ach: {}, shield: false, starred: {}, bestSpeed: 0, trivBest: 0, trivDone: 0, trivOrder: [], trivIdx: 0, trivScore: 0, dbgSolved: 0, dbgDone: 0, dbgOrder: [], dbgIdx: 0, dayStreak: 0, lastDay: dayStr(), lastActiveDay: '', deckId: 'basics', diff: 'all', mode: 'learn', score: {}, mistakes: {}, lessonsDone: {}, lessonStep: {}, projectsDone: {}, projectStep: {}, algosDone: {}, algoStep: {}, memory: {}, seenIds: {}, questHistory: {}, questPaidDay: '' };
 export const G = { mode: 'learn', deckId: 'basics', diff: 'all', combo: 1 };
 S.score = S.score || {};
 S.mistakes = S.mistakes || {};
@@ -109,6 +109,8 @@ export function sanitizeSave() {
     S.trivOrder = (S.trivOrder || []).filter((x) => typeof x === 'string');
     S.trivIdx = num(S.trivIdx);
     S.trivScore = num(S.trivScore);
+    S.dbgOrder = (S.dbgOrder || []).filter((x) => typeof x === 'string');
+    S.dbgIdx = num(S.dbgIdx);
     S.dbgSolved = num(S.dbgSolved);
     S.dbgDone = num(S.dbgDone);
     S.dayStreak = num(S.dayStreak, 0);
@@ -173,6 +175,14 @@ function migrateSaveVersion(s) {
         }
         if (typeof s['trivScore'] !== 'number') {
             s['trivScore'] = 0;
+            dirty = true;
+        }
+        if (!Array.isArray(s['dbgOrder'])) {
+            s['dbgOrder'] = [];
+            dirty = true;
+        }
+        if (typeof s['dbgIdx'] !== 'number') {
+            s['dbgIdx'] = 0;
             dirty = true;
         }
         s['v'] = SAVE_VERSION;
@@ -303,7 +313,7 @@ export function replaceState(next) {
     S = {
         v: SAVE_VERSION, xp: 0, coins: 0, streak: 0, best: 0, hearts: 3, mastered: {}, seen: 0,
         correct: 0, wrong: 0, quest: 0, questDay: d, ach: {}, shield: false,
-        starred: {}, bestSpeed: 0, trivBest: 0, trivDone: 0, trivOrder: [], trivIdx: 0, trivScore: 0, dbgSolved: 0, dbgDone: 0,
+        starred: {}, bestSpeed: 0, trivBest: 0, trivDone: 0, trivOrder: [], trivIdx: 0, trivScore: 0, dbgSolved: 0, dbgDone: 0, dbgOrder: [], dbgIdx: 0,
         dayStreak: 0, lastDay: d, lastActiveDay: '', deckId: 'basics', diff: 'all', mode: 'learn',
         score: {}, mistakes: {}, lessonsDone: {}, lessonStep: {}, projectsDone: {}, projectStep: {}, algosDone: {}, algoStep: {}, memory: {}, seenIds: {}, questHistory: {}, questPaidDay: '',
         ...next,

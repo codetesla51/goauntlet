@@ -3,7 +3,7 @@ import { $, setText, esc, norm, highlight, beep, sfx, toast, xpBurst, pulse, cop
 import { DECKS, CARDS, TRIVIA, DEBUG, ORDER, LESSONS, PROJECTS, rankBlurb } from './content.js';
 import { S, G, save, persistUI, touchActive, bumpQuest } from './state.js';
 import { updateHUD, unlock, checkAch, level, rankFor, confetti, needRevive, syncTabs, quip, showLevelUp, updateDeckProgress } from './ui.js';
-import { interleave, memorize, dueValue, freshFirst, mergeTriviaOrder, num } from './logic.js';
+import { interleave, memorize, dueValue, freshFirst, mergeSessionOrder, num } from './logic.js';
 import { mountArrange, mountCodeLines, mountOptions, markOptions } from './widgets.js';
 import { setMode, goCards } from './boot.js';
 import { lesNext } from './lessons.js';
@@ -362,7 +362,7 @@ function markSeen(id) {
     }
 }
 /* Trivia session persists across mode hops and reloads: order + position +
-   score live in S. Resume only when every saved id still exists. */
+   score live in S. Stale ids are dropped and new content merged on resume. */
 function saveTriv() {
     S.trivOrder = trivOrder.map(t => t.id);
     S.trivIdx = trivIdx;
@@ -380,7 +380,7 @@ function startTrivia() {
         // question) and same session score; newly-added questions are appended
         // shuffled instead of wiping progress. Position/score survive reloads
         // and mode hops via saveTriv().
-        const mergedIds = mergeTriviaOrder(S.trivOrder || [], allIds);
+        const mergedIds = mergeSessionOrder(S.trivOrder || [], allIds);
         trivOrder = mergedIds.map(id => TRIVIA.find(t => t.id === id));
         trivIdx = trivOrder.length ? num(S.trivIdx) % trivOrder.length : 0;
         trivScore = num(S.trivScore);
@@ -479,13 +479,33 @@ function startDebug() {
     if (!DEBUG.length)
         return;
     $('debugZone').classList.remove('hidden');
-    const byTier = [[], [], []];
-    DEBUG.forEach(d => byTier[(d.diff in TIER) ? TIER[d.diff] : 1].push(d));
-    dbgOrder = [];
-    byTier.forEach(t => { const pool = freshFirst(t, d => d.id, S.seenIds); pool.sort(() => Math.random() - .5); dbgOrder = dbgOrder.concat(pool); });
-    dbgIdx = 0;
+    const allIds = DEBUG.map(d => d.id);
+    const savedValid = (S.dbgOrder || []).filter(id => DEBUG.some(d => d.id === id));
+    if (savedValid.length) {
+        // Resume: same order, same case; newly-added cases append shuffled
+        // instead of restarting the session. Position survives reloads and
+        // mode hops via saveDbg(). Strikes don't persist — a resumed case
+        // restarts with 2 tries, same as a re-asked trivia question.
+        const mergedIds = mergeSessionOrder(S.dbgOrder || [], allIds);
+        dbgOrder = mergedIds.map(id => DEBUG.find(d => d.id === id));
+        dbgIdx = dbgOrder.length ? num(S.dbgIdx) % dbgOrder.length : 0;
+    }
+    else {
+        const byTier = [[], [], []];
+        DEBUG.forEach(d => byTier[(d.diff in TIER) ? TIER[d.diff] : 1].push(d));
+        dbgOrder = [];
+        byTier.forEach(t => { const pool = freshFirst(t, d => d.id, S.seenIds); pool.sort(() => Math.random() - .5); dbgOrder = dbgOrder.concat(pool); });
+        dbgIdx = 0;
+    }
     setText('dbgTotal', dbgOrder.length);
     renderDebug();
+}
+/* Debug session persists across mode hops and reloads: order + position
+   live in S. Same pattern as trivia's saveTriv. */
+function saveDbg() {
+    S.dbgOrder = dbgOrder.map(d => d.id);
+    S.dbgIdx = dbgIdx;
+    save();
 }
 function renderDebug() {
     const d = dbgOrder[dbgIdx % dbgOrder.length];
@@ -500,6 +520,7 @@ function renderDebug() {
     $('dbgResult').innerHTML = '';
     const lines = Array.isArray(d.code) ? d.code : d.code.split('\n');
     mountCodeLines($('dbgLines'), lines.map((ln, i) => ({ gutter: String(i + 1), codeHtml: highlight(ln), aria: 'Line ' + (i + 1) + ': ' + ln })), (i, b) => dbgPick(i, b));
+    saveDbg();
 }
 function dbgPick(i, btn) {
     if (needRevive())

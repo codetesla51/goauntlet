@@ -30,7 +30,7 @@ interface SaveState {
   quest: number; questDay: string; ach: Record<string, boolean>; shield: boolean;
   starred: Record<string, boolean>; bestSpeed: number;
   trivBest: number; trivDone: number; trivOrder: string[]; trivIdx: number; trivScore: number;
-  dbgSolved: number; dbgDone: number;
+  dbgSolved: number; dbgDone: number; dbgOrder: string[]; dbgIdx: number;
   dayStreak: number; lastDay: string; lastActiveDay: string; deckId: string; diff: string; mode: string;
   score: Record<string, number>; mistakes: Record<string, number>;
   lessonsDone: Record<string, boolean>; lessonStep: Record<string, number>;
