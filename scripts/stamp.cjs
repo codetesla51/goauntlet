@@ -3,7 +3,7 @@ const f = 'scripts/.buildnum';
 let n = 1;
 try { n = (parseInt(fs.readFileSync(f, 'utf8'), 10) || 0) + 1; } catch (e) { n = 1; }
 fs.writeFileSync(f, String(n));
-let html = fs.readFileSync('index.html', 'utf8');
+let html = fs.readFileSync('play.html', 'utf8');
 const next = `<script type="module" src="boot.js?v=${n}"><\/script>`;
 if (/<script type="module" src="boot\.js\?v=\d+"><\/script>/.test(html)) {
   html = html.replace(/<script type="module" src="boot\.js\?v=\d+"><\/script>/, next);
@@ -14,5 +14,5 @@ if (/<script type="module" src="boot\.js\?v=\d+"><\/script>/.test(html)) {
 if (/build \d+/.test(html)) {
   html = html.replace(/build \d+/, 'build ' + n);
 }
-fs.writeFileSync('index.html', html);
+fs.writeFileSync('play.html', html);
 console.log('stamped build', n);

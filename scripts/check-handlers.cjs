@@ -1,11 +1,12 @@
-// scripts/check-handlers.cjs — every onclick="fn(" in index.html must be
+// scripts/check-handlers.cjs — every onclick="fn(" in play.html must be
 // exposed on window by src/boot.ts (modules aren't global scope).
+// (index.html is the landing page and carries no handlers.)
 // Run: node scripts/check-handlers.cjs (part of npm test)
 const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'play.html'), 'utf8');
 const used = new Set();
 const re = /onclick="([A-Za-z_]\w*)\s*\(/g;
 let m;
