@@ -18,7 +18,11 @@ const QUIPS = ['Ouch. The gopher felt that one.','Wrong burrow. Dig again.','The
 function level(){ return Math.floor(S.xp/200)+1; }
 function rankFor(l: number): string { let r: string = RANKS[0][1]; for(const [lv,name] of RANKS){ if(l>=lv) r=name; } return r; }
 function needRevive(): boolean { if(S.hearts>0) return false; try{ const om=$<HTMLDialogElement>('overModal'); if(!om.open) om.showModal(); }catch(_){} return true; }
-function buyShield(){ if(S.coins<50) return toast('Need 50 coins for a shield.','coins'); S.coins-=50; S.shield=true; save(); updateHUD(); sfx.coin(); toast('Shield equipped.','shield-check'); }
+function buyShield(){
+  if(S.shield) return toast('Shield already active — it forgives your next mistake.','shield-check');
+  if(S.coins<50) return toast('Need 50 coins for a shield.','coins');
+  S.coins-=50; S.shield=true; save(); updateHUD(); sfx.coin(); toast('Shield equipped.','shield-check');
+}
 function buyHeart(){ if(S.coins<40) return toast('Need 40 coins.','coins'); if(S.hearts>=5) return toast('Lives are already full.','heart'); S.coins-=40; S.hearts++; save(); updateHUD(); sfx.coin(); toast('Extra life acquired.','heart'); }
 function revive(){ S.hearts=3; S.streak=0; G.combo=1; save(); updateHUD(); toast('Revived with 3 lives.','heart'); }
 function unlock(id: string): void {
@@ -90,7 +94,7 @@ function updateDeckProgress(){
 }
 function updateShop(): void {
   const cards = G.mode==='quiz'||G.mode==='speed';
-  ($('shopShield') as HTMLButtonElement).disabled = G.mode==='trivia' || S.coins<50;
+  ($('shopShield') as HTMLButtonElement).disabled = G.mode==='trivia' || S.shield || S.coins<50;
   ($('shopHeart') as HTMLButtonElement).disabled = G.mode==='trivia' || S.coins<40 || S.hearts>=5;
   ($('shopSkip') as HTMLButtonElement).disabled = !cards || S.coins<30;
   setText('shopNote', G.mode==='learn' ? 'Lessons need no power-ups — just press Run.' : G.mode==='build' ? 'Projects need no power-ups — just press Run.' : G.mode==='algo' ? 'Algorithms need no power-ups — just press Run.' : G.mode==='trivia' ? 'Power-ups rest in Trivia — no lives at stake.' : !cards ? 'Skip only works in Quiz and Speed.' : 'Power-ups work in Quiz and Speed.');
