@@ -1,19 +1,24 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="omarchy">
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GOAUNTLET — Learn Go by Playing</title>
-<meta name="description" content="GOAUNTLET teaches Go the way games teach mechanics: read a little, run real code, fix real bugs. Zero setup, real compiler." />
-<link rel="icon" type="image/svg+xml" href="logo.svg" />
-<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
-<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+<meta name="description" content="GOAUNTLET is a game that teaches Go: read real code, run it, fix it, or lose a life. Zero setup, real compiler.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<script>
+/* Shows once: returning players skip straight to the game.
+   The About link in the app points here with ?about=1 to bypass. */
+try {
+  if (location.search.indexOf('about') === -1 && localStorage.getItem('goauntlet_intro') === '1') {
+    location.replace('play.html');
+  }
+} catch (_) {}
+</script>
 <style>
   :root{
     --bg:#0d0d0c;
@@ -28,73 +33,177 @@
     --r:14px;
     --r-sm:10px;
   }
-  [data-theme="omarchy"]{ color-scheme:dark; }
-  body{ font-family:var(--sans); background:var(--bg); color:var(--text); }
-  .mono{ font-family:var(--mono); }
-  .surface{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r); }
-  .pill{ display:inline-flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:6px 13px; font-weight:700; font-size:13px; white-space:nowrap; }
-  .mode-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm); padding:16px; }
-  .mode-card i{ font-size:22px; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-width:320px; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased; }
   a{ color:inherit; }
-  :focus-visible{ outline:2px solid var(--muted); outline-offset:2px; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--muted); outline-offset:2px; }
+  .wrap{ width:min(680px, calc(100vw - 32px)); margin:0 auto; padding:40px 0 56px; }
+  .topbar{ display:flex; align-items:center; gap:10px; margin-bottom:36px; }
+  .topbar img{ width:36px; height:36px; display:block; }
+  .wordmark{ font-weight:800; font-size:15px; letter-spacing:.02em; }
+  .topbar nav{ margin-left:auto; display:flex; gap:16px; align-items:center; font-size:13px; font-weight:600; }
+  .topbar nav a{ text-decoration:none; color:var(--muted); }
+  .topbar nav a:hover{ color:var(--text); }
+  .topbar nav a.play{ color:var(--text); border:1px solid var(--line-strong); border-radius:999px; padding:6px 14px; }
+  .topbar nav a.play:hover{ background:var(--surface-2); }
+  h1{ font-size:clamp(28px, 5vw, 40px); line-height:1.15; letter-spacing:-.02em; margin:0; font-weight:800; }
+  .pun{ font-size:13px; color:var(--muted); margin:12px 0 0; }
+  .pun b{ color:var(--text); }
+  .lede{ font-size:15px; line-height:1.65; color:var(--muted); margin:14px 0 0; max-width:58ch; }
+  .lede b{ color:var(--text); }
+  .term{ margin:26px 0 0; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm); overflow:hidden; }
+  .term-bar{ display:flex; align-items:center; gap:8px; padding:9px 14px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:11px; color:var(--muted); }
+  .term-bar .dot{ width:9px; height:9px; border-radius:99px; background:var(--line-strong); }
+  .term-body{ font-family:var(--mono); font-size:12.5px; line-height:1.8; padding:14px 16px; white-space:pre-wrap; }
+  .term-body .p{ color:var(--muted); }
+  .term-body .good{ color:var(--text); font-weight:700; }
+  .term-body .dim{ color:var(--muted); }
+  .term-body .tline{ opacity:0; transform:translateY(4px); }
+  .term-body .tline.show{ opacity:1; transform:none; transition:opacity .25s ease, transform .25s ease; }
+  .tcur{ display:inline-block; width:8px; height:13px; background:var(--text); vertical-align:-2px; margin-left:2px; animation:tblink 1s steps(1) infinite; }
+  @keyframes tblink{ 50%{ opacity:0; } }
+  h2{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:38px 0 0; font-weight:700; }
+  .modelist{ list-style:none; margin:12px 0 0; padding:0; border-top:1px solid var(--line); }
+  .modelist li{ display:flex; gap:14px; align-items:baseline; padding:10px 2px; border-bottom:1px solid var(--line); font-size:13.5px; }
+  .modelist .m{ font-family:var(--mono); font-size:12px; font-weight:600; flex:none; width:74px; }
+  .modelist .d{ color:var(--muted); }
+  .rules{ margin:12px 0 0; padding:0; list-style:none; font-size:13.5px; color:var(--muted); }
+  .rules li{ margin:0 0 10px; padding-left:18px; position:relative; line-height:1.6; }
+  .rules li::before{ content:"—"; position:absolute; left:0; color:var(--line-strong); }
+  .rules b{ color:var(--text); }
+  .cta{ display:block; text-align:center; text-decoration:none; font-weight:700; font-size:16px; background:var(--surface-2); color:var(--text); border:1px solid var(--line-strong); border-radius:var(--r-sm); padding:15px; margin-top:30px; }
+  .cta:hover{ background:var(--surface); border-color:var(--text); }
+  .fine{ text-align:center; font-family:var(--mono); font-size:11px; color:var(--muted); margin:12px 0 0; }
+  .foot{ margin-top:34px; padding-top:16px; border-top:1px solid var(--line); display:flex; gap:16px; font-size:12.5px; color:var(--muted); font-weight:600; }
+  .foot a{ text-decoration:none; }
+  .foot a:hover{ color:var(--text); }
+  .foot span:last-child{ margin-left:auto; font-weight:400; }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
 </style>
 </head>
-<body class="min-h-screen">
-<header class="sticky top-0 z-50 backdrop-blur-xl border-b" style="background:rgba(13,13,12,.85); border-color:var(--line);">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2.5">
-    <img src="logo.svg" alt="GOAUNTLET" class="w-9 h-9">
-    <span class="font-extrabold text-[16px] tracking-tight">GO<span style="color:var(--muted);">AUNTLET</span></span>
-    <a href="play.html" class="pill ml-auto">Play <i class="ph-bold ph-arrow-right"></i></a>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <img src="logo.svg" alt="GOAUNTLET logo">
+      <span class="wordmark">GOAUNTLET</span>
+      <nav>
+        <a href="https://github.com/codetesla51/goauntlet" aria-label="GitHub repository"><i class="ph-bold ph-github-logo" style="font-size:19px;"></i></a>
+        <a class="play" href="play.html">Play</a>
+      </nav>
+    </header>
+
+    <h1>Learn Go by playing.</h1>
+    <p class="pun">Called <b>GOAUNTLET</b> as a pun on go + gauntlet — the whole language, run back to back.</p>
+    <p class="lede">You're the gopher in the arena. Every round throws real Go
+      at you — <b>read it, run it, fix it, or lose a life</b>. No setup, no
+      accounts. A real compiler, lives on the line, and streaks that only
+      count real work.</p>
+
+    <div class="term" aria-label="Example round">
+      <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="mono">a round, exactly as it plays</span></div>
+      <div class="term-body" id="termPlay"><span class="p">$ goauntlet quiz --deck slices</span>
+Q: What does append return?
+  A) A new slice header
+  B) Nothing — edits in place
+<span class="good">&gt; A <i class="ph-bold ph-check"></i>  +20 XP · streak 4 · combo x2</span>
+<span class="dim">lives 3 · coins 120 · quest 5/8</span></div>
+    </div>
+
+    <h2>The game</h2>
+    <ul class="modelist">
+      <li><span class="m">learn</span><span class="d">Guided lessons with a real compiler. No lives lost.</span></li>
+      <li><span class="m">quiz</span><span class="d">Flashcards that cost lives and streaks when you miss.</span></li>
+      <li><span class="m">speed</span><span class="d">60-second blitz. Answer fast, score big.</span></li>
+      <li><span class="m">trivia</span><span class="d">Casual Go knowledge. Nothing at stake.</span></li>
+      <li><span class="m">debug</span><span class="d">Tap the buggy line. Two tries per case.</span></li>
+      <li><span class="m">build</span><span class="d">Assemble real programs step by step, decoys included.</span></li>
+      <li><span class="m">order</span><span class="d">Put shuffled programs into running order.</span></li>
+      <li><span class="m">algo</span><span class="d">Ten lessons, Big O to sliding window. Watch, then solve.</span></li>
+    </ul>
+
+    <h2>The rules</h2>
+    <ul class="rules">
+      <li><b>Wrong costs.</b> Quiz misses take lives and reset streaks. Shields, hearts, and skips cost coins you earn by being right.</li>
+      <li><b>Practice is free.</b> Lessons never take lives. Wrong picks there cost nothing and retries are unlimited.</li>
+      <li><b>Streaks mean days.</b> Only real activity moves them. Opening the app does not count.</li>
+      <li><b>It really compiles.</b> Run buttons use a real Go toolchain through a proxy, with the Playground as backup.</li>
+    </ul>
+
+    <a class="cta" id="intro-start" href="play.html">Enter the gauntlet</a>
+    <p class="fine">shows once · progress stays in your browser</p>
+
+    <footer class="foot">
+      <a href="play.html">Play</a>
+      <a href="https://github.com/codetesla51/goauntlet" aria-label="GitHub repository"><i class="ph-bold ph-github-logo" style="font-size:16px;"></i></a>
+      <span>GOAUNTLET</span>
+    </footer>
   </div>
-</header>
-
-<main class="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
-  <div class="hero py-14 sm:py-20">
-    <div class="hero-content text-center flex-col gap-5">
-      <p class="text-[11px] font-extrabold tracking-[.2em]" style="color:var(--muted);">LEARN GO BY PLAYING</p>
-      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-none">Tutorial hell<br>ends here.</h1>
-      <p class="max-w-xl text-[15px] sm:text-base leading-relaxed" style="color:var(--muted);">GOAUNTLET teaches Go the way games teach mechanics. Read a little. Run real code. Fix real bugs. Zero setup, real compiler, lives on the line.</p>
-      <div class="flex flex-wrap justify-center gap-2.5 mt-2">
-        <a href="play.html" class="btn btn-lg">Enter the gauntlet <i class="ph-bold ph-arrow-right"></i></a>
-        <a href="#how" class="btn btn-lg btn-ghost">How it works</a>
-      </div>
-      <p class="mono text-[12px]" style="color:var(--muted);">free · no signup · progress stays in your browser</p>
-    </div>
-  </div>
-
-  <section aria-label="Game modes">
-    <h2 class="font-extrabold text-xl sm:text-2xl tracking-tight">Eight ways to play.</h2>
-    <p class="text-[14px] mt-1 mb-4" style="color:var(--muted);">Pick whatever fits your mood. Everything teaches; only some of it can kill you.</p>
-    <div class="grid sm:grid-cols-2 gap-2.5">
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-book-open"></i>Learn</div><p class="text-[13px] mt-1" style="color:var(--muted);">Guided lessons with a real compiler. No lives lost.</p></div>
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-lightning"></i>Quiz</div><p class="text-[13px] mt-1" style="color:var(--muted);">Flashcards that cost lives and streaks when you miss.</p></div>
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-timer"></i>Speed</div><p class="text-[13px] mt-1" style="color:var(--muted);">60-second blitz. Answer fast, score big.</p></div>
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-chat-circle-dots"></i>Trivia</div><p class="text-[13px] mt-1" style="color:var(--muted);">Casual Go knowledge. Nothing at stake.</p></div>
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-bug"></i>Debug</div><p class="text-[13px] mt-1" style="color:var(--muted);">Tap the buggy line. Two tries per case.</p></div>
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-puzzle-piece"></i>Build</div><p class="text-[13px] mt-1" style="color:var(--muted);">Assemble real programs step by step, decoys included.</p></div>
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-list-numbers"></i>Order</div><p class="text-[13px] mt-1" style="color:var(--muted);">Put shuffled programs into running order.</p></div>
-      <div class="mode-card"><div class="flex items-center gap-2 font-bold text-[14.5px]"><i class="ph-bold ph-brain"></i>Algo</div><p class="text-[13px] mt-1" style="color:var(--muted);">Ten lessons, Big O to sliding window. Watch algorithms run, then solve.</p></div>
-    </div>
-  </section>
-
-  <section id="how" aria-label="How it works" class="mt-12 scroll-mt-24">
-    <h2 class="font-extrabold text-xl sm:text-2xl tracking-tight">How it works.</h2>
-    <div class="grid sm:grid-cols-3 gap-2.5 mt-4">
-      <div class="mode-card"><p class="mono text-[12px] font-bold" style="color:var(--muted);">01</p><p class="font-bold text-[14.5px] mt-1">Pick a track.</p><p class="text-[13px] mt-1" style="color:var(--muted);">Start at zero with Learn, or drill what you know in Quiz. The Algo track runs top to bottom.</p></div>
-      <div class="mode-card"><p class="mono text-[12px] font-bold" style="color:var(--muted);">02</p><p class="font-bold text-[14.5px] mt-1">Do, don't watch.</p><p class="text-[13px] mt-1" style="color:var(--muted);">Run code, fix bugs, arrange programs, predict output. Every step makes your hands move.</p></div>
-      <div class="mode-card"><p class="mono text-[12px] font-bold" style="color:var(--muted);">03</p><p class="font-bold text-[14.5px] mt-1">Come back daily.</p><p class="text-[13px] mt-1" style="color:var(--muted);">A daily quest and a streak that only counts real work. Small every day beats big once.</p></div>
-    </div>
-    <div class="flex flex-wrap gap-2.5 mt-6">
-      <a href="play.html" class="btn btn-lg">Enter the gauntlet <i class="ph-bold ph-arrow-right"></i></a>
-    </div>
-  </section>
-
-  <footer class="mt-14 pt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] font-bold" style="border-top:1px solid var(--line); color:var(--muted);">
-    <span class="flex items-center gap-2" style="color:var(--text);"><img src="logo.svg" alt="" class="w-5 h-5">GOAUNTLET</span>
-    <a href="play.html">Play</a>
-    <a href="https://github.com/codetesla51/goauntlet">GitHub</a>
-    <span class="ml-auto">Progress stays in your browser.</span>
-  </footer>
-</main>
+<script>
+(function () {
+  document.getElementById("intro-start").addEventListener("click", function () {
+    try { localStorage.setItem("goauntlet_intro", "1"); } catch (_) {}
+  });
+})();
+</script>
+<script>
+/* The transcript plays itself: two alternating rounds (a clean answer, then
+   a boss kill), line by line with a block cursor, looping forever. Without
+   JS — or with reduced motion — the authored static round stays put. */
+(function () {
+  var box = document.getElementById("termPlay");
+  if (!box) return;
+  var reduced = false;
+  try { reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (_) {}
+  if (reduced) return;
+  box.setAttribute("aria-hidden", "true");
+  var CHECK = '<i class="ph-bold ph-check"></i>';
+  var ROUNDS = [
+    [
+      { h: '<span class="p">$ goauntlet quiz --deck slices</span>', d: 600 },
+      { h: 'Q: What does append return?', d: 800 },
+      { h: '<span class="dim">  A) A new slice header</span>', d: 500 },
+      { h: '<span class="dim">  B) Nothing — edits in place</span>', d: 700 },
+      { h: '<span class="good">&gt; A ' + CHECK + '  +20 XP · streak 4 · combo x2</span>', d: 1200 },
+      { h: '<span class="dim">lives 3 · coins 120 · quest 5/8</span>', d: 3400 }
+    ],
+    [
+      { h: '<span class="p">$ goauntlet quiz --deck basics</span>', d: 600 },
+      { h: 'Q: Nested loops over n items cost?', d: 800 },
+      { h: '<span class="dim">  A) O(n²) — pairs multiply</span>', d: 500 },
+      { h: '<span class="dim">  B) O(n) — twice as fast</span>', d: 700 },
+      { h: '<span class="good">&gt; A ' + CHECK + '  +60 XP · BOSS DOWN · streak 5</span>', d: 1200 },
+      { h: '<span class="dim">lives 3 · coins 135 · quest 6/8</span>', d: 3400 }
+    ]
+  ];
+  var ri = 0;
+  function clearCursor() {
+    var cs = box.querySelectorAll(".tcur");
+    for (var k = 0; k < cs.length; k++) cs[k].remove();
+  }
+  function playRound() {
+    var lines = ROUNDS[ri % ROUNDS.length]; ri++;
+    box.innerHTML = "";
+    var i = 0;
+    (function next() {
+      if (i >= lines.length) { clearCursor(); setTimeout(playRound, 600); return; }
+      var div = document.createElement("div");
+      div.className = "tline";
+      div.innerHTML = lines[i].h;
+      box.appendChild(div);
+      void div.offsetWidth;
+      clearCursor();
+      var c = document.createElement("span");
+      c.className = "tcur";
+      c.setAttribute("aria-hidden", "true");
+      div.appendChild(c);
+      div.classList.add("show");
+      var wait = lines[i].d; i++;
+      setTimeout(next, wait);
+    })();
+  }
+  playRound();
+})();
+</script>
 </body>
 </html>
