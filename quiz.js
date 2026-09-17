@@ -72,9 +72,9 @@ function renderDecks() {
         b.setAttribute('aria-label', d.name + ' deck, ' + m + ' of ' + n + ' mastered');
         b.dataset.tip = d.desc;
         b.innerHTML = '<span class="deck-ico"><i class="ph-fill ' + d.icon + '"></i></span>'
-            + '<span class="min-w-0 flex-1"><span class="block font-bold text-[13.5px] leading-tight">' + d.name + '</span>'
+            + '<span class="min-w-0 flex-1 deck-main"><span class="block font-bold text-[13.5px] leading-tight">' + d.name + '</span>'
             + '<span class="block text-[11px] truncate" style="color:var(--muted);">' + d.desc + (lesTot ? ' · ' + lesDone + '/' + lesTot + ' lessons' : '') + '</span></span>'
-            + '<span class="mono text-[11px] font-bold flex-none" style="color:var(--muted);">' + m + '/' + n + '</span>';
+            + '<span class="mono text-[11px] font-bold flex-none deck-meta" style="color:var(--muted);">' + m + '/' + n + '</span>';
         b.onclick = () => { G.deckId = d.id; refreshCards(); beep(700, .05); };
         el.appendChild(b);
     });

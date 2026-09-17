@@ -81,9 +81,9 @@ function renderFlowPicker(kind: FlowKind): void {
     b.setAttribute('aria-label', l.name + ', ' + label);
     b.dataset.tip = l.desc;
     b.innerHTML = '<span class="deck-ico"><i class="ph-fill ' + l.icon + '"></i></span>'
-      + '<span class="min-w-0 flex-1"><span class="block font-bold text-[13.5px] leading-tight">' + (n + 1) + '. ' + esc(l.name) + (done ? ' · Done' : '') + '</span>'
+      + '<span class="min-w-0 flex-1 deck-main"><span class="block font-bold text-[13.5px] leading-tight">' + (n + 1) + '. ' + esc(l.name) + (done ? ' · Done' : '') + '</span>'
       + '<span class="block text-[11px] truncate" style="color:var(--muted);">' + esc(l.desc) + '</span></span>'
-      + '<span class="mono text-[11px] font-bold flex-none" style="color:var(--muted);">' + label + '</span>';
+      + '<span class="mono text-[11px] font-bold flex-none deck-meta" style="color:var(--muted);">' + label + '</span>';
     b.onclick = () => startFlow(l.id);
     box.appendChild(b);
   });

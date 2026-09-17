@@ -183,6 +183,8 @@
   .deck-row.sel{ background:var(--surface-2); border-color:var(--line-strong); }
   .deck-ico{ width:40px; height:40px; border-radius:var(--r-sm); display:grid; place-items:center; font-size:19px; flex:none; background:var(--surface-2); border:1px solid var(--line); }
   .deck-row.sel .deck-ico{ background:var(--surface-2); color:var(--text); border-color:var(--line-strong); }
+  .deck-main{ min-width:0; }
+  .deck-meta{ flex:none; }
 
   .ach{ display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border-radius:var(--r-sm); background:var(--surface-2); border:1px solid var(--line); }
   .ach.locked{ opacity:.45; }
@@ -246,6 +248,11 @@
   ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:99px; border:2px solid var(--bg); }
   @media (max-width:640px){
     #qText,#bldQ,#ordQ,#trivQ,#dbgTitle{ font-size:19px !important; }
+    /* Picker rows (Learn/Build/Algo lessons + worlds): the status label
+       ("Continue · step 4/9") drops below the name instead of squeezing
+       beside it and overlapping on narrow screens. 51px = icon + gap. */
+    .deck-row{ flex-wrap:wrap; }
+    .deck-meta{ flex:1 1 100%; margin-left:51px; text-align:left; }
     .pill{ padding:4px 9px; font-size:11.5px; gap:5px; }
     .seg button{ padding:6px 10px; font-size:12px; gap:5px; }
     .seg button i{ font-size:14px; }
