@@ -212,10 +212,17 @@ function flipCard(){
   sfx.flip();
 }
 function studyConfirm(){
-  attempted[cur().id]=true;
-  touchActive();
-  S.xp+=5; S.coins+=1; S.seen++;
-  save(); updateHUD(); sfx.coin(); xpBurst('+5 XP');
+  // Study pays once per card per shuffle: without this the queue wraps
+  // forever and "Got it" becomes an infinite coin/XP tap. Re-shuffling
+  // (or switching decks) deals a fresh paid lap. Repeats still advance.
+  const id=cur().id;
+  const fresh=!attempted[id];
+  attempted[id]=true;
+  if(fresh){
+    touchActive();
+    S.xp+=5; S.coins+=1; S.seen++;
+    save(); updateHUD(); sfx.coin(); xpBurst('+5 XP');
+  }
   idx=(idx+1)%queue.length; renderCard(); popCard('slide-l');
 }
 let trivLeft = 15, trivScore = 0, trivIdx = 0, trivLocked = false;
