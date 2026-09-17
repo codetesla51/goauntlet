@@ -741,5 +741,249 @@
         }
       }
     ]
+  },
+  {
+    "id": "fetch",
+    "name": "Concurrent Fetcher",
+    "icon": "ph-cloud-arrow-down",
+    "desc": "A real fetcher: three pages grabbed at once, slots keep the order, waiting lands in the middle.",
+    "deck": "gochan",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Slow, one by one",
+        "text": "You're building a fetcher that grabs three pages at once. Meet the slow version first: it knocks on each door, waits for an answer, then walks to the next. Thirty plus ten plus twenty milliseconds of standing around — all sequential, all patient, all wasteful.\n\nRead it once. Notice the shape: one loop, one wait per page, results printed in order. Your job in the next steps: same order out, a third of the waiting.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\tnames := []string{\"blog\", \"docs\", \"news\"}\n\tlats := []int{30, 10, 20}\n\tcounts := []int{120, 340, 210}\n\tfor i := range names {\n\t\ttime.Sleep(time.Duration(lats[i]) * time.Millisecond)\n\t\tfmt.Printf(\"%s: %d words\\n\", names[i], counts[i])\n\t}\n\tfmt.Println(\"Fetched 3 pages!\")\n}",
+        "hint": "No action needed — just read. Count the Sleeps: the total wait is the SUM."
+      },
+      {
+        "kind": "run",
+        "title": "Announce the mission",
+        "text": "Every tool announces itself. The starter runs fine but mumbles \"...\" instead of a mission statement. Swap the placeholder for the real line from the goal box, then press Run.",
+        "hint": "Change only the text between the quotes: fmt.Println(\"Fetching 3 pages...\") — three dots, no exclamation mark.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"...\")\n}",
+        "expected": "Fetching 3 pages...",
+        "goal": "Fetching 3 pages...",
+        "predict": {
+          "options": [
+            "...",
+            "Fetching 3 pages...",
+            "Fetching 3 pages!"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "Don't leave before the work lands",
+        "text": "The concurrent version is written: three workers fired with go, each filling its own numbered slot, main printing the slots in order. But it prints three BLANK lines. Main strolled to the printer before the workers delivered — the Wait that holds the door is missing. Add it back.",
+        "hint": "After the launch loop closes and before the printing loop opens, add one line: wg.Wait(). Launches on top, waiting in the middle, printing at the bottom.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"time\"\n)\n\nfunc fetch(name string, ms int, words int, wg *sync.WaitGroup, out []string, i int) {\n\tdefer wg.Done()\n\ttime.Sleep(time.Duration(ms) * time.Millisecond)\n\tout[i] = fmt.Sprintf(\"%s: %d words\", name, words)\n}\n\nfunc main() {\n\tnames := []string{\"blog\", \"docs\", \"news\"}\n\tlats := []int{30, 10, 20}\n\tcounts := []int{120, 340, 210}\n\tout := make([]string, 3)\n\tvar wg sync.WaitGroup\n\twg.Add(3)\n\tfor i := range names {\n\t\tgo fetch(names[i], lats[i], counts[i], &wg, out, i)\n\t}\n\tfor _, line := range out {\n\t\tfmt.Println(line)\n\t}\n\tfmt.Println(\"Fetched 3 pages!\")\n}",
+        "expected": "blog: 120 words\ndocs: 340 words\nnews: 210 words\nFetched 3 pages!",
+        "goal": "blog: 120 words\ndocs: 340 words\nnews: 210 words\nFetched 3 pages!",
+        "predict": {
+          "options": [
+            "blog: 120 words\ndocs: 340 words\nnews: 210 words\nFetched 3 pages!",
+            "Fetched 3 pages!",
+            "news: 210 words\ndocs: 340 words\nblog: 120 words\nFetched 3 pages!"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Lay the foundation",
+        "text": "Before any worker fires, main needs its setup: who to fetch, and the announcement. Six lines, shuffled — assemble the foundation.",
+        "hint": "package first, import second, func main opens the door, the list loads before anything counts it, the announcement goes last, lone brace closes.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tnames := []string{\"blog\", \"docs\", \"news\"}",
+          "\tfmt.Println(\"Fetching\", len(names), \"pages...\")",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "build",
+        "title": "Print in order, every time",
+        "text": "Workers finish whenever they finish — docs beats blog despite launching last. So the printer can't take results as they arrive. Each worker wrote its OWN numbered slot; main prints slot 0, 1, 2. Pick the printing lines (two impostors lurk) and place them.",
+        "hint": "Range over the slots in order and print each line, then the victory lap. The impostor prints the whole slice in brackets — brackets are for debugging, not users.",
+        "lines": [
+          "for _, line := range out {",
+          "\tfmt.Println(line)",
+          "}",
+          "fmt.Println(\"Fetched 3 pages!\")"
+        ],
+        "decoys": [
+          "\tfmt.Println(out)",
+          "} // wg"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Spot the race",
+        "text": "A teammate \"simplified\" the fetcher: one shared total, every worker adds to it, no locks, no slots. It prints the right number MOST runs — and garbage on unlucky ones. Racy code is broken code even when it looks fine. Tap the line that races.",
+        "hint": "Three goroutines, one variable, zero synchronization. Which line touches the shared variable from inside a worker?",
+        "bugName": "unsynchronized shared counter",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"time\"\n)\n\nfunc main() {\n\ttotal := 0\n\tvar wg sync.WaitGroup\n\twg.Add(3)\n\tfor i := 0; i < 3; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\ttime.Sleep(10 * time.Millisecond)\n\t\t\ttotal += 100\n\t\t}()\n\t}\n\twg.Wait()\n\tfmt.Println(\"Total:\", total)\n}",
+        "bug": 16
+      },
+      {
+        "kind": "quiz",
+        "title": "Why is the order stable?",
+        "text": "Workers finish in random order — docs (10ms) beats blog (30ms) almost every run. Yet the output never shuffles. Why?",
+        "hint": "Finishing first and printing first are different jobs. Who owns each?",
+        "quiz": {
+          "options": [
+            "Go schedules goroutines in launch order",
+            "Each worker writes its own slot; main prints slots in order after Wait",
+            "The channel delivers results sorted"
+          ],
+          "answer": 1,
+          "why": "Finishing and printing are separate jobs. Slots decouple them: workers write out[i] whenever they land, and main — held at wg.Wait() until all three land — prints slot 0, 1, 2. Same order out, every run, no luck involved."
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole fetcher, assembled — launches on top, waiting in the middle, printing at the bottom. Predict all four lines exactly, then press Run and watch three pages land in a third of the time.",
+        "hint": "blog 120, docs 340, news 210 — slots print in index order, victory lap last.",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"time\"\n)\n\nfunc fetch(name string, ms int, words int, wg *sync.WaitGroup, out []string, i int) {\n\tdefer wg.Done()\n\ttime.Sleep(time.Duration(ms) * time.Millisecond)\n\tout[i] = fmt.Sprintf(\"%s: %d words\", name, words)\n}\n\nfunc main() {\n\tnames := []string{\"blog\", \"docs\", \"news\"}\n\tlats := []int{30, 10, 20}\n\tcounts := []int{120, 340, 210}\n\tout := make([]string, 3)\n\tvar wg sync.WaitGroup\n\twg.Add(3)\n\tfor i := range names {\n\t\tgo fetch(names[i], lats[i], counts[i], &wg, out, i)\n\t}\n\twg.Wait()\n\tfor _, line := range out {\n\t\tfmt.Println(line)\n\t}\n\tfmt.Println(\"Fetched 3 pages!\")\n}",
+        "expected": "blog: 120 words\ndocs: 340 words\nnews: 210 words\nFetched 3 pages!",
+        "goal": "blog: 120 words\ndocs: 340 words\nnews: 210 words\nFetched 3 pages!",
+        "predict": {
+          "options": [
+            "blog: 120 words\ndocs: 340 words\nnews: 210 words\nFetched 3 pages!",
+            "docs: 340 words\nblog: 120 words\nnews: 210 words\nFetched 3 pages!",
+            "blog: 120 words\ndocs: 340 words\nnews: 210 words"
+          ],
+          "answer": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "quizgame",
+    "name": "Quiz Night",
+    "icon": "ph-list-checks",
+    "desc": "A real quiz game: scripted players, a three-way judge per question, an honest scoreboard.",
+    "deck": "basics",
+    "steps": [
+      {
+        "kind": "read",
+        "title": "Game night plan",
+        "text": "You're building a quiz game: three questions asked, answers judged against the key, score counted. Real players would type — but the compile sandbox has no keyboard, so the players are scripted (three answers walk in on rails). Same judging either way.\n\nRead the whole game below. Setup on top, one judging loop in the middle, scoreboard at the bottom. You'll build every piece.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tqs := []string{\"Go mascot?\", \"go run does what?\", \"Slice length of []int{1,2,3}?\"}\n\tkeys := []string{\"gopher\", \"compile and run\", \"3\"}\n\tgot := []string{\"gopher\", \"compile only\", \"3\"}\n\tscore := 0\n\tfor i := range qs {\n\t\tfmt.Println(\"Q:\", qs[i])\n\t\tif got[i] == keys[i] {\n\t\t\tfmt.Println(\"Correct!\")\n\t\t\tscore++\n\t\t} else {\n\t\t\tfmt.Println(\"Wrong — it was\", keys[i])\n\t\t}\n\t}\n\tfmt.Println(\"Score:\", score, \"/\", len(qs))\n}",
+        "hint": "No action needed — just read. Find the three acts: setup, loop, scoreboard."
+      },
+      {
+        "kind": "run",
+        "title": "Welcome the players",
+        "text": "Every game night needs a host. The starter runs fine but mumbles \"...\" instead of a welcome. Swap the placeholder for the real line from the goal box, then press Run.",
+        "hint": "Change only the text between the quotes: fmt.Println(\"3 questions. No pressure!\")",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"...\")\n}",
+        "expected": "3 questions. No pressure!",
+        "goal": "3 questions. No pressure!",
+        "predict": {
+          "options": [
+            "...",
+            "3 questions. No pressure!",
+            "Welcome to Quiz Night!"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "kind": "fix",
+        "title": "The scoreboard is stuck",
+        "text": "The game asks, judges, celebrates correct answers — and ends 0 / 3. The verdict prints but the scoreboard never ticks: score++ is missing from the correct branch. One line. Add it.",
+        "hint": "Inside the if branch, right after the Correct! print, add: score++. The celebration is there; the counting isn't.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tqs := []string{\"Go mascot?\", \"go run does what?\", \"Slice length of []int{1,2,3}?\"}\n\tkeys := []string{\"gopher\", \"compile and run\", \"3\"}\n\tgot := []string{\"gopher\", \"compile only\", \"3\"}\n\tscore := 0\n\tfor i := range qs {\n\t\tfmt.Println(\"Q:\", qs[i])\n\t\tif got[i] == keys[i] {\n\t\t\tfmt.Println(\"Correct!\")\n\t\t} else {\n\t\t\tfmt.Println(\"Wrong — it was\", keys[i])\n\t\t}\n\t}\n\tfmt.Println(\"Score:\", score, \"/\", len(qs))\n}",
+        "expected": "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 2 / 3",
+        "goal": "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 2 / 3",
+        "predict": {
+          "options": [
+            "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 2 / 3",
+            "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 0 / 3",
+            "Score: 3 / 3"
+          ],
+          "answer": 0
+        }
+      },
+      {
+        "kind": "order",
+        "title": "Lay the foundation",
+        "text": "Before any judging, game night needs its setup: the question list, and the host's announcement. Six lines, shuffled — assemble the foundation.",
+        "hint": "package first, import second, func main opens the door, questions load before anything counts them, announcement last, lone brace closes.",
+        "lines": [
+          "package main",
+          "import \"fmt\"",
+          "func main() {",
+          "\tqs := []string{\"Go mascot?\", \"go run does what?\", \"Slice length of []int{1,2,3}?\"}",
+          "\tfmt.Println(\"Tonight:\", len(qs), \"questions\")",
+          "} // func main"
+        ]
+      },
+      {
+        "kind": "build",
+        "title": "Deliver the verdict",
+        "text": "Setup stands. Now the judge: right earns a cheer AND a point, wrong reveals the key. Six real lines, two impostors — one counts backwards, one closes the wrong block.",
+        "hint": "if opens, cheer then count, else reveals. The backwards counter belongs in golf, not here.",
+        "lines": [
+          "if got[i] == keys[i] {",
+          "\tfmt.Println(\"Correct!\")",
+          "\tscore++",
+          "} else {",
+          "\tfmt.Println(\"Wrong — it was\", keys[i])",
+          "} // if"
+        ],
+        "decoys": [
+          "\tscore--",
+          "} // for"
+        ]
+      },
+      {
+        "kind": "spot",
+        "title": "Spot the leak",
+        "text": "Suspicious scores: everyone aces it. Someone's build prints the answer key BEFORE asking — an open-book test nobody agreed to. Tap the leak.",
+        "hint": "The leak prints keys[i] where players can see it. Questions ask; keys stay hidden.",
+        "bugName": "answer key leak",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tqs := []string{\"Go mascot?\", \"Slice length of []int{1,2,3}?\"}\n\tkeys := []string{\"gopher\", \"3\"}\n\tgot := []string{\"gopher\", \"2\"}\n\tfor i := range qs {\n\t\tfmt.Println(\"Answer is\", keys[i])\n\t\tfmt.Println(\"Q:\", qs[i])\n\t\tif got[i] == keys[i] {\n\t\t\tfmt.Println(\"Correct!\")\n\t\t} else {\n\t\t\tfmt.Println(\"Wrong!\")\n\t\t}\n\t}\n}",
+        "bug": 9
+      },
+      {
+        "kind": "quiz",
+        "title": "Why scripted players?",
+        "text": "Real quiz players type answers. Ours arrive in a slice. Why the rails?",
+        "hint": "What hardware does the compile sandbox NOT have?",
+        "quiz": {
+          "options": [
+            "The sandbox has no keyboard — scripted plays keep every run identical",
+            "Slices are faster than keyboards",
+            "fmt cannot read input"
+          ],
+          "answer": 0,
+          "why": "The compile sandbox gives your program no stdin — Scan would hit EOF instantly. Scripted answers keep the game runnable and deterministic here; on your own machine you'd swap the slice for a bufio.Scanner and change nothing else."
+        }
+      },
+      {
+        "kind": "run",
+        "title": "Opening night",
+        "text": "The whole game, assembled — setup, loop, judge, scoreboard. Predict the final tally exactly, then press Run and host your first game night.",
+        "hint": "Two cheers, one reveal, then the honest tally: 2 / 3.",
+        "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tqs := []string{\"Go mascot?\", \"go run does what?\", \"Slice length of []int{1,2,3}?\"}\n\tkeys := []string{\"gopher\", \"compile and run\", \"3\"}\n\tgot := []string{\"gopher\", \"compile only\", \"3\"}\n\tscore := 0\n\tfor i := range qs {\n\t\tfmt.Println(\"Q:\", qs[i])\n\t\tif got[i] == keys[i] {\n\t\t\tfmt.Println(\"Correct!\")\n\t\t\tscore++\n\t\t} else {\n\t\t\tfmt.Println(\"Wrong — it was\", keys[i])\n\t\t}\n\t}\n\tfmt.Println(\"Score:\", score, \"/\", len(qs))\n}",
+        "expected": "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 2 / 3",
+        "goal": "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 2 / 3",
+        "predict": {
+          "options": [
+            "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 0 / 3",
+            "Q: Go mascot?\nCorrect!\nQ: go run does what?\nWrong — it was compile and run\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 2 / 3",
+            "Q: Go mascot?\nCorrect!\nQ: go run does what?\nCorrect!\nQ: Slice length of []int{1,2,3}?\nCorrect!\nScore: 3 / 3"
+          ],
+          "answer": 1
+        }
+      }
+    ]
   }
 ]
