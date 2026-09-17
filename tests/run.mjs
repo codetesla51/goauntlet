@@ -2,7 +2,7 @@
 // Run: npm test
 import { esc, norm, highlight } from '../util.js';
 import { validCard, validLesStep, validLesson, takeValid } from '../content.js';
-import { interleave, normOut, insertionIndex, movePlacedAt, memorize, dueValue, migrateStores, freshFirst , num, dayKey, shiftDayKey, isYesterday, nextStreak, displayStreak } from '../logic.js';
+import { interleave, normOut, insertionIndex, movePlacedAt, memorize, dueValue, migrateStores, freshFirst, mergeTriviaOrder, num, dayKey, shiftDayKey, isYesterday, nextStreak, displayStreak } from '../logic.js';
 import handler, { shapeResult } from '../api/compile.js';
 import { migrateSaveVersion, reconcileContent, SAVE_VERSION } from '../state.js';
 
@@ -111,6 +111,13 @@ ok('freshFirst-all-seen-cycles', (() => {
   return freshFirst(items, t => t.id, { a: true, b: true }).length === 2;
 })());
 ok('freshFirst-empty', freshFirst([], () => '', {}).length === 0);
+
+// --- trivia resume (order + position + score survive reloads/mode hops) ---
+ok('merge-keeps-saved-order', same(mergeTriviaOrder(['b', 'a'], ['a', 'b', 'c'], () => 0.5), ['b', 'a', 'c']));
+ok('merge-drops-removed', same(mergeTriviaOrder(['a', 'gone'], ['a', 'b'], () => 0.5), ['a', 'b']));
+ok('merge-appends-new', same(mergeTriviaOrder(['a'], ['a', 'b', 'c'], () => 0.5), ['a', 'b', 'c']));
+ok('merge-empty-saved-returns-all', same(mergeTriviaOrder([], ['a', 'b'], () => 0.5), ['a', 'b']));
+ok('merge-duplicate-save-dedupes', same(mergeTriviaOrder(['a', 'a', 'b'], ['a', 'b', 'c'], () => 0.5), ['a', 'b', 'c']));
 
 // --- sanitize ---
 ok('num-plain', num(7) === 7);

@@ -62,6 +62,25 @@ export function freshFirst(items, key, seen) {
     const fresh = items.filter(t => !seen[key(t)]);
     return fresh.length ? fresh : items.slice();
 }
+/* Trivia session resume: order + position + score survive reloads and mode
+   hops. Saved ids that still exist keep their order (so the position still
+   points at the same question); newly-added content is appended shuffled so
+   it appears without wiping progress; removed ids are dropped. Pure so
+   tests can drive it; quiz.ts wires it to S.trivOrder. */
+export function mergeTriviaOrder(savedIds, allIds, rand = Math.random) {
+    // Dedupe defensively (hand-edited saves): first occurrence wins.
+    const seen = new Set();
+    const valid = [];
+    for (const id of (savedIds || [])) {
+        if (allIds.indexOf(id) !== -1 && !seen.has(id)) {
+            seen.add(id);
+            valid.push(id);
+        }
+    }
+    const missing = allIds.filter(id => !seen.has(id));
+    const shuffled = [...missing].sort(() => rand() - .5);
+    return valid.concat(shuffled);
+}
 /* Calendar-day keys (YYYY-MM-DD, local time). Pure so tests can drive
    streak/quest rollover without mocking Date.now.
    Why not Date.now()+off*864e5: that breaks across DST (a "day" is not
